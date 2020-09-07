@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mawkun.core.dao.GoodsDaoExt">
+
+    <resultMap id="GoodsDetailResultMap" type="com.mawkun.core.base.data.vo.GoodsVo">
+        <id column="id" property="id"/>
+        <result column="goods_name" property="goodsName"/>
+        <result column="price" property="price"/>
+        <result column="picture" property="picture"/>
+        <result column="goods_num" property="goodsNum"/>
+    </resultMap>
+
+    <select id="selectByOrderFormId" resultMap="GoodsDetailResultMap" resultType="java.lang.Long">
+    SELECT
+        gd.id,
+        gd.goods_name,
+        gd.price,
+        gd.picture,
+        oc.goods_num
+    FROM
+        order_clothes oc
+        LEFT JOIN goods gd ON oc.goods_id = gd.id
+    WHERE
+        oc.order_form_id = 1
+    </select>
+
+    <select id="selectByName" resultMap="com.mawkun.core.base.dao.GoodsDao.GoodsResultMap" parameterType="java.lang.String">
+        select * from goods where goods_name = #{name}
+    </select>
+</mapper>

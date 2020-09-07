@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.ShopDao">
+
+    <resultMap type="com.mawkun.core.base.entity.Shop" id="ShopResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="shopName" column="shop_name" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="picture" column="picture" jdbcType="VARCHAR"/>
+        <result property="longitude" column="longitude" jdbcType="VARCHAR"/>
+        <result property="latitude" column="latitude" jdbcType="VARCHAR"/>
+        <result property="location" column="location" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, shop_name, address, picture, longitude, latitude, location, level, status, update_time, create_time      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="ShopResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from shop
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="ShopResultMap" parameterType="com.mawkun.core.base.entity.Shop">
+        select
+          <include refid="table_field" />
+        from shop
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="shopName != null">
+                and shop_name like #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="picture != null">
+                and picture = #{picture,jdbcType=VARCHAR}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude,jdbcType=VARCHAR}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude,jdbcType=VARCHAR}
+            </if>
+            <if test="location != null">
+                and location = #{location,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="ShopResultMap" parameterType="com.mawkun.core.base.entity.Shop">
+        select
+          <include refid="table_field" />
+        from shop
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="shopName != null">
+                and shop_name = #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="picture != null">
+                and picture = #{picture,jdbcType=VARCHAR}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude,jdbcType=VARCHAR}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude,jdbcType=VARCHAR}
+            </if>
+            <if test="location != null">
+                and location = #{location,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="ShopResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from shop
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.Shop">
+        insert into shop
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="shopName != null">
+             shop_name,
+          </if>
+          <if test="address != null">
+             address,
+          </if>
+          <if test="picture != null">
+             picture,
+          </if>
+          <if test="longitude != null">
+             longitude,
+          </if>
+          <if test="latitude != null">
+             latitude,
+          </if>
+          <if test="location != null">
+             location,
+          </if>
+          <if test="level != null">
+             level,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+          <if test="updateTime != null">
+             update_time,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="shopName != null">
+             #{shopName,jdbcType=VARCHAR},
+          </if>
+          <if test="address != null">
+             #{address,jdbcType=VARCHAR},
+          </if>
+          <if test="picture != null">
+             #{picture,jdbcType=VARCHAR},
+          </if>
+          <if test="longitude != null">
+             #{longitude,jdbcType=VARCHAR},
+          </if>
+          <if test="latitude != null">
+             #{latitude,jdbcType=VARCHAR},
+          </if>
+          <if test="location != null">
+             #{location,jdbcType=VARCHAR},
+          </if>
+          <if test="level != null">
+             #{level,jdbcType=INTEGER},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=INTEGER},
+          </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into shop
+         (id, shop_name, address, picture, longitude, latitude, location, level, status, update_time, create_time)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.shopName,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.picture,jdbcType=VARCHAR}, #{item.longitude,jdbcType=VARCHAR}, #{item.latitude,jdbcType=VARCHAR}, #{item.location,jdbcType=VARCHAR}, #{item.level,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.Shop">
+        update shop
+        <set>
+            <if test="shopName != null and shopName != ''">
+                shop_name = #{shopName,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="picture != null and picture != ''">
+                picture = #{picture,jdbcType=VARCHAR},
+            </if>
+            <if test="longitude != null and longitude != ''">
+                longitude = #{longitude,jdbcType=VARCHAR},
+            </if>
+            <if test="latitude != null and latitude != ''">
+                latitude = #{latitude,jdbcType=VARCHAR},
+            </if>
+            <if test="location != null and location != ''">
+                location = #{location,jdbcType=VARCHAR},
+            </if>
+            <if test="level != null">
+                level = #{level,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update shop
+        <set>
+            <if test="where.shopName == null and set.shopName != null and set.shopName != ''">
+                shop_name = #{set.shopName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.address == null and set.address != null and set.address != ''">
+                address = #{set.address,jdbcType=VARCHAR},
+            </if>
+            <if test="where.picture == null and set.picture != null and set.picture != ''">
+                picture = #{set.picture,jdbcType=VARCHAR},
+            </if>
+            <if test="where.longitude == null and set.longitude != null and set.longitude != ''">
+                longitude = #{set.longitude,jdbcType=VARCHAR},
+            </if>
+            <if test="where.latitude == null and set.latitude != null and set.latitude != ''">
+                latitude = #{set.latitude,jdbcType=VARCHAR},
+            </if>
+            <if test="where.location == null and set.location != null and set.location != ''">
+                location = #{set.location,jdbcType=VARCHAR},
+            </if>
+            <if test="where.level == null and set.level != null">
+                level = #{set.level,jdbcType=INTEGER},
+            </if>
+            <if test="where.status == null and set.status != null">
+                status = #{set.status,jdbcType=INTEGER},
+            </if>
+            <if test="where.updateTime == null and set.updateTime != null">
+                update_time = #{set.updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.shopName != null">
+                and shop_name = #{where.shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.address != null">
+                and address = #{where.address,jdbcType=VARCHAR}
+            </if>
+            <if test="where.picture != null">
+                and picture = #{where.picture,jdbcType=VARCHAR}
+            </if>
+            <if test="where.longitude != null">
+                and longitude = #{where.longitude,jdbcType=VARCHAR}
+            </if>
+            <if test="where.latitude != null">
+                and latitude = #{where.latitude,jdbcType=VARCHAR}
+            </if>
+            <if test="where.location != null">
+                and location = #{where.location,jdbcType=VARCHAR}
+            </if>
+            <if test="where.level != null">
+                and level = #{where.level,jdbcType=INTEGER}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=INTEGER}
+            </if>
+            <if test="where.updateTime != null">
+                and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update shop
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="shop_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.shopName}
+                 </foreach>
+            </trim>
+            <trim prefix="address = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.address}
+                 </foreach>
+            </trim>
+            <trim prefix="picture = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.picture}
+                 </foreach>
+            </trim>
+            <trim prefix="longitude = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.longitude}
+                 </foreach>
+            </trim>
+            <trim prefix="latitude = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.latitude}
+                 </foreach>
+            </trim>
+            <trim prefix="location = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.location}
+                 </foreach>
+            </trim>
+            <trim prefix="level = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.level}
+                 </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from shop where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.Shop">
+        delete from shop
+        <where>
+            <if test="shopName != null">
+                and shop_name = #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="picture != null">
+                and picture = #{picture,jdbcType=VARCHAR}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude,jdbcType=VARCHAR}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude,jdbcType=VARCHAR}
+            </if>
+            <if test="location != null">
+                and location = #{location,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from shop where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from shop
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.Shop" resultType="int">
+        select count(id) from shop
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="shopName != null">
+                and shop_name = #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="picture != null">
+                and picture = #{picture,jdbcType=VARCHAR}
+            </if>
+            <if test="longitude != null">
+                and longitude = #{longitude,jdbcType=VARCHAR}
+            </if>
+            <if test="latitude != null">
+                and latitude = #{latitude,jdbcType=VARCHAR}
+            </if>
+            <if test="location != null">
+                and location = #{location,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.OperateOrderLogDao">
+
+    <resultMap type="com.mawkun.core.base.entity.OperateOrderLog" id="OperateOrderLogResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="orderFormId" column="order_form_id" jdbcType="INTEGER"/>
+        <result property="userKind" column="user_kind" jdbcType="OTHER"/>
+        <result property="operate" column="operate" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, user_id, order_form_id, user_kind, operate, description, status, create_time      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="OperateOrderLogResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from operate_order_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="OperateOrderLogResultMap" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
+        select
+          <include refid="table_field" />
+        from operate_order_log
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="orderFormId != null">
+                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            </if>
+            <if test="userKind != null">
+                and user_kind = #{userKind,jdbcType=OTHER}
+            </if>
+            <if test="operate != null">
+                and operate = #{operate,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="OperateOrderLogResultMap" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
+        select
+          <include refid="table_field" />
+        from operate_order_log
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="orderFormId != null">
+                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            </if>
+            <if test="userKind != null">
+                and user_kind = #{userKind,jdbcType=OTHER}
+            </if>
+            <if test="operate != null">
+                and operate = #{operate,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="OperateOrderLogResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from operate_order_log
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
+        insert into operate_order_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="userId != null">
+             user_id,
+          </if>
+          <if test="orderFormId != null">
+             order_form_id,
+          </if>
+          <if test="userKind != null">
+             user_kind,
+          </if>
+          <if test="operate != null">
+             operate,
+          </if>
+          <if test="description != null">
+             description,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="userId != null">
+             #{userId,jdbcType=INTEGER},
+          </if>
+          <if test="orderFormId != null">
+             #{orderFormId,jdbcType=INTEGER},
+          </if>
+          <if test="userKind != null">
+             #{userKind,jdbcType=OTHER},
+          </if>
+          <if test="operate != null">
+             #{operate,jdbcType=VARCHAR},
+          </if>
+          <if test="description != null">
+             #{description,jdbcType=VARCHAR},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=OTHER},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into operate_order_log
+         (id, user_id, order_form_id, user_kind, operate, description, status, create_time)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.orderFormId,jdbcType=INTEGER}, #{item.userKind,jdbcType=OTHER}, #{item.operate,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
+        update operate_order_log
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="orderFormId != null">
+                order_form_id = #{orderFormId,jdbcType=INTEGER},
+            </if>
+            <if test="userKind != null">
+                user_kind = #{userKind,jdbcType=OTHER},
+            </if>
+            <if test="operate != null and operate != ''">
+                operate = #{operate,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=OTHER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update operate_order_log
+        <set>
+            <if test="where.userId == null and set.userId != null">
+                user_id = #{set.userId,jdbcType=INTEGER},
+            </if>
+            <if test="where.orderFormId == null and set.orderFormId != null">
+                order_form_id = #{set.orderFormId,jdbcType=INTEGER},
+            </if>
+            <if test="where.userKind == null and set.userKind != null">
+                user_kind = #{set.userKind,jdbcType=OTHER},
+            </if>
+            <if test="where.operate == null and set.operate != null and set.operate != ''">
+                operate = #{set.operate,jdbcType=VARCHAR},
+            </if>
+            <if test="where.description == null and set.description != null and set.description != ''">
+                description = #{set.description,jdbcType=VARCHAR},
+            </if>
+            <if test="where.status == null and set.status != null">
+                status = #{set.status,jdbcType=OTHER},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.userId != null">
+                and user_id = #{where.userId,jdbcType=INTEGER}
+            </if>
+            <if test="where.orderFormId != null">
+                and order_form_id = #{where.orderFormId,jdbcType=INTEGER}
+            </if>
+            <if test="where.userKind != null">
+                and user_kind = #{where.userKind,jdbcType=OTHER}
+            </if>
+            <if test="where.operate != null">
+                and operate = #{where.operate,jdbcType=VARCHAR}
+            </if>
+            <if test="where.description != null">
+                and description = #{where.description,jdbcType=VARCHAR}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=OTHER}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update operate_order_log
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="user_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userId}
+                 </foreach>
+            </trim>
+            <trim prefix="order_form_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.orderFormId}
+                 </foreach>
+            </trim>
+            <trim prefix="user_kind = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userKind}
+                 </foreach>
+            </trim>
+            <trim prefix="operate = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.operate}
+                 </foreach>
+            </trim>
+            <trim prefix="description = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.description}
+                 </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from operate_order_log where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
+        delete from operate_order_log
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="orderFormId != null">
+                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            </if>
+            <if test="userKind != null">
+                and user_kind = #{userKind,jdbcType=OTHER}
+            </if>
+            <if test="operate != null">
+                and operate = #{operate,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from operate_order_log where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from operate_order_log
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.OperateOrderLog" resultType="int">
+        select count(id) from operate_order_log
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="orderFormId != null">
+                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            </if>
+            <if test="userKind != null">
+                and user_kind = #{userKind,jdbcType=OTHER}
+            </if>
+            <if test="operate != null">
+                and operate = #{operate,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null">
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+</mapper>

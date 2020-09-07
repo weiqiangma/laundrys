@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mawkun.core.dao.OperateOrderLogDaoExt">
+
+    <select id="selectList" parameterType="com.mawkun.core.base.data.query.OperateOrderLogQuery" resultMap="com.mawkun.core.base.dao.OperateOrderLogDao.OperateOrderLogResultMap">
+        select ool.* from operate_order_log ool LEFT JOIN order_form ofm on ofm.id = ool.order_form_id
+        <where>
+            <if test="shopId != null and shopId > 0">
+                and ofm.shop_id = #{shopId}
+            </if>
+        </where>
+    </select>
+</mapper>

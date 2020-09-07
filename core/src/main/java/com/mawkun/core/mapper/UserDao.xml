@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.UserDao">
+
+    <resultMap type="com.mawkun.core.base.entity.User" id="UserResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="realName" column="real_name" jdbcType="VARCHAR"/>
+        <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="kind" column="kind" jdbcType="INTEGER"/>
+        <result property="sumOfMoney" column="sum_of_money" jdbcType="NUMERIC"/>
+        <result property="integral" column="integral" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, user_name, real_name, mobile, address, kind, sum_of_money, integral, status, update_time, create_time      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="UserResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="UserResultMap" parameterType="com.mawkun.core.base.entity.User">
+        select
+          <include refid="table_field" />
+        from user
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name like #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name like #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null">
+                and mobile like #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="kind != null">
+                and kind = #{kind,jdbcType=INTEGER}
+            </if>
+            <if test="sumOfMoney != null">
+                and sum_of_money = #{sumOfMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="integral != null">
+                and integral = #{integral,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="UserResultMap" parameterType="com.mawkun.core.base.entity.User">
+        select
+          <include refid="table_field" />
+        from user
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="kind != null">
+                and kind = #{kind,jdbcType=INTEGER}
+            </if>
+            <if test="sumOfMoney != null">
+                and sum_of_money = #{sumOfMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="integral != null">
+                and integral = #{integral,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="UserResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from user
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.User">
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="userName != null">
+             user_name,
+          </if>
+          <if test="realName != null">
+             real_name,
+          </if>
+          <if test="mobile != null">
+             mobile,
+          </if>
+          <if test="address != null">
+             address,
+          </if>
+          <if test="kind != null">
+             kind,
+          </if>
+          <if test="sumOfMoney != null">
+             sum_of_money,
+          </if>
+          <if test="integral != null">
+             integral,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+          <if test="updateTime != null">
+             update_time,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="userName != null">
+             #{userName,jdbcType=VARCHAR},
+          </if>
+          <if test="realName != null">
+             #{realName,jdbcType=VARCHAR},
+          </if>
+          <if test="mobile != null">
+             #{mobile,jdbcType=VARCHAR},
+          </if>
+          <if test="address != null">
+             #{address,jdbcType=VARCHAR},
+          </if>
+          <if test="kind != null">
+             #{kind,jdbcType=INTEGER},
+          </if>
+          <if test="sumOfMoney != null">
+             #{sumOfMoney,jdbcType=NUMERIC},
+          </if>
+          <if test="integral != null">
+             #{integral,jdbcType=INTEGER},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=OTHER},
+          </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into user
+         (id, user_name, real_name, mobile, address, kind, sum_of_money, integral, status, update_time, create_time)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=INTEGER}, #{item.sumOfMoney,jdbcType=NUMERIC}, #{item.integral,jdbcType=INTEGER}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.User">
+        update user
+        <set>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="realName != null and realName != ''">
+                real_name = #{realName,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null and mobile != ''">
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="kind != null">
+                kind = #{kind,jdbcType=INTEGER},
+            </if>
+            <if test="sumOfMoney != null">
+                sum_of_money = #{sumOfMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="integral != null">
+                integral = #{integral,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=OTHER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update user
+        <set>
+            <if test="where.userName == null and set.userName != null and set.userName != ''">
+                user_name = #{set.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.realName == null and set.realName != null and set.realName != ''">
+                real_name = #{set.realName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.mobile == null and set.mobile != null and set.mobile != ''">
+                mobile = #{set.mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="where.address == null and set.address != null and set.address != ''">
+                address = #{set.address,jdbcType=VARCHAR},
+            </if>
+            <if test="where.kind == null and set.kind != null">
+                kind = #{set.kind,jdbcType=INTEGER},
+            </if>
+            <if test="where.sumOfMoney == null and set.sumOfMoney != null">
+                sum_of_money = #{set.sumOfMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="where.integral == null and set.integral != null">
+                integral = #{set.integral,jdbcType=INTEGER},
+            </if>
+            <if test="where.status == null and set.status != null">
+                status = #{set.status,jdbcType=OTHER},
+            </if>
+            <if test="where.updateTime == null and set.updateTime != null">
+                update_time = #{set.updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.userName != null">
+                and user_name = #{where.userName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.realName != null">
+                and real_name = #{where.realName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.mobile != null">
+                and mobile = #{where.mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="where.address != null">
+                and address = #{where.address,jdbcType=VARCHAR}
+            </if>
+            <if test="where.kind != null">
+                and kind = #{where.kind,jdbcType=INTEGER}
+            </if>
+            <if test="where.sumOfMoney != null">
+                and sum_of_money = #{where.sumOfMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="where.integral != null">
+                and integral = #{where.integral,jdbcType=INTEGER}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=OTHER}
+            </if>
+            <if test="where.updateTime != null">
+                and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update user
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="user_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userName}
+                 </foreach>
+            </trim>
+            <trim prefix="real_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.realName}
+                 </foreach>
+            </trim>
+            <trim prefix="mobile = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.mobile}
+                 </foreach>
+            </trim>
+            <trim prefix="address = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.address}
+                 </foreach>
+            </trim>
+            <trim prefix="kind = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.kind}
+                 </foreach>
+            </trim>
+            <trim prefix="sum_of_money = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.sumOfMoney}
+                 </foreach>
+            </trim>
+            <trim prefix="integral = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.integral}
+                 </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from user where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.User">
+        delete from user
+        <where>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="kind != null">
+                and kind = #{kind,jdbcType=INTEGER}
+            </if>
+            <if test="sumOfMoney != null">
+                and sum_of_money = #{sumOfMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="integral != null">
+                and integral = #{integral,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from user where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from user
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.User" resultType="int">
+        select count(id) from user
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="kind != null">
+                and kind = #{kind,jdbcType=INTEGER}
+            </if>
+            <if test="sumOfMoney != null">
+                and sum_of_money = #{sumOfMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="integral != null">
+                and integral = #{integral,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+</mapper>

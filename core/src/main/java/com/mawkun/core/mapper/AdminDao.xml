@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.AdminDao">
+
+    <resultMap type="com.mawkun.core.base.entity.Admin" id="AdminResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="shopId" column="shop_id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="realName" column="real_name" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="OTHER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, shop_id, user_name, real_name, password, phone, level, status, update_time, create_time      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="AdminResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from admin
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="AdminResultMap" parameterType="com.mawkun.core.base.entity.Admin">
+        select
+          <include refid="table_field" />
+        from admin
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="shopId != null">
+                and shop_id = #{shopId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name like #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name like #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="phone != null">
+                and phone like #{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=OTHER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="AdminResultMap" parameterType="com.mawkun.core.base.entity.Admin">
+        select
+          <include refid="table_field" />
+        from admin
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="shopId != null">
+                and shop_id = #{shopId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=OTHER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="AdminResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from admin
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.Admin">
+        insert into admin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="shopId != null">
+             shop_id,
+          </if>
+          <if test="userName != null">
+             user_name,
+          </if>
+          <if test="realName != null">
+             real_name,
+          </if>
+          <if test="password != null">
+             password,
+          </if>
+          <if test="phone != null">
+             phone,
+          </if>
+          <if test="level != null">
+             level,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+          <if test="updateTime != null">
+             update_time,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="shopId != null">
+             #{shopId,jdbcType=INTEGER},
+          </if>
+          <if test="userName != null">
+             #{userName,jdbcType=VARCHAR},
+          </if>
+          <if test="realName != null">
+             #{realName,jdbcType=VARCHAR},
+          </if>
+          <if test="password != null">
+             #{password,jdbcType=VARCHAR},
+          </if>
+          <if test="phone != null">
+             #{phone,jdbcType=VARCHAR},
+          </if>
+          <if test="level != null">
+             #{level,jdbcType=OTHER},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=OTHER},
+          </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into admin
+         (id, shop_id, user_name, real_name, password, phone, level, status, update_time, create_time)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR}, #{item.phone,jdbcType=VARCHAR}, #{item.level,jdbcType=OTHER}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.Admin">
+        update admin
+        <set>
+            <if test="shopId != null">
+                shop_id = #{shopId,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="realName != null and realName != ''">
+                real_name = #{realName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="level != null">
+                level = #{level,jdbcType=OTHER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=OTHER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update admin
+        <set>
+            <if test="where.shopId == null and set.shopId != null">
+                shop_id = #{set.shopId,jdbcType=INTEGER},
+            </if>
+            <if test="where.userName == null and set.userName != null and set.userName != ''">
+                user_name = #{set.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.realName == null and set.realName != null and set.realName != ''">
+                real_name = #{set.realName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.password == null and set.password != null and set.password != ''">
+                password = #{set.password,jdbcType=VARCHAR},
+            </if>
+            <if test="where.phone == null and set.phone != null and set.phone != ''">
+                phone = #{set.phone,jdbcType=VARCHAR},
+            </if>
+            <if test="where.level == null and set.level != null">
+                level = #{set.level,jdbcType=OTHER},
+            </if>
+            <if test="where.status == null and set.status != null">
+                status = #{set.status,jdbcType=OTHER},
+            </if>
+            <if test="where.updateTime == null and set.updateTime != null">
+                update_time = #{set.updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.shopId != null">
+                and shop_id = #{where.shopId,jdbcType=INTEGER}
+            </if>
+            <if test="where.userName != null">
+                and user_name = #{where.userName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.realName != null">
+                and real_name = #{where.realName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.password != null">
+                and password = #{where.password,jdbcType=VARCHAR}
+            </if>
+            <if test="where.phone != null">
+                and phone = #{where.phone,jdbcType=VARCHAR}
+            </if>
+            <if test="where.level != null">
+                and level = #{where.level,jdbcType=OTHER}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=OTHER}
+            </if>
+            <if test="where.updateTime != null">
+                and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update admin
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="shop_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.shopId}
+                 </foreach>
+            </trim>
+            <trim prefix="user_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userName}
+                 </foreach>
+            </trim>
+            <trim prefix="real_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.realName}
+                 </foreach>
+            </trim>
+            <trim prefix="password = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.password}
+                 </foreach>
+            </trim>
+            <trim prefix="phone = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.phone}
+                 </foreach>
+            </trim>
+            <trim prefix="level = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.level}
+                 </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from admin where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.Admin">
+        delete from admin
+        <where>
+            <if test="shopId != null">
+                and shop_id = #{shopId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=OTHER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from admin where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from admin
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.Admin" resultType="int">
+        select count(id) from admin
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="shopId != null">
+                and shop_id = #{shopId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null">
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and level = #{level,jdbcType=OTHER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+</mapper>

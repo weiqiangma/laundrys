@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.mawkun.core.dao.OrderFormDaoExt">
+
+    <resultMap id="OrderFormDetailResultMap" type="com.mawkun.core.base.data.vo.OrderFormVo">
+        <id column="id" property="id"/>
+        <result column="order_serial" property="orderSerial"/>
+        <result column="remark" property="remark"/>
+        <result column="status" property="status"/>
+        <result column="real_amount" property="realAmount"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="transport_way" property="transportWay"/>
+        <result column="customerName" property="customerName"/>
+        <result column="distributorName" property="distributorName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <!-- 订单详情 -->
+    <select id="selectDetail" parameterType="java.lang.Long" resultMap="OrderFormDetailResultMap">
+    SELECT
+        ofm.id,
+        ofm.order_serial,
+        ofm.remark,
+        ofm.`status`,
+        ofm.real_amount,
+        ofm.total_amount,
+        ofm.transport_way,
+        ofm.create_time,
+        cus.real_name customerName,
+        dis.real_name distributorName
+    FROM
+        order_form ofm
+        left JOIN `user` cus on ofm.user_id =cus.id
+        LEFT JOIN `user` dis on ofm.distributor_id=dis.id
+    WHERE ofm.id=#{id}
+    </select>
+
+    <resultMap type="com.mawkun.core.base.data.vo.OrderFormVo" id="OrderFormVoResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="shopId" column="shop_id" jdbcType="INTEGER"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="distributorId" column="distributor_id" jdbcType="INTEGER"/>
+        <result property="orderSerial" column="order_serial" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="realAmount" column="real_amount" jdbcType="NUMERIC"/>
+        <result property="totalAmount" column="total_amount" jdbcType="NUMERIC"/>
+        <result property="transportWay" column="transport_way" jdbcType="OTHER"/>
+        <result property="integral" column="integral" jdbcType="INTEGER"/>
+        <result property="type" column="type"/>
+        <result property="createTime" column="create_time" jdbcType="OTHER"/>
+    </resultMap>
+    <!-- 统计门店收入 -->
+    <select id="statsShopIncome" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.StateQuery">
+        SELECT
+        ofm.shop_id,
+        <if test="shopId != null and shopId > 0">
+            sp.shop_name,
+        </if>
+        SUM( ofm.total_amount ) total_amount,
+        DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
+        FROM
+        order_form ofm
+        LEFT JOIN shop sp ON ofm.shop_id = sp.id
+        <where>
+            <if test="shopId != null and shopId > 0">
+                and shop_id = #{shopId}
+            </if>
+            <if test="startTime != null and endTime != null">
+                and ofm.create_time between #{startTime} and #{endTime}
+            </if>
+        </where>
+        GROUP BY
+        type
+        <if test="shopId != null and shopId > 0">
+            ,shop_id
+        </if>
+    </select>
+
+    <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.OrderFormQuery">
+        select order_form.*, shop.shop_name from order_form left join  shop on order_form.shop_id = shop.id
+        <where>
+            <if test="transportWay != null">
+                and order_form.transport_way = #{transportWay}
+            </if>
+            <if test="status != null">
+                and order_form.status = #{status}
+            </if>
+            <if test="orderSerial != null and orderSerial != ''">
+                and order_form.order_serial like #{orderSerial}
+            </if>
+            <if test="shopName != null and shopName != ''">
+                and order_form.shopName like #{shopName}
+            </if>
+        </where>
+    </select>
+</mapper>

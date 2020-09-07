@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.SysParamDao">
+
+    <resultMap type="com.mawkun.core.base.entity.SysParam" id="SysParamResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="aliasName" column="alias_name" jdbcType="VARCHAR"/>
+        <result property="realName" column="real_name" jdbcType="VARCHAR"/>
+        <result property="sysValue" column="sys_value" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, alias_name, real_name, sys_value, status      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="SysParamResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from sys_param
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="SysParamResultMap" parameterType="com.mawkun.core.base.entity.SysParam">
+        select
+          <include refid="table_field" />
+        from sys_param
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="aliasName != null">
+                and alias_name = #{aliasName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="sysValue != null">
+                and sys_value = #{sysValue,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="SysParamResultMap" parameterType="com.mawkun.core.base.entity.SysParam">
+        select
+          <include refid="table_field" />
+        from sys_param
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="aliasName != null">
+                and alias_name = #{aliasName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="sysValue != null">
+                and sys_value = #{sysValue,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="SysParamResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from sys_param
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.SysParam">
+        insert into sys_param
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="aliasName != null">
+             alias_name,
+          </if>
+          <if test="realName != null">
+             real_name,
+          </if>
+          <if test="sysValue != null">
+             sys_value,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="aliasName != null">
+             #{aliasName,jdbcType=VARCHAR},
+          </if>
+          <if test="realName != null">
+             #{realName,jdbcType=VARCHAR},
+          </if>
+          <if test="sysValue != null">
+             #{sysValue,jdbcType=VARCHAR},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=OTHER},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into sys_param
+         (id, alias_name, real_name, sys_value, status)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.aliasName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.sysValue,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.SysParam">
+        update sys_param
+        <set>
+            <if test="aliasName != null and aliasName != ''">
+                alias_name = #{aliasName,jdbcType=VARCHAR},
+            </if>
+            <if test="realName != null and realName != ''">
+                real_name = #{realName,jdbcType=VARCHAR},
+            </if>
+            <if test="sysValue != null and sysValue != ''">
+                sys_value = #{sysValue,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=OTHER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update sys_param
+        <set>
+            <if test="where.aliasName == null and set.aliasName != null and set.aliasName != ''">
+                alias_name = #{set.aliasName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.realName == null and set.realName != null and set.realName != ''">
+                real_name = #{set.realName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.sysValue == null and set.sysValue != null and set.sysValue != ''">
+                sys_value = #{set.sysValue,jdbcType=VARCHAR},
+            </if>
+            <if test="where.status == null and set.status != null">
+                status = #{set.status,jdbcType=OTHER},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.aliasName != null">
+                and alias_name = #{where.aliasName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.realName != null">
+                and real_name = #{where.realName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.sysValue != null">
+                and sys_value = #{where.sysValue,jdbcType=VARCHAR}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=OTHER}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update sys_param
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="alias_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.aliasName}
+                 </foreach>
+            </trim>
+            <trim prefix="real_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.realName}
+                 </foreach>
+            </trim>
+            <trim prefix="sys_value = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.sysValue}
+                 </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from sys_param where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.SysParam">
+        delete from sys_param
+        <where>
+            <if test="aliasName != null">
+                and alias_name = #{aliasName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="sysValue != null">
+                and sys_value = #{sysValue,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from sys_param where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from sys_param
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.SysParam" resultType="int">
+        select count(id) from sys_param
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="aliasName != null">
+                and alias_name = #{aliasName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name = #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="sysValue != null">
+                and sys_value = #{sysValue,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+        </where>
+    </select>
+</mapper>
