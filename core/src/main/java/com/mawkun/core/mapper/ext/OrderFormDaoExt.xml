@@ -73,29 +73,21 @@
         <result property="type" column="type"/>
         <result property="createTime" column="create_time" jdbcType="OTHER"/>
     </resultMap>
-    <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.StateQuery">
-        SELECT
-        ofm.shop_id,
-        <if test="shopId != null and shopId > 0">
-            sp.shop_name,
-        </if>
-        SUM( ofm.total_amount ) total_amount,
-        DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
-        FROM
-        order_form ofm
-        LEFT JOIN shop sp ON ofm.shop_id = sp.id
+    <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.OrderFormQuery">
+        select order_form.*, shop.shop_name from order_form left join  shop on order_form.shop_id = shop.id
         <where>
-            <if test="shopId != null and shopId > 0">
-                and shop_id = #{shopId}
+            <if test="transportWay != null">
+                and order_form.transport_way = #{transportWay}
             </if>
-            <if test="startTime != null and endTime != null">
-                and ofm.create_time between #{startTime} and #{endTime}
+            <if test="status != null">
+                and order_form.status = #{status}
+            </if>
+            <if test="orderSerial != null and orderSerial != ''">
+                and order_form.order_serial like #{orderSerial}
+            </if>
+            <if test="shopName != null and shopName != ''">
+                and order_form.shopName like #{shopName}
             </if>
         </where>
-        GROUP BY
-        type
-        <if test="shopId != null and shopId > 0">
-            ,shop_id
-        </if>
     </select>
 </mapper>

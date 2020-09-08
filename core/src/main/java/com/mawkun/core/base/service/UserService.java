@@ -1,16 +1,21 @@
 package com.mawkun.core.base.service;
 
+import cn.pertech.common.utils.NumberUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.dao.ShopUserDao;
 import com.mawkun.core.base.dao.UserDao;
 import com.mawkun.core.base.data.query.UserQuery;
+import com.mawkun.core.base.entity.ShopUser;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.utils.StringUtils;
+import net.sf.cglib.core.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author mawkun
@@ -19,8 +24,10 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Resource(type = UserDao.class)
+    @Resource
     private UserDao userDao;
+    @Resource
+    private ShopUserDao shopUserDao;
 
     public UserDao getUserDao() {
         return userDao;
@@ -59,7 +66,17 @@ public class UserService {
         return userDao.insertBatch(list);
     }
 
-    public int update(User user) {
+    public int update(User user, String shopIds) {
+        if(StringUtils.isNotEmpty(shopIds)) {
+            List<String> shopIdList = Arrays.asList(shopIds.split(","));
+            for(String shopId : shopIdList) {
+                Long sId = NumberUtils.str2Long(shopId);
+                ShopUser shopUser = new ShopUser();
+                shopUser.setUserId(user.getId());
+                shopUser.setShopId(sId);
+                shopUserDao.insert(shopUser);
+            }
+        }
         user.setUpdateTime(new Date());
         return userDao.update(user);
     }

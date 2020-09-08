@@ -1,4 +1,61 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="cn.pertech.gate.core.dao.AdminMapperExt">
+<mapper namespace="com.mawkun.core.dao.UserDaoExt">
+
+
+    <resultMap type="com.mawkun.core.base.data.vo.UserVo" id="UserVoResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="shopId" column="shopId"/>
+        <result property="shopName" column="shopName"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="realName" column="real_name" jdbcType="VARCHAR"/>
+        <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="kind" column="kind" jdbcType="INTEGER"/>
+        <result property="sumOfMoney" column="sum_of_money" jdbcType="NUMERIC"/>
+        <result property="integral" column="integral" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="pageByEntity" resultMap="UserVoResultMap" parameterType="com.mawkun.core.base.data.query.UserQuery">
+        select * from user
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name like #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="realName != null">
+                and real_name like #{realName,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null">
+                and mobile like #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
+            </if>
+            <if test="kind != null">
+                and kind = #{kind,jdbcType=INTEGER}
+            </if>
+            <if test="sumOfMoney != null">
+                and sum_of_money = #{sumOfMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="integral != null">
+                and integral = #{integral,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
 </mapper>

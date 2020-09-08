@@ -80,9 +80,9 @@ public class UserController extends BaseController {
     @ResponseBody
     @PutMapping("/update")
     @ApiOperation(value="编辑用户", notes="编辑用户")
-    public JsonResult update(@LoginedAuth @ApiIgnore UserSession session, User user){
+    public JsonResult update(@LoginedAuth @ApiIgnore UserSession session, User user, String shopIds){
         if(session.getShopId() > 0) return sendArgsError("子管理员无权编辑用户");
-        int result = userServiceExt.update(user);
+        int result = userServiceExt.update(user, shopIds);
         return sendSuccess(result);
     }
 
