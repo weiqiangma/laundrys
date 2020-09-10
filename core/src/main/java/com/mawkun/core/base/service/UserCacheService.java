@@ -66,7 +66,21 @@ public class UserCacheService extends BaseService {
     private int USER_TOKEN_CACHE_TIME = CacheKeyConstants.ADMIN_TOKEN_TIME;
 
     /**
-     * 将用户信息放缓存 存放两份信息,一份用户用户token,另外一份是用户ID的
+     * 将后台用户信息放缓存 存放两份信息,一份用户用户token,另外一份是用户ID的
+     *
+     * @param token
+     * @param userSession
+     */
+    public void putAdminSession(String token, UserSession userSession) {
+        String key = String.format(CacheKeyConstants.ADMIN_OPEN_ID_KEY, token);
+        //logger.info("保存缓存信息: " + key + "\r\n" + JsonUtils.toStringNoEx(userSession));
+        cacheService.put(key, userSession, USER_TOKEN_CACHE_TIME, TimeUnit.SECONDS);
+        //再保存一份根据用户ID获取当前session
+        cacheService.put(String.format("TUD_%d", userSession.getId()), userSession, USER_TOKEN_CACHE_TIME, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 将后台用户信息放缓存 存放两份信息,一份用户用户token,另外一份是用户openId的
      *
      * @param token
      * @param userSession
@@ -78,6 +92,7 @@ public class UserCacheService extends BaseService {
         //再保存一份根据用户ID获取当前session
         cacheService.put(String.format("TUD_%d", userSession.getId()), userSession, USER_TOKEN_CACHE_TIME, TimeUnit.SECONDS);
     }
+
 
     /**
      * 从缓存中获取用户信息

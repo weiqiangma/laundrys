@@ -35,6 +35,10 @@ public class UserSession {
 
     private String token;
 
+    private String openId;
+
+    private String sessionKey;
+
     public UserSession(){}
 
     public UserSession(String token, Admin admin) {
@@ -55,6 +59,12 @@ public class UserSession {
         this.sumOfMoney = user.getSumOfMoney();
         this.integral = user.getIntegral();
         this.kind = user.getKind();
+    }
+
+    public UserSession(String token, WxLoginResultData data) {
+        this.token = token;
+        this.openId = data.getOpenId();
+        this.sessionKey = data.getSessionKey();
     }
 
     public boolean isAdmin() {

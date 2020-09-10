@@ -8,7 +8,6 @@ import lombok.experimental.SuperBuilder;
 import java.util.Date;
 
 @Data
-@SuperBuilder
 public class UserQuery extends User {
     private Integer pageNo;
     private Integer pageSize;

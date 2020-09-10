@@ -5,6 +5,8 @@ import cn.pertech.common.http.HttpUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.utils.StringUtils;
+import com.xiaoleilu.hutool.lang.Validator;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,11 +29,12 @@ public class WxApiServiceExt {
         try {
             HttpResult result = HttpUtils.get(url);
             JSONObject object = result.asJSON();
-            if(0 != object.getInteger("errCode")) log.info("查询异常");
-            String openId = object.getString("openId");
+            String openId = object.getString("openid");
             String sessionKey = object.getString("session_key");
-            if(!StringUtils.isEmpty(openId)) loginResult.setOpenId(openId);
-            if(!StringUtils.isEmpty(sessionKey)) loginResult.setSessionKey(sessionKey);
+            Validator.isNotEmpty(openId);
+            Validator.isNotEmpty(sessionKey);
+            loginResult.setOpenId(openId);
+            loginResult.setSessionKey(sessionKey);
         } catch (Exception e) {
             e.printStackTrace();
         }

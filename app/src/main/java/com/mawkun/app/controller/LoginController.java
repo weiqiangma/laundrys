@@ -1,35 +1,55 @@
 package com.mawkun.app.controller;
 
-import com.mawkun.core.base.common.result.JsonResult;
+import cn.pertech.common.abs.BaseController;
+import cn.pertech.common.spring.JsonResult;
+import cn.pertech.common.utils.CryptUtils;
+import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.data.query.UserQuery;
+import com.mawkun.core.base.data.vo.UserVo;
+import com.mawkun.core.base.entity.User;
+import com.mawkun.core.base.service.UserCacheService;
 import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
-import com.mawkun.core.utils.StringUtils;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Date 2020/9/8 16:23
  * @Author mawkun
  */
 @RestController
-@Api(tags={"登录操作操作接口"})
-public class LoginController {
+@Api(tags = {"登录操作操作接口"})
+public class LoginController extends BaseController {
 
     @Autowired
     private WxApiServiceExt wxApiServiceExt;
     @Autowired
     private UserServiceExt userServiceExt;
+    @Autowired
+    private UserCacheService userCacheService;
 
     @PostMapping(value = "/login")
     public JsonResult login(String code) {
         WxLoginResultData resultData = wxApiServiceExt.getOpenIdByCode(code);
-        if(StringUtils.isNotEmpty(resultData.getOpenId())) {
+        //根据openID查询数据库中是否存在该用户，没有则添加
+        UserQuery query = new UserQuery();
+        query.setOpenId(resultData.getOpenId());
+        List<UserVo> list = userServiceExt.listByEntity(query);
+        if (list.size() == 0) {
+            User user = new User();
+            user.setOpenId(resultData.getOpenId());
+            userServiceExt.update(user, null);
         }
-        return null;
+        //生成token,保存session
+        String token = CryptUtils.md5Safe(resultData.getOpenId()  + resultData.getSessionKey() + System.currentTimeMillis());
+        UserSession session = new UserSession(token, resultData);
+        userCacheService.putUserSession(token, session);
+        return sendSuccess(token);
     }
 }

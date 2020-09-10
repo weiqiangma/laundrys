@@ -60,7 +60,7 @@ public class LoginController extends BaseController {
         item.put("realName", admin.getRealName());
         item.put("token", token);
         UserSession session = new UserSession(token, admin);
-        userCacheService.putUserSession(token, session);
+        userCacheService.putAdminSession(token, session);
         return sendSuccess(item);
     }
 
