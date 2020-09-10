@@ -8,6 +8,7 @@ import com.mawkun.core.base.dao.UserDao;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.entity.ShopUser;
 import com.mawkun.core.base.entity.User;
+import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.utils.StringUtils;
 import net.sf.cglib.core.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class UserService {
     @Resource
     private UserDao userDao;
     @Resource
-    private ShopUserDao shopUserDao;
+    private ShopUserDaoExt shopUserDaoExt;
 
     public UserDao getUserDao() {
         return userDao;
@@ -69,12 +70,13 @@ public class UserService {
     public int update(User user, String shopIds) {
         if(StringUtils.isNotEmpty(shopIds)) {
             List<String> shopIdList = Arrays.asList(shopIds.split(","));
+            shopUserDaoExt.deleteByUserId(user.getId());
             for(String shopId : shopIdList) {
                 Long sId = NumberUtils.str2Long(shopId);
                 ShopUser shopUser = new ShopUser();
                 shopUser.setUserId(user.getId());
                 shopUser.setShopId(sId);
-                shopUserDao.insert(shopUser);
+                shopUserDaoExt.insert(shopUser);
             }
         }
         user.setUpdateTime(new Date());

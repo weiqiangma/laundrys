@@ -11,4 +11,8 @@
     <select id="selectShopNameByUserId" parameterType="java.lang.Long" resultMap="shopUserVoBaseResultMap">
         select su.id, su.shop_id, s.shop_name from shop_user su left join shop s on su.shop_id = s.id where su.user_id = #{userId}
     </select>
+
+    <delete id="deleteByUserId" parameterType="java.lang.Long">
+        delete from shop_user where user_id = #{userId}
+    </delete>
 </mapper>
