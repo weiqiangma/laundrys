@@ -1,46 +1,66 @@
 package com.mawkun.core.base.entity;
 
 import java.util.Date;
-
-import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonFormat;
+                                            import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-
 /**
  * (User)实体类
  *
  * @author mawkun
- * @date 2020-09-02 23:11:44
+ * @since 2020-09-10 11:33:36
  */
-@Data
+@Data 
 public class User {
-
-    @ExcelProperty("用户ID")
+    
     private Long id;
-    @ExcelProperty("用户名")
+    /**
+    * 微信用户唯一ID
+    */
+    private String openId;
+    /**
+    * 用户昵称
+    */
     private String userName;
-    @ExcelProperty("真实姓名")
+    /**
+    * 真实姓名
+    */
     private String realName;
-    @ExcelProperty("手机号")
+    /**
+    * 联系方式
+    */
     private String mobile;
-    @ExcelProperty("地址")
+    /**
+    * 地址
+    */
     private String address;
-    @ExcelProperty("类型")
+    /**
+    * 类型
+    */
     private Integer kind;
-    @ExcelProperty("余额")
+    /**
+    * 余额
+    */
     private Double sumOfMoney;
-    @ExcelProperty("积分")
+    /**
+    * 积分
+    */
     private Integer integral;
-    @ExcelProperty("状态")
-    private Object status;
-    @ExcelProperty("更新时间")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
-    @ExcelProperty("创建时间")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+    /**
+    * 状态
+    */
+    private Integer status;
+    /**
+    * 更新时间
+    */
+        @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+private Date updateTime;
+    /**
+    * 创建时间
+    */
+        @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+private Date createTime;
 
 }

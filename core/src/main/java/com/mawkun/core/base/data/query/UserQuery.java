@@ -1,11 +1,14 @@
 package com.mawkun.core.base.data.query;
 
 import com.mawkun.core.base.entity.User;
+import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 
 @Data
+@SuperBuilder
 public class UserQuery extends User {
     private Integer pageNo;
     private Integer pageSize;

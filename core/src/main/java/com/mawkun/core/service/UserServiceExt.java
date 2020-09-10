@@ -42,4 +42,15 @@ public class UserServiceExt extends UserService {
         }
         return new PageInfo(list);
     }
+
+    public List<UserVo> listByEntity(UserQuery query) {
+        query.init();
+        if(!StringUtils.isEmpty(query.getUserName())) {
+            query.setUserName("%" + query.getUserName() + "%");
+        }
+        if(!StringUtils.isEmpty(query.getMobile())) {
+            query.setMobile("%" + query.getMobile() + "%");
+        }
+        return userDaoExt.pageByEntity(query);
+    }
 }

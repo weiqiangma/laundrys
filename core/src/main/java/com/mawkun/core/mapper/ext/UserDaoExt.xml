@@ -5,8 +5,7 @@
 
     <resultMap type="com.mawkun.core.base.data.vo.UserVo" id="UserVoResultMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="shopId" column="shopId"/>
-        <result property="shopName" column="shopName"/>
+        <result property="openId" column="open_id" jdbcType="VARCHAR"/>
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="realName" column="real_name" jdbcType="VARCHAR"/>
         <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
@@ -25,6 +24,9 @@
         <where>
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="openId != null">
+                and open_id = #{openId,jdbcType=VARCHAR}
             </if>
             <if test="userName != null">
                 and user_name like #{userName,jdbcType=VARCHAR}
