@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.dao.ShoppingCartDaoExt">
+
+    <resultMap type="com.mawkun.core.base.entity.ShoppingCart" id="ShoppingCartResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="goodsId" column="goods_id" jdbcType="INTEGER"/>
+        <result property="kindId" column="kind_id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="goodsNum" column="goods_num" jdbcType="INTEGER"/>
+        <result property="goodsPic" column="goods_pic" jdbcType="VARCHAR"/>
+        <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+        <result property="goodsPrice" column="goods_price" jdbcType="NUMERIC"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="selectByUserId" resultMap="ShoppingCartResultMap">
+        select * from shopping_cart
+        <where>
+            <if test="userId != null and userId > 0">
+                and user_id = #{userId}
+            </if>
+            <if test="goodsId != null and goodsId > 0">
+                and goods_id = #{goodsId}
+            </if>
+            <if test="idList != null and idList.size() > 0">
+                <foreach collection="idList" separator="," item="deviceId" open="(" close=")">#{deviceId}</foreach>
+            </if>
+            <if test="idList!=null">
+                and goods_id in
+                <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

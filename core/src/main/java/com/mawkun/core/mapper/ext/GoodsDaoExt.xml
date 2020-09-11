@@ -27,4 +27,12 @@
     <select id="selectByName" resultMap="com.mawkun.core.base.dao.GoodsDao.GoodsResultMap" parameterType="java.lang.String">
         select * from goods where goods_name = #{name}
     </select>
+
+    <select id="selectByTerms" resultMap="com.mawkun.core.base.dao.GoodsDao.GoodsResultMap" parameterType="com.mawkun.core.base.data.query.GoodsQuery">
+        select * from goods
+        <where>
+            <if test="id != null and id > 0">and id = #{id}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+    </select>
 </mapper>

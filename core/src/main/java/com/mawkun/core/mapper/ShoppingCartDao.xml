@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.ShoppingCartDao">
+
+    <resultMap type="com.mawkun.core.base.entity.ShoppingCart" id="ShoppingCartResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="goodsId" column="goods_id" jdbcType="INTEGER"/>
+        <result property="kindId" column="kind_id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="goodsNum" column="goods_num" jdbcType="INTEGER"/>
+        <result property="goodsPic" column="goods_pic" jdbcType="VARCHAR"/>
+        <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+        <result property="goodsPrice" column="goods_price" jdbcType="NUMERIC"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, goods_id, kind_id, user_id, goods_num, goods_pic, goods_name, goods_price, user_name, status, update_time, create_time      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="ShoppingCartResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from shopping_cart
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="ShoppingCartResultMap" parameterType="com.mawkun.core.base.entity.ShoppingCart">
+        select
+          <include refid="table_field" />
+        from shopping_cart
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="goodsId != null">
+                and goods_id = #{goodsId,jdbcType=INTEGER}
+            </if>
+            <if test="kindId != null">
+                and kind_id = #{kindId,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="goodsNum != null">
+                and goods_num = #{goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="goodsPic != null">
+                and goods_pic = #{goodsPic,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsName != null">
+                and goods_name = #{goodsName,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsPrice != null">
+                and goods_price = #{goodsPrice,jdbcType=NUMERIC}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="ShoppingCartResultMap" parameterType="com.mawkun.core.base.entity.ShoppingCart">
+        select
+          <include refid="table_field" />
+        from shopping_cart
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="goodsId != null">
+                and goods_id = #{goodsId,jdbcType=INTEGER}
+            </if>
+            <if test="kindId != null">
+                and kind_id = #{kindId,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="goodsNum != null">
+                and goods_num = #{goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="goodsPic != null">
+                and goods_pic = #{goodsPic,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsName != null">
+                and goods_name = #{goodsName,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsPrice != null">
+                and goods_price = #{goodsPrice,jdbcType=NUMERIC}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="ShoppingCartResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from shopping_cart
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.ShoppingCart">
+        insert into shopping_cart
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="goodsId != null">
+             goods_id,
+          </if>
+          <if test="kindId != null">
+             kind_id,
+          </if>
+          <if test="userId != null">
+             user_id,
+          </if>
+          <if test="goodsNum != null">
+             goods_num,
+          </if>
+          <if test="goodsPic != null">
+             goods_pic,
+          </if>
+          <if test="goodsName != null">
+             goods_name,
+          </if>
+          <if test="goodsPrice != null">
+             goods_price,
+          </if>
+          <if test="userName != null">
+             user_name,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+          <if test="updateTime != null">
+             update_time,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="goodsId != null">
+             #{goodsId,jdbcType=INTEGER},
+          </if>
+          <if test="kindId != null">
+             #{kindId,jdbcType=INTEGER},
+          </if>
+          <if test="userId != null">
+             #{userId,jdbcType=INTEGER},
+          </if>
+          <if test="goodsNum != null">
+             #{goodsNum,jdbcType=INTEGER},
+          </if>
+          <if test="goodsPic != null">
+             #{goodsPic,jdbcType=VARCHAR},
+          </if>
+          <if test="goodsName != null">
+             #{goodsName,jdbcType=VARCHAR},
+          </if>
+          <if test="goodsPrice != null">
+             #{goodsPrice,jdbcType=NUMERIC},
+          </if>
+          <if test="userName != null">
+             #{userName,jdbcType=VARCHAR},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=INTEGER},
+          </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into shopping_cart
+         (id, goods_id, kind_id, user_id, goods_num, goods_pic, goods_name, goods_price, user_name, status, update_time, create_time)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.goodsId,jdbcType=INTEGER}, #{item.kindId,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.goodsNum,jdbcType=INTEGER}, #{item.goodsPic,jdbcType=VARCHAR}, #{item.goodsName,jdbcType=VARCHAR}, #{item.goodsPrice,jdbcType=NUMERIC}, #{item.userName,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.ShoppingCart">
+        update shopping_cart
+        <set>
+            <if test="goodsId != null">
+                goods_id = #{goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="kindId != null">
+                kind_id = #{kindId,jdbcType=INTEGER},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="goodsNum != null">
+                goods_num = #{goodsNum,jdbcType=INTEGER},
+            </if>
+            <if test="goodsPic != null and goodsPic != ''">
+                goods_pic = #{goodsPic,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsName != null and goodsName != ''">
+                goods_name = #{goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsPrice != null">
+                goods_price = #{goodsPrice,jdbcType=NUMERIC},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update shopping_cart
+        <set>
+            <if test="where.goodsId == null and set.goodsId != null">
+                goods_id = #{set.goodsId,jdbcType=INTEGER},
+            </if>
+            <if test="where.kindId == null and set.kindId != null">
+                kind_id = #{set.kindId,jdbcType=INTEGER},
+            </if>
+            <if test="where.userId == null and set.userId != null">
+                user_id = #{set.userId,jdbcType=INTEGER},
+            </if>
+            <if test="where.goodsNum == null and set.goodsNum != null">
+                goods_num = #{set.goodsNum,jdbcType=INTEGER},
+            </if>
+            <if test="where.goodsPic == null and set.goodsPic != null and set.goodsPic != ''">
+                goods_pic = #{set.goodsPic,jdbcType=VARCHAR},
+            </if>
+            <if test="where.goodsName == null and set.goodsName != null and set.goodsName != ''">
+                goods_name = #{set.goodsName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.goodsPrice == null and set.goodsPrice != null">
+                goods_price = #{set.goodsPrice,jdbcType=NUMERIC},
+            </if>
+            <if test="where.userName == null and set.userName != null and set.userName != ''">
+                user_name = #{set.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.status == null and set.status != null">
+                status = #{set.status,jdbcType=INTEGER},
+            </if>
+            <if test="where.updateTime == null and set.updateTime != null">
+                update_time = #{set.updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.goodsId != null">
+                and goods_id = #{where.goodsId,jdbcType=INTEGER}
+            </if>
+            <if test="where.kindId != null">
+                and kind_id = #{where.kindId,jdbcType=INTEGER}
+            </if>
+            <if test="where.userId != null">
+                and user_id = #{where.userId,jdbcType=INTEGER}
+            </if>
+            <if test="where.goodsNum != null">
+                and goods_num = #{where.goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="where.goodsPic != null">
+                and goods_pic = #{where.goodsPic,jdbcType=VARCHAR}
+            </if>
+            <if test="where.goodsName != null">
+                and goods_name = #{where.goodsName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.goodsPrice != null">
+                and goods_price = #{where.goodsPrice,jdbcType=NUMERIC}
+            </if>
+            <if test="where.userName != null">
+                and user_name = #{where.userName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=INTEGER}
+            </if>
+            <if test="where.updateTime != null">
+                and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update shopping_cart
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="goods_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.goodsId}
+                 </foreach>
+            </trim>
+            <trim prefix="kind_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.kindId}
+                 </foreach>
+            </trim>
+            <trim prefix="user_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userId}
+                 </foreach>
+            </trim>
+            <trim prefix="goods_num = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.goodsNum}
+                 </foreach>
+            </trim>
+            <trim prefix="goods_pic = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.goodsPic}
+                 </foreach>
+            </trim>
+            <trim prefix="goods_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.goodsName}
+                 </foreach>
+            </trim>
+            <trim prefix="goods_price = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.goodsPrice}
+                 </foreach>
+            </trim>
+            <trim prefix="user_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userName}
+                 </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from shopping_cart where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.ShoppingCart">
+        delete from shopping_cart
+        <where>
+            <if test="goodsId != null">
+                and goods_id = #{goodsId,jdbcType=INTEGER}
+            </if>
+            <if test="kindId != null">
+                and kind_id = #{kindId,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="goodsNum != null">
+                and goods_num = #{goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="goodsPic != null">
+                and goods_pic = #{goodsPic,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsName != null">
+                and goods_name = #{goodsName,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsPrice != null">
+                and goods_price = #{goodsPrice,jdbcType=NUMERIC}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from shopping_cart where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from shopping_cart
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.ShoppingCart" resultType="int">
+        select count(id) from shopping_cart
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="goodsId != null">
+                and goods_id = #{goodsId,jdbcType=INTEGER}
+            </if>
+            <if test="kindId != null">
+                and kind_id = #{kindId,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="goodsNum != null">
+                and goods_num = #{goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="goodsPic != null">
+                and goods_pic = #{goodsPic,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsName != null">
+                and goods_name = #{goodsName,jdbcType=VARCHAR}
+            </if>
+            <if test="goodsPrice != null">
+                and goods_price = #{goodsPrice,jdbcType=NUMERIC}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -2,9 +2,11 @@ package com.mawkun.admin.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import cn.pertech.common.utils.RequestUtils;
 import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
+import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.service.UserServiceExt;
@@ -12,6 +14,7 @@ import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.core.CollectionUtils;
 import net.sf.cglib.core.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +22,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author mawkun
  * @date 2020-08-19 21:44:11
  */
+@Slf4j
 @Controller
 @RequestMapping("/adm/user")
 @Api(tags={"用户操作接口"})
@@ -111,6 +117,13 @@ public class UserController extends BaseController {
         return sendSuccess(result);
     }
 
+    @ResponseBody
+    @GetMapping("/statsIncreaseMember")
+    @ApiOperation(value = "统计新增会员",notes = "统计新增会员")
+    public JsonResult statsIncreaseMember(@LoginedAuth UserSession session) {
+        return null;
+    }
+
     @GetMapping("/export")
     @ApiOperation(value="用户信息导出excel", notes="用户信息导出excel")
     public void export(User user, HttpServletResponse response) {
@@ -123,6 +136,30 @@ public class UserController extends BaseController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //查询统计对象(首页统计)
+    private StateQuery createQueryStateVo(){
+        int type = getIntPar("type",1);
+        HttpServletRequest request = getRequest();
+        Date start = null;
+        Date end = null;
+        Integer shopId = RequestUtils.getIntPar(request, "shopId", 0);
+        try{
+            start = RequestUtils.getDatePar(request,"createTimeStart","yyyy-MM-dd");
+            end = RequestUtils.getDatePar(request,"createTimeEnd","yyyy-MM-dd");
+        }catch (Exception e){
+            log.error("开始和结束错误时间格式错误");
+        }
+        StateQuery queryVO = new StateQuery();
+        queryVO.setShopId(shopId.longValue());
+        if(start!=null && end!=null){
+            type = 4 ;
+            queryVO.setStartTime(start);
+            queryVO.setEndTime(end);
+        }
+        queryVO.setType(type);
+        return queryVO;
     }
 
 }

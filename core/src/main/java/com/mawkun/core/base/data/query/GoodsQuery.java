@@ -2,6 +2,7 @@ package com.mawkun.core.base.data.query;
 
 import com.mawkun.core.base.entity.Goods;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 

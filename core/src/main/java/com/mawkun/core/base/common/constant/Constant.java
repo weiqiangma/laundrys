@@ -30,6 +30,11 @@ public interface Constant {
     //=============================系统参数状态=============================//
     int SYS_PARAM_OPEN = 1;     //开启
     int SYS_PARAM_CLOSE = 0;    //关闭
+
+    //=============================商品状态=============================//
+    int GOODS_GROUNDING = 0;    //上架
+    int GOODS_UNDERCARRIAGE = 1;//下架
+
     //=============================系统用户状态=============================
     //用户登录和请求token权限返回状态
     int LOGIN_NOTFIND = 40000;
@@ -50,11 +55,7 @@ public interface Constant {
     int PAY_STATU_REFUND_SUCCESS = 30;
     int PAY_STATU_REFUND_REJECT = 50;
 
-    //=============================缴费_人员状态=============================
-    //状态0:未交费,1:无需缴费,2:缴费成功
-    int PROJECT_PAY_STATU_NOT = 0;
-    int PROJECT_PAY_STATU_NOT_NEED = 1;
-    int PROJECT_PAY_STATU_SUCCESS = 2;
+    //=============================购物车信息状态=============================
 
     //=============================门店状态=============================
     int SHOP_LEVEL_FIRST = 0;   //总店
