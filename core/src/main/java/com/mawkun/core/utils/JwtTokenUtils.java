@@ -82,16 +82,4 @@ public class JwtTokenUtils {
         byte[] encodedKey = Base64.decodeBase64(signKey);//本地的密码解码
         return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
     }
-
-    public static void main(String[] args) throws Exception {
-        String input = "17858955543";
-        JwtTokenUtils jwt = new JwtTokenUtils();
-        jwt.setSignKey("3c842a4841c651dd941b37e7b440f903");
-        String jwtToken = jwt.createJwtToken(input);
-        String output = jwt.getOpenIdFromToken(jwtToken);
-        System.out.println(input);
-        System.out.println(jwtToken);
-        System.out.println(output);
-
-    }
 }

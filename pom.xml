@@ -12,7 +12,7 @@
     <artifactId>laundry</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>laundry</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Laundry project for Spring Boot</description>
 
     <modules>
         <module>app</module>
@@ -194,14 +194,5 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

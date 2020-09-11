@@ -8,11 +8,8 @@
         <version>0.0.1-SNAPSHOT</version><!-- lookup parent from repository -->
     </parent>
     <artifactId>core</artifactId>
-
     <packaging>jar</packaging>
-
     <version>0.0.1-SNAPSHOT</version>
-
     <name>core</name>
 
     <properties>
@@ -38,44 +35,44 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
+<!--    <build>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
 
-        <!--代码中的xml文件也打包-->
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <!--目前没有用到filtering,所以false,如果开了true图标会变-->
-                <filtering>false</filtering>
-                <includes>
-                    <include>webapp/**</include>
-                </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <!--其他配置进行过滤配置-->
-                <filtering>true</filtering>
-                <!-- 资源根目录排除各环境的配置  ，防止在生成目录中多余其它目录 -->
-                <excludes>
-                    <exclude>etc/**</exclude>
-                </excludes>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
+<!--        &lt;!&ndash;代码中的xml文件也打包&ndash;&gt;-->
+<!--        <resources>-->
+<!--            <resource>-->
+<!--                <directory>src/main/resources</directory>-->
+<!--                &lt;!&ndash;目前没有用到filtering,所以false,如果开了true图标会变&ndash;&gt;-->
+<!--                <filtering>false</filtering>-->
+<!--                <includes>-->
+<!--                    <include>webapp/**</include>-->
+<!--                </includes>-->
+<!--            </resource>-->
+<!--            <resource>-->
+<!--                <directory>src/main/resources</directory>-->
+<!--                &lt;!&ndash;其他配置进行过滤配置&ndash;&gt;-->
+<!--                <filtering>true</filtering>-->
+<!--                &lt;!&ndash; 资源根目录排除各环境的配置  ，防止在生成目录中多余其它目录 &ndash;&gt;-->
+<!--                <excludes>-->
+<!--                    <exclude>etc/**</exclude>-->
+<!--                </excludes>-->
+<!--                <includes>-->
+<!--                    <include>**/*.xml</include>-->
+<!--                </includes>-->
+<!--            </resource>-->
 
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
+<!--            <resource>-->
+<!--                <directory>src/main/java</directory>-->
+<!--                <includes>-->
+<!--                    <include>**/*.xml</include>-->
+<!--                </includes>-->
+<!--            </resource>-->
+<!--        </resources>-->
+<!--    </build>-->
 
 </project>

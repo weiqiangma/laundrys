@@ -15,10 +15,6 @@ public final class JsonUtils {
     public JsonUtils() {
     }
 
-    public static void main(String[] args) {
-        System.out.println(parse("{root:{id2875:'color_canyd',id2876:'color_canyd',id2877:'color_canyd',id2878:'color_canyd',id2879:'color_canyd',id2880:'color_canyd'}}"));
-    }
-
     public static Object parse(String string) {
         return JSON.parse(string);
     }
