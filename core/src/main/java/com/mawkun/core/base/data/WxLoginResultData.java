@@ -8,6 +8,8 @@ import lombok.Data;
  */
 @Data
 public class WxLoginResultData {
+    private Long userId;;
     private String openId;
     private String sessionKey;
+    private Integer kind;
 }

@@ -2,7 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.mawkun.core.dao.ShopDaoExt">
 
+    <resultMap type="com.mawkun.core.base.data.vo.ShopVo" id="ShopVoResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="shopName" column="shop_name" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="picture" column="picture" jdbcType="VARCHAR"/>
+        <result property="longitude" column="longitude" jdbcType="VARCHAR"/>
+        <result property="latitude" column="latitude" jdbcType="VARCHAR"/>
+        <result property="location" column="location" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
     <select id="selectByName" parameterType="java.lang.String" resultMap="com.mawkun.core.base.dao.ShopDao.ShopResultMap">
         select * from shop where shop_name = #{name}
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="selectList" resultMap="ShopVoResultMap" parameterType="com.mawkun.core.base.data.query.ShopQuery">
+        select * from shop
+        <where>
+            <if test="shopName != null">and shop_name like #{shopName}</if>
+            <if test="status != null">and status = #{status}</if>
+            <if test="level != null">and level = #{level}</if>
+        </where>
     </select>
 </mapper>

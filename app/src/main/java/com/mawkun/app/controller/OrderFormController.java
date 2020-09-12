@@ -27,7 +27,7 @@ import java.util.List;
  * @date 2020-08-19 21:43:45
  */
 @RestController
-@RequestMapping("/adm/orderForm")
+@RequestMapping("/api/orderForm")
 @Api(tags={"订单操作接口"})
 public class OrderFormController extends BaseController {
     
@@ -57,8 +57,7 @@ public class OrderFormController extends BaseController {
 
     @GetMapping("pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
-    public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, OrderFormQuery query) {
-        if(session.getShopId() > 0) query.setShopId(session.getShopId());
+    public JsonResult pageList(OrderFormQuery query) {
         PageInfo page = orderFormServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }

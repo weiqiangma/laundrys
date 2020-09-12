@@ -62,9 +62,11 @@ public class UserSession {
     }
 
     public UserSession(String token, WxLoginResultData data) {
+        this.id = data.getUserId();
         this.token = token;
         this.openId = data.getOpenId();
         this.sessionKey = data.getSessionKey();
+        this.kind = data.getKind();
     }
 
     public boolean isAdmin() {

@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SysParamDaoExt extends SysParamDao {
 
+    String selectSysValue(String realName);
+
 }

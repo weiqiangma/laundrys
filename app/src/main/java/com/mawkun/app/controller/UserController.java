@@ -31,7 +31,7 @@ import java.util.List;
  * @date 2020-08-19 21:44:11
  */
 @Controller
-@RequestMapping("/adm/user")
+@RequestMapping("/api/user")
 @Api(tags={"用户操作接口"})
 public class UserController extends BaseController {
     
@@ -67,5 +67,13 @@ public class UserController extends BaseController {
     public JsonResult pageList(UserQuery userQuery) {
         PageInfo page = userServiceExt.pageByEntity(userQuery);
         return sendSuccess(page);
+    }
+
+    @ResponseBody
+    @PostMapping("/updateUserInfo")
+    @ApiOperation(value="编辑用户", notes="编辑用户")
+    public JsonResult update(User user){
+        int result = userServiceExt.update(user, null);
+        return sendSuccess(result);
     }
 }

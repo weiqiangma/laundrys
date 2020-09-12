@@ -14,7 +14,6 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @since 2020-09-11 14:04:09
  */
 @Data
-@Builder
 public class ShoppingCart {
 
     private Long id;

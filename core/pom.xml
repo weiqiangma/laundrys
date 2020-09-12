@@ -35,44 +35,78 @@
         </dependency>
     </dependencies>
 
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${maven.compiler.encoding}</encoding>
+                </configuration>
+            </plugin>
 
-<!--        &lt;!&ndash;代码中的xml文件也打包&ndash;&gt;-->
-<!--        <resources>-->
-<!--            <resource>-->
-<!--                <directory>src/main/resources</directory>-->
-<!--                &lt;!&ndash;目前没有用到filtering,所以false,如果开了true图标会变&ndash;&gt;-->
-<!--                <filtering>false</filtering>-->
-<!--                <includes>-->
-<!--                    <include>webapp/**</include>-->
-<!--                </includes>-->
-<!--            </resource>-->
-<!--            <resource>-->
-<!--                <directory>src/main/resources</directory>-->
-<!--                &lt;!&ndash;其他配置进行过滤配置&ndash;&gt;-->
-<!--                <filtering>true</filtering>-->
-<!--                &lt;!&ndash; 资源根目录排除各环境的配置  ，防止在生成目录中多余其它目录 &ndash;&gt;-->
-<!--                <excludes>-->
-<!--                    <exclude>etc/**</exclude>-->
-<!--                </excludes>-->
-<!--                <includes>-->
-<!--                    <include>**/*.xml</include>-->
-<!--                </includes>-->
-<!--            </resource>-->
+            <!-- 打JAR包 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <!-- 不打包资源文件（配置文件和依赖包分开）如果不是jar部署这里要开启 -->
+                    <excludes>
+                        <exclude>etc/**</exclude>
+                        <exclude>opencv/**</exclude>
+                        <exclude>webapp/**</exclude>
+                        <exclude>*.properties</exclude>
+                        <exclude>*.xml</exclude>
+                        <exclude>*.txt</exclude>
+                    </excludes>
+                    <outputDirectory>../target</outputDirectory>
+                </configuration>
+            </plugin>
 
-<!--            <resource>-->
-<!--                <directory>src/main/java</directory>-->
-<!--                <includes>-->
-<!--                    <include>**/*.xml</include>-->
-<!--                </includes>-->
-<!--            </resource>-->
-<!--        </resources>-->
-<!--    </build>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <!--代码中的xml文件也打包-->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!--目前没有用到filtering,所以false,如果开了true图标会变-->
+                <filtering>false</filtering>
+                <includes>
+                    <include>webapp/**</include>
+                </includes>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources</directory>
+                <!--其他配置进行过滤配置-->
+                <filtering>true</filtering>
+                <!-- 资源根目录排除各环境的配置  ，防止在生成目录中多余其它目录 -->
+                <excludes>
+                    <exclude>etc/**</exclude>
+                </excludes>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 
 </project>

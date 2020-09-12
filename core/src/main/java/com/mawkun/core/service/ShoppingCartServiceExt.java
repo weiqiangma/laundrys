@@ -37,31 +37,51 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
     /**
      * 编辑购物车信息
      * @param session
-     * @param cart
+     * @param goodsId
      * @param type
      */
-    public void insert(UserSession session, ShoppingCart cart, Integer type) {
+    public void save(UserSession session, Long goodsId, Integer type) {
         /**
          * 1.判断shopId不为空
          * 2.根据shopId查询数据库中是否存在该商品
          * 3.根据userId和shopId查询该商品是否已添加至该用户购物车
          * 如果该用户购物车中已存在，根据type判断商品数量+1或-1，如果不存在，添加商品至购物车
          */
-        Validate.notNull(cart.getGoodsId(), "shopId不能为空");
+        Validate.notNull(goodsId, "shopId不能为空");
         GoodsQuery query = new GoodsQuery();
-        query.setId(cart.getGoodsId());
+        query.setId(goodsId);
         query.setStatus(Constant.GOODS_GROUNDING);
         Goods goods = goodsDaoExt.selectByTerms(query);
         Validate.notNull(goods, "数据库中未查询到该商品信息");
-        ShoppingCart resultCart = shoppingCartDaoExt.selectByUserId(session.getId(), cart.getGoodsId());
+        ShoppingCart resultCart = shoppingCartDaoExt.selectByUserId(session.getId(), goodsId, null);
         if (resultCart != null) {
-            if(type == 1) resultCart.setGoodsNum(resultCart.getGoodsNum() + 1);
-            if(type == 0) resultCart.setGoodsNum(resultCart.getGoodsNum() - 1);
+            Integer goodsNum = 0;
+            if(type == 1) {
+                goodsNum = resultCart.getGoodsNum() + 1;
+                resultCart.setGoodsNum(goodsNum);
+                shoppingCartDaoExt.update(resultCart);
+            }
+            if(type == 0) {
+                goodsNum = resultCart.getGoodsNum() - 1;
+                if(goodsNum < 1) {
+                    shoppingCartDaoExt.deleteByEntity(resultCart);
+                } else {
+                    resultCart.setGoodsNum(goodsNum);
+                    shoppingCartDaoExt.update(resultCart);
+                }
+            }
         } else {
-            ShoppingCart insertCart = ShoppingCart.builder().goodsId(goods.getId())
-                    .userId(session.getId()).kindId(goods.getKindId()).goodsNum(1)
-                    .goodsName(goods.getGoodsName()).goodsPic(goods.getPicture()).goodsPrice(goods.getPrice())
-                    .userName(session.getUserName()).updateTime(new Date()).createTime(new Date()).build();
+            ShoppingCart insertCart = new ShoppingCart();
+            insertCart.setGoodsId(goods.getId());
+            insertCart.setUserId(session.getId());
+            insertCart.setKindId(goods.getKindId());
+            insertCart.setGoodsNum(1);
+            insertCart.setGoodsName(goods.getGoodsName());
+            insertCart.setGoodsPic(goods.getPicture());
+            insertCart.setGoodsPrice(goods.getPrice());
+            insertCart.setUserName(session.getUserName());
+            insertCart.setUpdateTime(new Date());
+            insertCart.setCreateTime(new Date());
             shoppingCartDaoExt.insert(insertCart);
         }
     }

@@ -3,6 +3,8 @@ package com.mawkun.app.controller;
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.CryptUtils;
+import cn.pertech.common.utils.NumberUtils;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.data.query.UserQuery;
@@ -37,6 +39,7 @@ public class LoginController extends BaseController {
     @PostMapping(value = "/login")
     public JsonResult login(String code) {
         WxLoginResultData resultData = wxApiServiceExt.getOpenIdByCode(code);
+        resultData.setKind(Constant.USER_TYPE_CUSTOMER);
         //根据openID查询数据库中是否存在该用户，没有则添加
         UserQuery query = new UserQuery();
         query.setOpenId(resultData.getOpenId());
@@ -44,12 +47,13 @@ public class LoginController extends BaseController {
         if (list.size() == 0) {
             User user = new User();
             user.setOpenId(resultData.getOpenId());
-            userServiceExt.update(user, null);
+            int userId = userServiceExt.insert(user);
+            resultData.setUserId((long) userId);
         }
         //生成token,保存session
         String token = CryptUtils.md5Safe(resultData.getOpenId()  + resultData.getSessionKey() + System.currentTimeMillis());
         UserSession session = new UserSession(token, resultData);
         userCacheService.putUserSession(token, session);
-        return sendSuccess(token);
+        return sendSuccess("ok", token);
     }
 }

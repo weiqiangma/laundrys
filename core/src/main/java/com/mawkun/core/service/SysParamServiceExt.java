@@ -4,6 +4,7 @@ package com.mawkun.core.service;
 import com.mawkun.core.base.dao.SysParamDao;
 import com.mawkun.core.base.entity.SysParam;
 import com.mawkun.core.base.service.SysParamService;
+import com.mawkun.core.dao.SysParamDaoExt;
 import com.mawkun.core.utils.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class SysParamServiceExt extends SysParamService {
 
     @Autowired
-    private SysParamDao sysParamDao;
+    private SysParamDaoExt sysParamDaoExt;
 
     public int updateWithPic(SysParam param, MultipartFile[] files) {
         if(files != null && files.length > 0) {
             String images = "";
-            SysParam sysParam = sysParamDao.getById(param.getId());
+            SysParam sysParam = sysParamDaoExt.getById(param.getId());
             String newImage = ImageUtils.uploadImages(files);
             StringBuilder strBuilder = new StringBuilder();
             if(param.getSysValue() != null) {
@@ -34,6 +35,18 @@ public class SysParamServiceExt extends SysParamService {
             }
             param.setSysValue(images);
         }
-        return sysParamDao.update(param);
+        return sysParamDaoExt.update(param);
+    }
+
+    /**
+     * 获取首页图片
+     * @return
+     */
+    public String getMainPicture() {
+        return sysParamDaoExt.selectSysValue("main_picture");
+    }
+
+    public String getMainAdvice() {
+        return sysParamDaoExt.selectSysValue("main_advice");
     }
 }

@@ -26,9 +26,6 @@
             <if test="goodsId != null and goodsId > 0">
                 and goods_id = #{goodsId}
             </if>
-            <if test="idList != null and idList.size() > 0">
-                <foreach collection="idList" separator="," item="deviceId" open="(" close=")">#{deviceId}</foreach>
-            </if>
             <if test="idList!=null">
                 and goods_id in
                 <foreach item="item" index="index" collection="idList" open="(" separator="," close=")">

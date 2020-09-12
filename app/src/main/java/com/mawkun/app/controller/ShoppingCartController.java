@@ -2,6 +2,7 @@ package com.mawkun.app.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.entity.ShoppingCart;
 import com.mawkun.core.base.service.ShoppingCartService;
@@ -19,10 +20,11 @@ import javax.validation.Validation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Api(tags={"购物车操作接口"})
-@RequestMapping("/shoppingCart")
+@RequestMapping("/api/shoppingCart")
 public class ShoppingCartController extends BaseController {
     
     @Autowired
@@ -43,14 +45,15 @@ public class ShoppingCartController extends BaseController {
     @GetMapping("/list")
     public JsonResult list(ShoppingCart shoppingCart) {
         List<ShoppingCart> shoppingCartList = shoppingCartServiceExt.listByEntity(shoppingCart);
-        return sendSuccess(shoppingCartList);
+        List<ShoppingCart> resutlList = shoppingCartList.stream().filter(a -> a.getStatus() == Constant.GOODS_UNDERCARRIAGE).collect(Collectors.toList());
+        return sendSuccess(resutlList);
     }
 
     @PostMapping("/insert")
-    public JsonResult insert(ShoppingCart shoppingCart){
-        Assert.notNull(shoppingCart.getGoodsId());
-        shoppingCartServiceExt.insert(shoppingCart);
-        return sendSuccess(shoppingCart);
+    public JsonResult insert(@LoginedAuth UserSession session, Long goodsId, Integer type){
+        Assert.notNull(goodsId);
+        shoppingCartServiceExt.save(session, goodsId, type);
+        return sendSuccess("ok");
     }
 
     @PutMapping("/update")
@@ -65,7 +68,7 @@ public class ShoppingCartController extends BaseController {
         return sendSuccess(result);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deleteBatch")
     public JsonResult deleteBatch(String ids){
         int result = 0;
         List<String> idArray = Arrays.asList(ids.split(","));

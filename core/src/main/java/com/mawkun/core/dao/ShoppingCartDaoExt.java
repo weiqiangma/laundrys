@@ -16,5 +16,5 @@ import java.util.List;
 @Repository
 public interface ShoppingCartDaoExt extends ShoppingCartDao {
 
-    ShoppingCart selectByUserId(@Param("userId") Long userId, @Param("goodsId") Long goodsId);
+    ShoppingCart selectByUserId(@Param("userId") Long userId, @Param("goodsId") Long goodsId, @Param("idList") List<Long> idList);
 }

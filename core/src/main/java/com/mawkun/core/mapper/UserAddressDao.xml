@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.UserAddressDao">
+
+    <resultMap type="com.mawkun.core.base.entity.UserAddress" id="UserAddressResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="area" column="area" jdbcType="VARCHAR"/>
+        <result property="street" column="street" jdbcType="VARCHAR"/>
+        <result property="detail" column="detail" jdbcType="VARCHAR"/>
+        <result property="linkMan" column="link_man" jdbcType="VARCHAR"/>
+        <result property="linkMobile1" column="link_mobile1" jdbcType="VARCHAR"/>
+        <result property="linkMobile2" column="link_mobile2" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, user_id, province, city, area, street, detail, link_man, link_mobile1, link_mobile2, status      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="UserAddressResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from user_address
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="UserAddressResultMap" parameterType="com.mawkun.core.base.entity.UserAddress">
+        select
+          <include refid="table_field" />
+        from user_address
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="province != null">
+                and province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if test="city != null">
+                and city = #{city,jdbcType=VARCHAR}
+            </if>
+            <if test="area != null">
+                and area = #{area,jdbcType=VARCHAR}
+            </if>
+            <if test="street != null">
+                and street = #{street,jdbcType=VARCHAR}
+            </if>
+            <if test="detail != null">
+                and detail = #{detail,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMan != null">
+                and link_man = #{linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMobile1 != null">
+                and link_mobile1 = #{linkMobile1,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMobile2 != null">
+                and link_mobile2 = #{linkMobile2,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="UserAddressResultMap" parameterType="com.mawkun.core.base.entity.UserAddress">
+        select
+          <include refid="table_field" />
+        from user_address
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="province != null">
+                and province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if test="city != null">
+                and city = #{city,jdbcType=VARCHAR}
+            </if>
+            <if test="area != null">
+                and area = #{area,jdbcType=VARCHAR}
+            </if>
+            <if test="street != null">
+                and street = #{street,jdbcType=VARCHAR}
+            </if>
+            <if test="detail != null">
+                and detail = #{detail,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMan != null">
+                and link_man = #{linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMobile1 != null">
+                and link_mobile1 = #{linkMobile1,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMobile2 != null">
+                and link_mobile2 = #{linkMobile2,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="UserAddressResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from user_address
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.UserAddress">
+        insert into user_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="userId != null">
+             user_id,
+          </if>
+          <if test="province != null">
+             province,
+          </if>
+          <if test="city != null">
+             city,
+          </if>
+          <if test="area != null">
+             area,
+          </if>
+          <if test="street != null">
+             street,
+          </if>
+          <if test="detail != null">
+             detail,
+          </if>
+          <if test="linkMan != null">
+             link_man,
+          </if>
+          <if test="linkMobile1 != null">
+             link_mobile1,
+          </if>
+          <if test="linkMobile2 != null">
+             link_mobile2,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="userId != null">
+             #{userId,jdbcType=INTEGER},
+          </if>
+          <if test="province != null">
+             #{province,jdbcType=VARCHAR},
+          </if>
+          <if test="city != null">
+             #{city,jdbcType=VARCHAR},
+          </if>
+          <if test="area != null">
+             #{area,jdbcType=VARCHAR},
+          </if>
+          <if test="street != null">
+             #{street,jdbcType=VARCHAR},
+          </if>
+          <if test="detail != null">
+             #{detail,jdbcType=VARCHAR},
+          </if>
+          <if test="linkMan != null">
+             #{linkMan,jdbcType=VARCHAR},
+          </if>
+          <if test="linkMobile1 != null">
+             #{linkMobile1,jdbcType=VARCHAR},
+          </if>
+          <if test="linkMobile2 != null">
+             #{linkMobile2,jdbcType=VARCHAR},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=OTHER},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into user_address
+         (id, user_id, province, city, area, street, detail, link_man, link_mobile1, link_mobile2, status)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.area,jdbcType=VARCHAR}, #{item.street,jdbcType=VARCHAR}, #{item.detail,jdbcType=VARCHAR}, #{item.linkMan,jdbcType=VARCHAR}, #{item.linkMobile1,jdbcType=VARCHAR}, #{item.linkMobile2,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.UserAddress">
+        update user_address
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="province != null and province != ''">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null and city != ''">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
+            <if test="area != null and area != ''">
+                area = #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="street != null and street != ''">
+                street = #{street,jdbcType=VARCHAR},
+            </if>
+            <if test="detail != null and detail != ''">
+                detail = #{detail,jdbcType=VARCHAR},
+            </if>
+            <if test="linkMan != null and linkMan != ''">
+                link_man = #{linkMan,jdbcType=VARCHAR},
+            </if>
+            <if test="linkMobile1 != null and linkMobile1 != ''">
+                link_mobile1 = #{linkMobile1,jdbcType=VARCHAR},
+            </if>
+            <if test="linkMobile2 != null and linkMobile2 != ''">
+                link_mobile2 = #{linkMobile2,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=OTHER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update user_address
+        <set>
+            <if test="where.userId == null and set.userId != null">
+                user_id = #{set.userId,jdbcType=INTEGER},
+            </if>
+            <if test="where.province == null and set.province != null and set.province != ''">
+                province = #{set.province,jdbcType=VARCHAR},
+            </if>
+            <if test="where.city == null and set.city != null and set.city != ''">
+                city = #{set.city,jdbcType=VARCHAR},
+            </if>
+            <if test="where.area == null and set.area != null and set.area != ''">
+                area = #{set.area,jdbcType=VARCHAR},
+            </if>
+            <if test="where.street == null and set.street != null and set.street != ''">
+                street = #{set.street,jdbcType=VARCHAR},
+            </if>
+            <if test="where.detail == null and set.detail != null and set.detail != ''">
+                detail = #{set.detail,jdbcType=VARCHAR},
+            </if>
+            <if test="where.linkMan == null and set.linkMan != null and set.linkMan != ''">
+                link_man = #{set.linkMan,jdbcType=VARCHAR},
+            </if>
+            <if test="where.linkMobile1 == null and set.linkMobile1 != null and set.linkMobile1 != ''">
+                link_mobile1 = #{set.linkMobile1,jdbcType=VARCHAR},
+            </if>
+            <if test="where.linkMobile2 == null and set.linkMobile2 != null and set.linkMobile2 != ''">
+                link_mobile2 = #{set.linkMobile2,jdbcType=VARCHAR},
+            </if>
+            <if test="where.status == null and set.status != null">
+                status = #{set.status,jdbcType=OTHER},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.userId != null">
+                and user_id = #{where.userId,jdbcType=INTEGER}
+            </if>
+            <if test="where.province != null">
+                and province = #{where.province,jdbcType=VARCHAR}
+            </if>
+            <if test="where.city != null">
+                and city = #{where.city,jdbcType=VARCHAR}
+            </if>
+            <if test="where.area != null">
+                and area = #{where.area,jdbcType=VARCHAR}
+            </if>
+            <if test="where.street != null">
+                and street = #{where.street,jdbcType=VARCHAR}
+            </if>
+            <if test="where.detail != null">
+                and detail = #{where.detail,jdbcType=VARCHAR}
+            </if>
+            <if test="where.linkMan != null">
+                and link_man = #{where.linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="where.linkMobile1 != null">
+                and link_mobile1 = #{where.linkMobile1,jdbcType=VARCHAR}
+            </if>
+            <if test="where.linkMobile2 != null">
+                and link_mobile2 = #{where.linkMobile2,jdbcType=VARCHAR}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=OTHER}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update user_address
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="user_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userId}
+                 </foreach>
+            </trim>
+            <trim prefix="province = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.province}
+                 </foreach>
+            </trim>
+            <trim prefix="city = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.city}
+                 </foreach>
+            </trim>
+            <trim prefix="area = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.area}
+                 </foreach>
+            </trim>
+            <trim prefix="street = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.street}
+                 </foreach>
+            </trim>
+            <trim prefix="detail = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.detail}
+                 </foreach>
+            </trim>
+            <trim prefix="link_man = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.linkMan}
+                 </foreach>
+            </trim>
+            <trim prefix="link_mobile1 = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.linkMobile1}
+                 </foreach>
+            </trim>
+            <trim prefix="link_mobile2 = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.linkMobile2}
+                 </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from user_address where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.UserAddress">
+        delete from user_address
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="province != null">
+                and province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if test="city != null">
+                and city = #{city,jdbcType=VARCHAR}
+            </if>
+            <if test="area != null">
+                and area = #{area,jdbcType=VARCHAR}
+            </if>
+            <if test="street != null">
+                and street = #{street,jdbcType=VARCHAR}
+            </if>
+            <if test="detail != null">
+                and detail = #{detail,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMan != null">
+                and link_man = #{linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMobile1 != null">
+                and link_mobile1 = #{linkMobile1,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMobile2 != null">
+                and link_mobile2 = #{linkMobile2,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from user_address where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from user_address
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.UserAddress" resultType="int">
+        select count(id) from user_address
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="province != null">
+                and province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if test="city != null">
+                and city = #{city,jdbcType=VARCHAR}
+            </if>
+            <if test="area != null">
+                and area = #{area,jdbcType=VARCHAR}
+            </if>
+            <if test="street != null">
+                and street = #{street,jdbcType=VARCHAR}
+            </if>
+            <if test="detail != null">
+                and detail = #{detail,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMan != null">
+                and link_man = #{linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMobile1 != null">
+                and link_mobile1 = #{linkMobile1,jdbcType=VARCHAR}
+            </if>
+            <if test="linkMobile2 != null">
+                and link_mobile2 = #{linkMobile2,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=OTHER}
+            </if>
+        </where>
+    </select>
+</mapper>

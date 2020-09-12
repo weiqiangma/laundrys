@@ -8,6 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
+import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.Shop;
 import com.mawkun.core.service.ShopServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
@@ -64,9 +65,8 @@ public class ShopController extends BaseController {
 
     @GetMapping("/pageList")
     @ApiOperation(value="门店列表分业", notes="门店列表分业")
-    public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, ShopQuery shopQuery) {
-        if(session.getShopId() > 0) shopQuery.setId(session.getShopId());
-        PageInfo<ShopQuery> page = shopServiceExt.pageByEntity(shopQuery);
+    public JsonResult pageList(ShopQuery shopQuery) {
+        PageInfo<ShopVo> page = shopServiceExt.pageByEntity(shopQuery);
         return sendSuccess(page);
     }
 

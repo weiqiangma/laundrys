@@ -1,6 +1,7 @@
 package com.mawkun.core.service;
 
 import cn.pertech.common.utils.DateUtils;
+import cn.pertech.common.utils.NumberUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
@@ -8,6 +9,7 @@ import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.OrderFormVo;
+import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.Shop;
 import com.mawkun.core.base.service.ShopService;
 import com.mawkun.core.dao.OrderFormDaoExt;
@@ -15,15 +17,14 @@ import com.mawkun.core.dao.ShopDaoExt;
 import com.mawkun.core.utils.ImageUtils;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.TimeUtils;
+import com.xiaoleilu.hutool.lang.Validator;
+import com.xiaoleilu.hutool.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,6 +35,8 @@ public class ShopServiceExt extends ShopService {
     private ShopDaoExt shopDaoExt;
     @Autowired
     private OrderFormDaoExt orderFormDaoExt;
+    @Autowired
+    private GaoDeApiServiceExt gaoDeApiServiceExt;
 
     /**
      * 添加店铺
@@ -127,8 +130,22 @@ public class ShopServiceExt extends ShopService {
             query.setShopName("%" + query.getShopName() + "%");
         }
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
-        List<Shop> list = shopDaoExt.listByEntity(query);
-        return new PageInfo<Shop>(list);
+        //List<Shop> list = shopDaoExt.listByEntity(query);
+        List<ShopVo> list = shopDaoExt.selectList(query);
+        if(StringUtils.isNotEmpty(query.getLal())) {
+            for(ShopVo shopVo : list) {
+                String originalLal = query.getLal();
+                String destincation =   shopVo.getLocation();
+                String distance = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
+                shopVo.setLength(NumberUtils.str2Int(distance));
+                distance = convertDistanceUnit(distance);
+                shopVo.setDistance(distance);
+            }
+            List<ShopVo> sortList = list.stream().sorted(Comparator.comparingInt(ShopVo::getLength)).collect(Collectors.toList());
+            list = sortList;
+        }
+
+        return new PageInfo<ShopVo>(list);
     }
 
     /**
@@ -172,5 +189,17 @@ public class ShopServiceExt extends ShopService {
             queryVO.setDateCount(diff);
         }
         //System.out.println("格式化后范围: "+JsonUtils.toString(queryVO));
+    }
+
+    public String convertDistanceUnit(String distance) {
+        String result = "";
+        Integer length = NumberUtils.str2Int(distance);
+        if(length > 1000) {
+            Double convertData = NumberUtil.div(length, 1000, 1);
+            result = convertData + "km";
+        } else {
+            result = length + "m";
+        }
+        return result;
     }
 }

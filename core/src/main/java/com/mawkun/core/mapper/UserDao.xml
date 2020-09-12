@@ -7,24 +7,29 @@
         <result property="openId" column="open_id" jdbcType="VARCHAR"/>
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="realName" column="real_name" jdbcType="VARCHAR"/>
+        <result property="avatartUrl" column="avatart_url" jdbcType="VARCHAR"/>
         <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="OTHER"/>
         <result property="address" column="address" jdbcType="VARCHAR"/>
         <result property="kind" column="kind" jdbcType="INTEGER"/>
         <result property="sumOfMoney" column="sum_of_money" jdbcType="NUMERIC"/>
         <result property="integral" column="integral" jdbcType="INTEGER"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="country" column="country" jdbcType="VARCHAR"/>
+        <result property="province" column="province" jdbcType="VARCHAR"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, open_id, user_name, real_name, mobile, address, kind, sum_of_money, integral, status, update_time, create_time
+      id, open_id, user_name, real_name, avatart_url, mobile, gender, address, kind, sum_of_money, integral, country, province, city, status, update_time, create_time      
     </sql>
-
+       
     <!--通过Id查询单个-->
     <select id="getById" resultMap="UserResultMap" parameterType="java.lang.Long">
         select
-        <include refid="table_field" />
+          <include refid="table_field" />
         from user
         where id = #{id,jdbcType=INTEGER}
     </select>
@@ -33,7 +38,7 @@
     <!--通过实体不为空的属性作为筛选条件查询列表-->
     <select id="listByEntity" resultMap="UserResultMap" parameterType="com.mawkun.core.base.entity.User">
         select
-        <include refid="table_field" />
+          <include refid="table_field" />
         from user
         <where>
             <if test="id != null">
@@ -48,8 +53,14 @@
             <if test="realName != null">
                 and real_name = #{realName,jdbcType=VARCHAR}
             </if>
+            <if test="avatartUrl != null">
+                and avatart_url = #{avatartUrl,jdbcType=VARCHAR}
+            </if>
             <if test="mobile != null">
                 and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -63,8 +74,17 @@
             <if test="integral != null">
                 and integral = #{integral,jdbcType=INTEGER}
             </if>
+            <if test="country != null">
+                and country = #{country,jdbcType=VARCHAR}
+            </if>
+            <if test="province != null">
+                and province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if test="city != null">
+                and city = #{city,jdbcType=VARCHAR}
+            </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -78,7 +98,7 @@
     <!--通过实体不为空的属性作为筛选条件查询单个-->
     <select id="getByEntity" resultMap="UserResultMap" parameterType="com.mawkun.core.base.entity.User">
         select
-        <include refid="table_field" />
+          <include refid="table_field" />
         from user
         <where>
             <if test="id != null">
@@ -93,8 +113,14 @@
             <if test="realName != null">
                 and real_name = #{realName,jdbcType=VARCHAR}
             </if>
+            <if test="avatartUrl != null">
+                and avatart_url = #{avatartUrl,jdbcType=VARCHAR}
+            </if>
             <if test="mobile != null">
                 and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -108,8 +134,17 @@
             <if test="integral != null">
                 and integral = #{integral,jdbcType=INTEGER}
             </if>
+            <if test="country != null">
+                and country = #{country,jdbcType=VARCHAR}
+            </if>
+            <if test="province != null">
+                and province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if test="city != null">
+                and city = #{city,jdbcType=VARCHAR}
+            </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -123,7 +158,7 @@
     <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
     <select id="listByIds" resultMap="UserResultMap" parameterType="list">
         select
-        <include refid="table_field" />
+          <include refid="table_field" />
         from user
         where id in
         <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
@@ -135,90 +170,120 @@
     <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.User">
         insert into user
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
-            </if>
-            <if test="openId != null">
-                open_id,
-            </if>
-            <if test="userName != null">
-                user_name,
-            </if>
-            <if test="realName != null">
-                real_name,
-            </if>
-            <if test="mobile != null">
-                mobile,
-            </if>
-            <if test="address != null">
-                address,
-            </if>
-            <if test="kind != null">
-                kind,
-            </if>
-            <if test="sumOfMoney != null">
-                sum_of_money,
-            </if>
-            <if test="integral != null">
-                integral,
-            </if>
-            <if test="status != null">
-                status,
-            </if>
-            <if test="updateTime != null">
-                update_time,
-            </if>
-            <if test="createTime != null">
-                create_time,
-            </if>
+          <if test="id != null">
+             id,
+          </if>
+          <if test="openId != null">
+             open_id,
+          </if>
+          <if test="userName != null">
+             user_name,
+          </if>
+          <if test="realName != null">
+             real_name,
+          </if>
+          <if test="avatartUrl != null">
+             avatart_url,
+          </if>
+          <if test="mobile != null">
+             mobile,
+          </if>
+          <if test="gender != null">
+             gender,
+          </if>
+          <if test="address != null">
+             address,
+          </if>
+          <if test="kind != null">
+             kind,
+          </if>
+          <if test="sumOfMoney != null">
+             sum_of_money,
+          </if>
+          <if test="integral != null">
+             integral,
+          </if>
+          <if test="country != null">
+             country,
+          </if>
+          <if test="province != null">
+             province,
+          </if>
+          <if test="city != null">
+             city,
+          </if>
+          <if test="status != null">
+             status,
+          </if>
+          <if test="updateTime != null">
+             update_time,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                #{id,jdbcType=INTEGER},
-            </if>
-            <if test="openId != null">
-                #{openId,jdbcType=VARCHAR},
-            </if>
-            <if test="userName != null">
-                #{userName,jdbcType=VARCHAR},
-            </if>
-            <if test="realName != null">
-                #{realName,jdbcType=VARCHAR},
-            </if>
-            <if test="mobile != null">
-                #{mobile,jdbcType=VARCHAR},
-            </if>
-            <if test="address != null">
-                #{address,jdbcType=VARCHAR},
-            </if>
-            <if test="kind != null">
-                #{kind,jdbcType=INTEGER},
-            </if>
-            <if test="sumOfMoney != null">
-                #{sumOfMoney,jdbcType=NUMERIC},
-            </if>
-            <if test="integral != null">
-                #{integral,jdbcType=INTEGER},
-            </if>
-            <if test="status != null">
-                #{status,jdbcType=INTEGER},
-            </if>
-            <if test="updateTime != null">
-                #{updateTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="createTime != null">
-                #{createTime,jdbcType=TIMESTAMP},
-            </if>
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="openId != null">
+             #{openId,jdbcType=VARCHAR},
+          </if>
+          <if test="userName != null">
+             #{userName,jdbcType=VARCHAR},
+          </if>
+          <if test="realName != null">
+             #{realName,jdbcType=VARCHAR},
+          </if>
+          <if test="avatartUrl != null">
+             #{avatartUrl,jdbcType=VARCHAR},
+          </if>
+          <if test="mobile != null">
+             #{mobile,jdbcType=VARCHAR},
+          </if>
+          <if test="gender != null">
+             #{gender,jdbcType=OTHER},
+          </if>
+          <if test="address != null">
+             #{address,jdbcType=VARCHAR},
+          </if>
+          <if test="kind != null">
+             #{kind,jdbcType=INTEGER},
+          </if>
+          <if test="sumOfMoney != null">
+             #{sumOfMoney,jdbcType=NUMERIC},
+          </if>
+          <if test="integral != null">
+             #{integral,jdbcType=INTEGER},
+          </if>
+          <if test="country != null">
+             #{country,jdbcType=VARCHAR},
+          </if>
+          <if test="province != null">
+             #{province,jdbcType=VARCHAR},
+          </if>
+          <if test="city != null">
+             #{city,jdbcType=VARCHAR},
+          </if>
+          <if test="status != null">
+             #{status,jdbcType=OTHER},
+          </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
+          </if>
         </trim>
     </insert>
 
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into user
-        (id, open_id, user_name, real_name, mobile, address, kind, sum_of_money, integral, status, update_time, create_time)
+         (id, open_id, user_name, real_name, avatart_url, mobile, gender, address, kind, sum_of_money, integral, country, province, city, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-            (#{item.id,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=INTEGER}, #{item.sumOfMoney,jdbcType=NUMERIC}, #{item.integral,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.avatartUrl,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.gender,jdbcType=OTHER}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=INTEGER}, #{item.sumOfMoney,jdbcType=NUMERIC}, #{item.integral,jdbcType=INTEGER}, #{item.country,jdbcType=VARCHAR}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -235,8 +300,14 @@
             <if test="realName != null and realName != ''">
                 real_name = #{realName,jdbcType=VARCHAR},
             </if>
+            <if test="avatartUrl != null and avatartUrl != ''">
+                avatart_url = #{avatartUrl,jdbcType=VARCHAR},
+            </if>
             <if test="mobile != null and mobile != ''">
                 mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=OTHER},
             </if>
             <if test="address != null and address != ''">
                 address = #{address,jdbcType=VARCHAR},
@@ -250,8 +321,17 @@
             <if test="integral != null">
                 integral = #{integral,jdbcType=INTEGER},
             </if>
+            <if test="country != null and country != ''">
+                country = #{country,jdbcType=VARCHAR},
+            </if>
+            <if test="province != null and province != ''">
+                province = #{province,jdbcType=VARCHAR},
+            </if>
+            <if test="city != null and city != ''">
+                city = #{city,jdbcType=VARCHAR},
+            </if>
             <if test="status != null">
-                status = #{status,jdbcType=INTEGER},
+                status = #{status,jdbcType=OTHER},
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -276,8 +356,14 @@
             <if test="where.realName == null and set.realName != null and set.realName != ''">
                 real_name = #{set.realName,jdbcType=VARCHAR},
             </if>
+            <if test="where.avatartUrl == null and set.avatartUrl != null and set.avatartUrl != ''">
+                avatart_url = #{set.avatartUrl,jdbcType=VARCHAR},
+            </if>
             <if test="where.mobile == null and set.mobile != null and set.mobile != ''">
                 mobile = #{set.mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="where.gender == null and set.gender != null">
+                gender = #{set.gender,jdbcType=OTHER},
             </if>
             <if test="where.address == null and set.address != null and set.address != ''">
                 address = #{set.address,jdbcType=VARCHAR},
@@ -291,8 +377,17 @@
             <if test="where.integral == null and set.integral != null">
                 integral = #{set.integral,jdbcType=INTEGER},
             </if>
+            <if test="where.country == null and set.country != null and set.country != ''">
+                country = #{set.country,jdbcType=VARCHAR},
+            </if>
+            <if test="where.province == null and set.province != null and set.province != ''">
+                province = #{set.province,jdbcType=VARCHAR},
+            </if>
+            <if test="where.city == null and set.city != null and set.city != ''">
+                city = #{set.city,jdbcType=VARCHAR},
+            </if>
             <if test="where.status == null and set.status != null">
-                status = #{set.status,jdbcType=INTEGER},
+                status = #{set.status,jdbcType=OTHER},
             </if>
             <if test="where.updateTime == null and set.updateTime != null">
                 update_time = #{set.updateTime,jdbcType=TIMESTAMP},
@@ -314,8 +409,14 @@
             <if test="where.realName != null">
                 and real_name = #{where.realName,jdbcType=VARCHAR}
             </if>
+            <if test="where.avatartUrl != null">
+                and avatart_url = #{where.avatartUrl,jdbcType=VARCHAR}
+            </if>
             <if test="where.mobile != null">
                 and mobile = #{where.mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="where.gender != null">
+                and gender = #{where.gender,jdbcType=OTHER}
             </if>
             <if test="where.address != null">
                 and address = #{where.address,jdbcType=VARCHAR}
@@ -329,8 +430,17 @@
             <if test="where.integral != null">
                 and integral = #{where.integral,jdbcType=INTEGER}
             </if>
+            <if test="where.country != null">
+                and country = #{where.country,jdbcType=VARCHAR}
+            </if>
+            <if test="where.province != null">
+                and province = #{where.province,jdbcType=VARCHAR}
+            </if>
+            <if test="where.city != null">
+                and city = #{where.city,jdbcType=VARCHAR}
+            </if>
             <if test="where.status != null">
-                and status = #{where.status,jdbcType=INTEGER}
+                and status = #{where.status,jdbcType=OTHER}
             </if>
             <if test="where.updateTime != null">
                 and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
@@ -346,59 +456,84 @@
         update user
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="open_id = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.openId}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.openId}
+                 </foreach>
             </trim>
             <trim prefix="user_name = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.userName}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userName}
+                 </foreach>
             </trim>
             <trim prefix="real_name = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.realName}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.realName}
+                 </foreach>
+            </trim>
+            <trim prefix="avatart_url = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.avatartUrl}
+                 </foreach>
             </trim>
             <trim prefix="mobile = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.mobile}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.mobile}
+                 </foreach>
+            </trim>
+            <trim prefix="gender = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.gender}
+                 </foreach>
             </trim>
             <trim prefix="address = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.address}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.address}
+                 </foreach>
             </trim>
             <trim prefix="kind = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.kind}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.kind}
+                 </foreach>
             </trim>
             <trim prefix="sum_of_money = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.sumOfMoney}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.sumOfMoney}
+                 </foreach>
             </trim>
             <trim prefix="integral = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.integral}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.integral}
+                 </foreach>
+            </trim>
+            <trim prefix="country = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.country}
+                 </foreach>
+            </trim>
+            <trim prefix="province = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.province}
+                 </foreach>
+            </trim>
+            <trim prefix="city = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.city}
+                 </foreach>
             </trim>
             <trim prefix="status = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.status}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
             </trim>
             <trim prefix="update_time = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.updateTime}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
+                 </foreach>
             </trim>
             <trim prefix="create_time = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.createTime}
-                </foreach>
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
             </trim>
         </trim>
         where id in
@@ -406,7 +541,7 @@
             #{item.id,jdbcType=INTEGER}
         </foreach>
     </update>
-
+    
     <!--通过主键删除-->
     <delete id="deleteById" parameterType="java.lang.Long">
         delete from user where id = #{id,jdbcType=INTEGER}
@@ -425,8 +560,14 @@
             <if test="realName != null">
                 and real_name = #{realName,jdbcType=VARCHAR}
             </if>
+            <if test="avatartUrl != null">
+                and avatart_url = #{avatartUrl,jdbcType=VARCHAR}
+            </if>
             <if test="mobile != null">
                 and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -440,8 +581,17 @@
             <if test="integral != null">
                 and integral = #{integral,jdbcType=INTEGER}
             </if>
+            <if test="country != null">
+                and country = #{country,jdbcType=VARCHAR}
+            </if>
+            <if test="province != null">
+                and province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if test="city != null">
+                and city = #{city,jdbcType=VARCHAR}
+            </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -451,7 +601,7 @@
             </if>
         </where>
     </delete>
-
+    
     <!--通过主键列表删除，列表长度不能为0-->
     <delete id="deleteByIds" parameterType="list">
         delete from user where id in
@@ -459,11 +609,11 @@
             #{item}
         </foreach>
     </delete>
-
+    
     <select id="countAll" resultType="int">
         select count(id) from user
     </select>
-
+    
     <select id="countByEntity" parameterType="com.mawkun.core.base.entity.User" resultType="int">
         select count(id) from user
         <where>
@@ -479,8 +629,14 @@
             <if test="realName != null">
                 and real_name = #{realName,jdbcType=VARCHAR}
             </if>
+            <if test="avatartUrl != null">
+                and avatart_url = #{avatartUrl,jdbcType=VARCHAR}
+            </if>
             <if test="mobile != null">
                 and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -494,8 +650,17 @@
             <if test="integral != null">
                 and integral = #{integral,jdbcType=INTEGER}
             </if>
+            <if test="country != null">
+                and country = #{country,jdbcType=VARCHAR}
+            </if>
+            <if test="province != null">
+                and province = #{province,jdbcType=VARCHAR}
+            </if>
+            <if test="city != null">
+                and city = #{city,jdbcType=VARCHAR}
+            </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
