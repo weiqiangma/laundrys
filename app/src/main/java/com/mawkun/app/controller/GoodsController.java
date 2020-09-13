@@ -3,6 +3,7 @@ package com.mawkun.app.controller;
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsQuery;
 import com.mawkun.core.base.entity.Goods;
@@ -22,6 +23,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author mawkun
@@ -54,7 +56,8 @@ public class GoodsController extends BaseController {
     @ApiOperation(value="商品列表", notes="商品列表")
     public JsonResult list(Goods goods) {
         List<Goods> goodsList = goodsServiceExt.listByEntity(goods);
-        return sendSuccess(goodsList);
+        List<Goods> resutlList = goodsList.stream().filter(a -> a.getStatus() == Constant.GOODS_GROUNDING).collect(Collectors.toList());
+        return sendSuccess(resutlList);
     }
 
     @GetMapping("/pageList")

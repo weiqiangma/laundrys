@@ -6,7 +6,7 @@ import lombok.Data;
  * (UserAddress)实体类
  *
  * @author mawkun
- * @date 2020-09-12 22:21:58
+ * @date 2020-09-13 18:34:09
  */
 @Data
 public class UserAddress {
@@ -46,6 +46,10 @@ public class UserAddress {
     private String linkMobile1;
 
     private String linkMobile2;
+    /**
+     * 地址编码
+     */
+    private String code;
     /**
      * 1：默认使用
      */

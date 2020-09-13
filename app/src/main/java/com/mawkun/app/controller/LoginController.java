@@ -49,6 +49,8 @@ public class LoginController extends BaseController {
             user.setOpenId(resultData.getOpenId());
             int userId = userServiceExt.insert(user);
             resultData.setUserId((long) userId);
+        } else {
+            resultData.setUserId(list.get(0).getId());
         }
         //生成token,保存session
         String token = CryptUtils.md5Safe(resultData.getOpenId()  + resultData.getSessionKey() + System.currentTimeMillis());

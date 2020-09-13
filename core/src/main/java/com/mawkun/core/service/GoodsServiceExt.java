@@ -2,6 +2,7 @@ package com.mawkun.core.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.query.GoodsQuery;
 import com.mawkun.core.base.entity.Goods;
 import com.mawkun.core.base.service.GoodsService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author mawkun
@@ -31,7 +33,8 @@ public class GoodsServiceExt extends GoodsService {
         }
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<Goods> list = goodsDaoExt.listByEntity(query);
-        return new PageInfo(list);
+        List<Goods> resutlList = list.stream().filter(a -> a.getStatus() == Constant.GOODS_UNDERCARRIAGE).collect(Collectors.toList());
+        return new PageInfo(resutlList);
     }
 
     public int insertWithPic(Goods goods, MultipartFile file) {

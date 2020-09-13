@@ -29,7 +29,7 @@ public class Goods {
     @ExcelProperty("商品图片")
     private String picture;
     @ExcelProperty("商品状态")
-    private Object status;
+    private Integer status;
     @ExcelProperty(value = "商品更新时间")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

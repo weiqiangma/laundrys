@@ -35,6 +35,14 @@ public interface Constant {
     int GOODS_GROUNDING = 0;    //上架
     int GOODS_UNDERCARRIAGE = 1;//下架
 
+    //=============================运费等级配置=============================//
+    String TRANSPORT_LEVEL1 = "transport_level1";
+    String TRANSPORT_LEVEL2 = "transport_level2";
+    String TRANSPORT_LEVEL3 = "transport_level3";
+    String TRANSPORT_LEVEL4 = "transport_level4";
+
+    //=============================用户地址状态=============================//
+    int USER_ADDRESS_USED = 0;      //默认地址
     //=============================系统用户状态=============================
     //用户登录和请求token权限返回状态
     int LOGIN_NOTFIND = 40000;

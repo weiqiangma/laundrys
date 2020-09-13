@@ -5,4 +5,8 @@
     <select id="selectSysValue" resultType="java.lang.String" parameterType="java.lang.String">
         select sys_value from sys_param where real_name = #{realName}
     </select>
+
+    <select id="selectTransportFee" resultMap="com.mawkun.core.base.dao.SysParamDao.SysParamResultMap">
+        select * from sys_param where real_name like '%transport%'
+    </select>
 </mapper>
