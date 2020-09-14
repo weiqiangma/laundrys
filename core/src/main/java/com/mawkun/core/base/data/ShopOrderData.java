@@ -2,13 +2,14 @@ package com.mawkun.core.base.data;
 
 import lombok.Data;
 
+/**
+ * @Date 2020/9/14 16:10
+ * @Author mawkun
+ */
 @Data
-public class ShopIncomeData {
-    //shop_id
+public class ShopOrderData {
     private Long id;
-    //店铺名
+    private Integer amount;
     private String shopName;
-    //店铺收入
-    private Double amount;
     private String type;
 }

@@ -39,7 +39,7 @@
                 and id = #{id,jdbcType=INTEGER}
             </if>
             <if test="shopName != null">
-                and shop_name like #{shopName,jdbcType=VARCHAR}
+                and shop_name = #{shopName,jdbcType=VARCHAR}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -69,7 +69,6 @@
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
-        order by create_time desc
     </select>
 
     <!--通过实体不为空的属性作为筛选条件查询单个-->

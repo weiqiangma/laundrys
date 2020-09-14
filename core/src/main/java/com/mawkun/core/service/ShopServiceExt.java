@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
@@ -121,6 +122,41 @@ public class ShopServiceExt extends ShopService {
         return array;
     }
 
+    public JSONArray statsShopOrder(StateQuery query) {
+        fillQueryData(query);
+        List<ShopOrderData> list = orderFormDaoExt.statsShopOrder(query);
+        //根据type进行分组
+        Map<String, ShopOrderData> dataMap = list.stream().collect(Collectors.toMap(ShopOrderData::getType, m->m));
+        Date sTime = query.getStartTime();
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(sTime);
+        JSONArray array = new JSONArray();
+        for(int i = 0; i < query.getDateCount(); i++) {
+            String key = "";
+            if(query.getType()==1){
+                key = String.valueOf(i);
+            }else if(query.getType()==2){
+                key = DateUtils.format("yyyy-MM-dd",ca.getTime());
+            }else if(query.getType()==3 || query.getType()==4){
+                key = DateUtils.format("yyyy-MM-dd",ca.getTime());
+            }else{
+                continue;
+            }
+            ShopOrderData data = dataMap.get(key);
+            JSONObject object = new JSONObject();
+            String shopName = (data == null) ? "" : data.getShopName();
+            if(query.getShopId() == null) shopName = "";
+            Integer amount = (data == null) ? 0 : data.getAmount();
+            object.put("time", key);
+            object.put("shopName", shopName);
+            object.put("amount", amount);
+            array.add(object);
+            ca.add(Calendar.DAY_OF_MONTH,1);
+        }
+        return array;
+    }
+
+
     /**
      * 门店列表分业
      * @param query
@@ -134,10 +170,10 @@ public class ShopServiceExt extends ShopService {
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         //List<Shop> list = shopDaoExt.listByEntity(query);
         List<ShopVo> list = shopDaoExt.selectList(query);
-        if(StringUtils.isNotEmpty(query.getLal())) {
+        //根据用户收货地址计和各门店距离
+        if(StringUtils.isNotEmpty(query.getUserAddress())) {
             for(ShopVo shopVo : list) {
-                Validate.notEmpty(query.getAddress());
-                String originalLal = query.getLal();
+                String originalLal = gaoDeApiServiceExt.getLalByAddress(query.getUserAddress());
                 String destincation =   shopVo.getLocation();
                 String distance = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
                 shopVo.setLength(NumberUtils.str2Int(distance));

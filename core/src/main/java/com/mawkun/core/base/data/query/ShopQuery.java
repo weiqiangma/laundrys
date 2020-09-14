@@ -9,7 +9,7 @@ import java.util.Date;
 public class ShopQuery extends Shop {
     private Integer pageNo;
     private Integer pageSize;
-    private String address;
+    private String userAddress;
     private String lal;
     private Date createTimeStart;
     private Date createTimeEnd;

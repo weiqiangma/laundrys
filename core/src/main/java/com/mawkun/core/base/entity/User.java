@@ -2,6 +2,7 @@ package com.mawkun.core.base.entity;
 
 import java.util.Date;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,23 +15,27 @@ import org.springframework.format.annotation.DateTimeFormat;
  */
 @Data
 public class User {
-
+    @ExcelProperty("ID")
     private Long id;
     /**
      * 微信用户唯一ID
      */
+    @ExcelProperty("openId")
     private String openId;
     /**
      * 用户昵称
      */
+    @ExcelProperty("用户名")
     private String userName;
     /**
      * 真实姓名
      */
+    @ExcelProperty("realName")
     private String realName;
     /**
      * 头像
      */
+    @ExcelProperty("avatartUrl")
     private String avatartUrl;
     /**
      * 联系方式

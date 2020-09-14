@@ -48,8 +48,8 @@ public class MyMvcConfig extends WebMvcConfigurationSupport {
     //添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(createLoginInterceptor()).addPathPatterns("/adm/**");
-        registry.addInterceptor(createAuthenticationInterceptor());
+        //registry.addInterceptor(createLoginInterceptor()).addPathPatterns("/adm/**");
+        //registry.addInterceptor(createAuthenticationInterceptor());
         super.addInterceptors(registry);
     }
 

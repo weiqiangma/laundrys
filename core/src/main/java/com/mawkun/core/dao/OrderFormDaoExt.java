@@ -2,6 +2,7 @@ package com.mawkun.core.dao;
 
 import com.mawkun.core.base.dao.OrderFormDao;
 import com.mawkun.core.base.data.ShopIncomeData;
+import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.query.OrderFormQuery;
 import com.mawkun.core.base.data.query.ShopIncomeQuery;
 import com.mawkun.core.base.data.query.StateQuery;
@@ -29,6 +30,13 @@ public interface OrderFormDaoExt extends OrderFormDao {
      * @return
      */
     List<OrderFormVo> statsShopIncome(StateQuery query);
+
+    /**
+     * 统计门店订单
+     * @param query
+     * @return
+     */
+    List<ShopOrderData> statsShopOrder(StateQuery query);
 
     /**
      * 订单列表

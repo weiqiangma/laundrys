@@ -65,20 +65,6 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         Validate.notNull(goods, "数据库中未查询到该商品信息");
         ShoppingCart resultCart = shoppingCartDaoExt.selectByUserId(session.getId(), goodsId, null);
         if (resultCart != null) {
-//            if(type == 1) {
-//                goodsNum = resultCart.getGoodsNum() + 1;
-//                resultCart.setGoodsNum(goodsNum);
-//                shoppingCartDaoExt.update(resultCart);
-//            }
-//            if(type == 0) {
-//                goodsNum = resultCart.getGoodsNum() - 1;
-//                if(goodsNum < 1) {
-//                    shoppingCartDaoExt.deleteByEntity(resultCart);
-//                } else {
-//                    resultCart.setGoodsNum(goodsNum);
-//                    shoppingCartDaoExt.update(resultCart);
-//                }
-//            }
             if(goodsNum < 1) {
                 shoppingCartDaoExt.deleteByEntity(resultCart);
             } else {
@@ -122,7 +108,7 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
      * 计算运费
      * @param address
      */
-    public String countTransportFee(String address, String shopLocation) {
+    public String countTransportFee(Integer goodsAmount, String address, String shopLocation) {
         /**
          * 1.根据用户收货地址及门店坐标计算距离
          * 2.根据距离计算运费
@@ -136,18 +122,14 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
             int min = paramList.get(i).getDistance();
             int max = paramList.get(i+1).getDistance();
             if(distance >= min && distance < max) {
+                String minGoodsAmount = paramList.get(i+1).getSysValue();
+                fee = paramList.get(i+1).getSysValue();
+            }
+            if(distance < min) {
                 fee = paramList.get(i).getSysValue();
             }
             if(distance >= max) log.info("配送距离超过范围");
         }
         return fee;
     }
-
-    /**
-     * 积分抵消
-     */
-    public void offsetFeeWithIntegral(Integer userId) {
-
-    }
-
 }

@@ -10,4 +10,5 @@ class AdminApplicationTests {
     void contextLoads() {
     }
 
+
 }

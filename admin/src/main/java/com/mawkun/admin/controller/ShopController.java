@@ -125,8 +125,21 @@ public class ShopController extends BaseController {
     @ApiOperation(value="统计门店收入", notes="统计门店收入")
     public JsonResult statsShopIncome(@LoginedAuth UserSession session) {
         StateQuery query = this.createQueryStateVo();
-        if(session.getShopId() > 0) query.setShopId(session.getShopId());
+        //if(session.getShopId() > 0) query.setShopId(session.getShopId());
         JSONArray array = shopServiceExt.statsShopIncome(query);
+        return sendSuccess(array);
+    }
+
+    /**
+     * 统计门店订单
+     * @param session
+     * @return
+     */
+    @GetMapping("/statsShopOrder")
+    public JsonResult statsShopOrder(@LoginedAuth UserSession session) {
+        StateQuery query = this.createQueryStateVo();
+        //if(session.getShopId() > 0) query.setShopId(session.getShopId());
+        JSONArray array = shopServiceExt.statsShopOrder(query);
         return sendSuccess(array);
     }
 
