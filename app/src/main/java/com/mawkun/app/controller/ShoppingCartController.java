@@ -76,24 +76,10 @@ public class ShoppingCartController extends BaseController {
         return sendSuccess(result);
     }
 
-    @DeleteMapping("/delete")
-    public JsonResult deleteOne(Long id){
-        int result = shoppingCartServiceExt.deleteById(id);
-        return sendSuccess(result);
-    }
 
-    @DeleteMapping("/deleteBatch")
-    public JsonResult deleteBatch(String ids){
-        int result = 0;
-        List<String> idArray = Arrays.asList(ids.split(","));
-        List idList = new ArrayList<>();
-        idList = CollectionUtils.transform(idArray, new Transformer() {
-            @Override
-            public Object transform(Object o) {
-                return Convert.toInt(o, 0);
-            }
-        });
-        if (idList.size()>0) result = shoppingCartServiceExt.deleteByIds(idList);
+    @PostMapping("/deleteByUserId")
+    public JsonResult deleteByUserId(Long userId) {
+        int result = shoppingCartServiceExt.deleteByUserId(userId);
         return sendSuccess(result);
     }
 
@@ -113,16 +99,20 @@ public class ShoppingCartController extends BaseController {
         Integer distance = NumberUtils.str2Int(distanceStr);
         List<SysParam> paramList = sysParamDaoExt.selectTransportFee();
         List<SysParam> sortList = paramList.stream().sorted(Comparator.comparingInt(SysParam::getDistance)).collect(Collectors.toList());
-        for(int i = 0; i < paramList.size() - 1; i++) {
-            int front = paramList.get(i).getDistance();
-            int next = paramList.get(i+1).getDistance();
-            int max = paramList.get(paramList.size() -1).getDistance() * 1000;
+        for(int i = 0; i < sortList.size() - 1; i++) {
+            int front = sortList.get(i).getDistance();
+            int next = sortList.get(i+1).getDistance();
+            int max = sortList.get(paramList.size() -1).getDistance() * 1000;
             if(distance >= max) return sendSuccess("ok", "所选地址附近洗衣店正在建设中，请耐心等待");
             if(distance >= front && distance < next) {
-                fee = paramList.get(i).getSysValue();
+                fee = sortList.get(i).getSysValue();
             }
         }
         return sendSuccess("ok",fee);
+    }
+
+    public JsonResult countOrderForm(Integer tansportFee, Integer integral, Integer amount) {
+        return sendSuccess();
     }
 
 }

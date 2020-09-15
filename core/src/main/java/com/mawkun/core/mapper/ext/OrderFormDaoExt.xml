@@ -4,24 +4,22 @@
 
     <!-- 统计门店收入 -->
     <select id="statsShopIncome" resultType="com.mawkun.core.base.data.vo.OrderFormVo" parameterType="com.mawkun.core.base.data.query.StateQuery">
-    SELECT
-        shop.id,
-        shop_name shopName,
-        ifnull( AVG( real_amount ), 0 ) amount,
+        SELECT
+        ifnull( SUM( real_amount ), 0 ) amount,
         DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
-    FROM
-        shop
-        LEFT JOIN order_form ON order_form.shop_id = shop.id
-    <where>
-        <if test="startTime != null and endTime != null">
-            AND order_form.create_time &gt;= #{startTime} AND order_form.create_time &lt;= #{endTime}
-        </if>
-        <if test="shopId != null">
-            AND shop.id = #{shopId}
-        </if>
-    </where>
-    GROUP BY
-        shop.id
+        FROM
+        order_form ofm
+        LEFT JOIN shop ON ofm.shop_id = shop.id
+        <where>
+            <if test="startTime != null and endTime != null">
+                AND ofm.create_time &gt;= #{startTime} AND ofm.create_time &lt;= #{endTime}
+            </if>
+            <if test="shopId != null and shopId > 0">
+                AND shop.id = #{shopId}
+            </if>
+        </where>
+        GROUP BY
+        type
     </select>
 
     <!-- 统计门店订单 -->
@@ -31,7 +29,6 @@
         DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
         <if test="shopId != null and shopId > 0">
             ,shop.shop_name shopName
-            ,shop.id shopId
         </if>
         FROM
         order_form ofm
@@ -44,7 +41,7 @@
                 AND ofm.shop_id = #{shopId}
             </if>
         </where>
-        group by ofm.id
+        group by type
     </select>
 
 

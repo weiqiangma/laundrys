@@ -87,6 +87,12 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         }
     }
 
+    public int deleteByUserId(Long userId) {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUserId(userId);
+        return shoppingCartDaoExt.deleteByEntity(cart);
+    }
+
     /**
      * 计算购物车商品金额
      * @param goodsIds

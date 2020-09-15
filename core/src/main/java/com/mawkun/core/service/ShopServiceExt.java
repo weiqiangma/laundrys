@@ -100,7 +100,7 @@ public class ShopServiceExt extends ShopService {
         for(int i = 0; i < query.getDateCount(); i++) {
             String key = "";
             if(query.getType()==1){
-                key = String.valueOf(i);
+                key = (i < 10) ? String.valueOf("0"+i):String.valueOf(i);
             }else if(query.getType()==2){
                 key = DateUtils.format("yyyy-MM-dd",ca.getTime());
             }else if(query.getType()==3 || query.getType()==4){
@@ -112,7 +112,7 @@ public class ShopServiceExt extends ShopService {
             JSONObject object = new JSONObject();
             String shopName = (form == null) ? "" : form.getShopName();
             if(query.getShopId() == null) shopName = "";
-            Double amount = (form == null) ? 0 : form.getTotalAmount();
+            Double amount = (form == null) ? 0 : form.getAmount();
             object.put("time", key);
             object.put("shopName", shopName);
             object.put("amount", amount);
@@ -122,6 +122,11 @@ public class ShopServiceExt extends ShopService {
         return array;
     }
 
+    /**
+     * 统计店铺订单
+     * @param query
+     * @return
+     */
     public JSONArray statsShopOrder(StateQuery query) {
         fillQueryData(query);
         List<ShopOrderData> list = orderFormDaoExt.statsShopOrder(query);
@@ -134,7 +139,7 @@ public class ShopServiceExt extends ShopService {
         for(int i = 0; i < query.getDateCount(); i++) {
             String key = "";
             if(query.getType()==1){
-                key = String.valueOf(i);
+                key = (i < 10) ? String.valueOf("0"+i):String.valueOf(i);
             }else if(query.getType()==2){
                 key = DateUtils.format("yyyy-MM-dd",ca.getTime());
             }else if(query.getType()==3 || query.getType()==4){
@@ -168,7 +173,6 @@ public class ShopServiceExt extends ShopService {
             query.setShopName("%" + query.getShopName() + "%");
         }
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
-        //List<Shop> list = shopDaoExt.listByEntity(query);
         List<ShopVo> list = shopDaoExt.selectList(query);
         //根据用户收货地址计和各门店距离
         if(StringUtils.isNotEmpty(query.getUserAddress())) {
