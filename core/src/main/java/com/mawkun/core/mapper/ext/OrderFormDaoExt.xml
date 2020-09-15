@@ -113,6 +113,9 @@
             <if test="shopName != null and shopName != ''">
                 and order_form.shopName like #{shopName}
             </if>
+            <if test="userId != null and userId > 0">
+                and order_form.user_id = #{userId}
+            </if>
         </where>
     </select>
 </mapper>

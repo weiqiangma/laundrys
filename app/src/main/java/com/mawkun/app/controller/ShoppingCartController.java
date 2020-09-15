@@ -5,6 +5,7 @@ import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.NumberUtils;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
+import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.ShoppingCart;
 import com.mawkun.core.base.entity.SysParam;
 import com.mawkun.core.base.service.ShoppingCartService;
@@ -13,16 +14,19 @@ import com.mawkun.core.service.GaoDeApiServiceExt;
 import com.mawkun.core.service.ShoppingCartServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
+import com.xiaoleilu.hutool.util.ArrayUtil;
 import io.jsonwebtoken.lang.Assert;
 import io.swagger.annotations.Api;
 import net.sf.cglib.core.CollectionUtils;
 import net.sf.cglib.core.Transformer;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Validation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,7 +102,7 @@ public class ShoppingCartController extends BaseController {
      * @param address
      */
     @GetMapping("/countTransportFee")
-    public String countTransportFee(String address, String shopLocation) {
+    public JsonResult countTransportFee(String address, String shopLocation) {
         /**
          * 1.根据用户收货地址及门店坐标计算距离
          * 2.根据距离计算运费
@@ -108,15 +112,17 @@ public class ShoppingCartController extends BaseController {
         String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(location, shopLocation);
         Integer distance = NumberUtils.str2Int(distanceStr);
         List<SysParam> paramList = sysParamDaoExt.selectTransportFee();
-        for(int i = 0; i < paramList.size(); i++) {
-            int min = paramList.get(i).getDistance();
-            int max = paramList.get(i+1).getDistance();
-            if(distance >= min && distance < max) {
+        List<SysParam> sortList = paramList.stream().sorted(Comparator.comparingInt(SysParam::getDistance)).collect(Collectors.toList());
+        for(int i = 0; i < paramList.size() - 1; i++) {
+            int front = paramList.get(i).getDistance();
+            int next = paramList.get(i+1).getDistance();
+            int max = paramList.get(paramList.size() -1).getDistance() * 1000;
+            if(distance >= max) return sendSuccess("ok", "所选地址附近洗衣店正在建设中，请耐心等待");
+            if(distance >= front && distance < next) {
                 fee = paramList.get(i).getSysValue();
             }
-            if(distance >= max) sendSuccess("ok", "所选地址附近洗衣店正在建设中，请耐心等待");
         }
-        return fee;
+        return sendSuccess("ok",fee);
     }
 
 }

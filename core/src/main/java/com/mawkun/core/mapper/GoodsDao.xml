@@ -9,7 +9,7 @@
         <result property="price" column="price" jdbcType="NUMERIC"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="picture" column="picture" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
