@@ -7,21 +7,25 @@
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="shopId" column="shop_id" jdbcType="INTEGER"/>
         <result property="distributorId" column="distributor_id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="orderSerial" column="order_serial" jdbcType="VARCHAR"/>
         <result property="price" column="price" jdbcType="NUMERIC"/>
         <result property="remark" column="remark" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="OTHER"/>
         <result property="realAmount" column="real_amount" jdbcType="NUMERIC"/>
         <result property="totalAmount" column="total_amount" jdbcType="NUMERIC"/>
+        <result property="userAddress" column="user_address" jdbcType="VARCHAR"/>
         <result property="transportWay" column="transport_way" jdbcType="OTHER"/>
+        <result property="payKind" column="pay_kind" jdbcType="OTHER"/>
         <result property="integral" column="integral" jdbcType="INTEGER"/>
-        <result property="createTime" column="create_time" jdbcType="OTHER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, shop_id, distributor_id, order_serial, price, remark, status, real_amount, total_amount, transport_way, integral, create_time
+      id, user_id, shop_id, distributor_id, user_name, order_serial, price, remark, status, real_amount, total_amount, user_address, transport_way, pay_kind, integral, update_time, create_time      
     </sql>
-
+       
     <!--通过Id查询单个-->
     <select id="getById" resultMap="OrderFormResultMap" parameterType="java.lang.Long">
         select
@@ -49,8 +53,11 @@
             <if test="distributorId != null">
                 and distributor_id = #{distributorId,jdbcType=INTEGER}
             </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
             <if test="orderSerial != null">
-                and order_serial like #{orderSerial,jdbcType=VARCHAR}
+                and order_serial = #{orderSerial,jdbcType=VARCHAR}
             </if>
             <if test="price != null">
                 and price = #{price,jdbcType=NUMERIC}
@@ -67,17 +74,25 @@
             <if test="totalAmount != null">
                 and total_amount = #{totalAmount,jdbcType=NUMERIC}
             </if>
+            <if test="userAddress != null">
+                and user_address = #{userAddress,jdbcType=VARCHAR}
+            </if>
             <if test="transportWay != null">
                 and transport_way = #{transportWay,jdbcType=OTHER}
+            </if>
+            <if test="payKind != null">
+                and pay_kind = #{payKind,jdbcType=OTHER}
             </if>
             <if test="integral != null">
                 and integral = #{integral,jdbcType=INTEGER}
             </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
             <if test="createTime != null">
-                and create_time = #{createTime,jdbcType=OTHER}
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
-        order by create_time desc
     </select>
 
     <!--通过实体不为空的属性作为筛选条件查询单个-->
@@ -98,6 +113,9 @@
             <if test="distributorId != null">
                 and distributor_id = #{distributorId,jdbcType=INTEGER}
             </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
             <if test="orderSerial != null">
                 and order_serial = #{orderSerial,jdbcType=VARCHAR}
             </if>
@@ -116,14 +134,23 @@
             <if test="totalAmount != null">
                 and total_amount = #{totalAmount,jdbcType=NUMERIC}
             </if>
+            <if test="userAddress != null">
+                and user_address = #{userAddress,jdbcType=VARCHAR}
+            </if>
             <if test="transportWay != null">
                 and transport_way = #{transportWay,jdbcType=OTHER}
+            </if>
+            <if test="payKind != null">
+                and pay_kind = #{payKind,jdbcType=OTHER}
             </if>
             <if test="integral != null">
                 and integral = #{integral,jdbcType=INTEGER}
             </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
             <if test="createTime != null">
-                and create_time = #{createTime,jdbcType=OTHER}
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>
@@ -155,6 +182,9 @@
           <if test="distributorId != null">
              distributor_id,
           </if>
+          <if test="userName != null">
+             user_name,
+          </if>
           <if test="orderSerial != null">
              order_serial,
           </if>
@@ -173,11 +203,20 @@
           <if test="totalAmount != null">
              total_amount,
           </if>
+          <if test="userAddress != null">
+             user_address,
+          </if>
           <if test="transportWay != null">
              transport_way,
           </if>
+          <if test="payKind != null">
+             pay_kind,
+          </if>
           <if test="integral != null">
              integral,
+          </if>
+          <if test="updateTime != null">
+             update_time,
           </if>
           <if test="createTime != null">
              create_time,
@@ -195,6 +234,9 @@
           </if>
           <if test="distributorId != null">
              #{distributorId,jdbcType=INTEGER},
+          </if>
+          <if test="userName != null">
+             #{userName,jdbcType=VARCHAR},
           </if>
           <if test="orderSerial != null">
              #{orderSerial,jdbcType=VARCHAR},
@@ -214,14 +256,23 @@
           <if test="totalAmount != null">
              #{totalAmount,jdbcType=NUMERIC},
           </if>
+          <if test="userAddress != null">
+             #{userAddress,jdbcType=VARCHAR},
+          </if>
           <if test="transportWay != null">
              #{transportWay,jdbcType=OTHER},
+          </if>
+          <if test="payKind != null">
+             #{payKind,jdbcType=OTHER},
           </if>
           <if test="integral != null">
              #{integral,jdbcType=INTEGER},
           </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
           <if test="createTime != null">
-             #{createTime,jdbcType=OTHER},
+             #{createTime,jdbcType=TIMESTAMP},
           </if>
         </trim>
     </insert>
@@ -229,10 +280,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into order_form
-         (id, user_id, shop_id, distributor_id, order_serial, price, remark, status, real_amount, total_amount, transport_way, integral, create_time)
+         (id, user_id, shop_id, distributor_id, user_name, order_serial, price, remark, status, real_amount, total_amount, user_address, transport_way, pay_kind, integral, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.distributorId,jdbcType=INTEGER}, #{item.orderSerial,jdbcType=VARCHAR}, #{item.price,jdbcType=NUMERIC}, #{item.remark,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.realAmount,jdbcType=NUMERIC}, #{item.totalAmount,jdbcType=NUMERIC}, #{item.transportWay,jdbcType=OTHER}, #{item.integral,jdbcType=INTEGER}, #{item.createTime,jdbcType=OTHER})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.distributorId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.orderSerial,jdbcType=VARCHAR}, #{item.price,jdbcType=NUMERIC}, #{item.remark,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.realAmount,jdbcType=NUMERIC}, #{item.totalAmount,jdbcType=NUMERIC}, #{item.userAddress,jdbcType=VARCHAR}, #{item.transportWay,jdbcType=OTHER}, #{item.payKind,jdbcType=OTHER}, #{item.integral,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -248,6 +299,9 @@
             </if>
             <if test="distributorId != null">
                 distributor_id = #{distributorId,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName,jdbcType=VARCHAR},
             </if>
             <if test="orderSerial != null and orderSerial != ''">
                 order_serial = #{orderSerial,jdbcType=VARCHAR},
@@ -267,14 +321,23 @@
             <if test="totalAmount != null">
                 total_amount = #{totalAmount,jdbcType=NUMERIC},
             </if>
+            <if test="userAddress != null and userAddress != ''">
+                user_address = #{userAddress,jdbcType=VARCHAR},
+            </if>
             <if test="transportWay != null">
                 transport_way = #{transportWay,jdbcType=OTHER},
+            </if>
+            <if test="payKind != null">
+                pay_kind = #{payKind,jdbcType=OTHER},
             </if>
             <if test="integral != null">
                 integral = #{integral,jdbcType=INTEGER},
             </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
             <if test="createTime != null">
-                create_time = #{createTime,jdbcType=OTHER},
+                create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -292,6 +355,9 @@
             </if>
             <if test="where.distributorId == null and set.distributorId != null">
                 distributor_id = #{set.distributorId,jdbcType=INTEGER},
+            </if>
+            <if test="where.userName == null and set.userName != null and set.userName != ''">
+                user_name = #{set.userName,jdbcType=VARCHAR},
             </if>
             <if test="where.orderSerial == null and set.orderSerial != null and set.orderSerial != ''">
                 order_serial = #{set.orderSerial,jdbcType=VARCHAR},
@@ -311,14 +377,23 @@
             <if test="where.totalAmount == null and set.totalAmount != null">
                 total_amount = #{set.totalAmount,jdbcType=NUMERIC},
             </if>
+            <if test="where.userAddress == null and set.userAddress != null and set.userAddress != ''">
+                user_address = #{set.userAddress,jdbcType=VARCHAR},
+            </if>
             <if test="where.transportWay == null and set.transportWay != null">
                 transport_way = #{set.transportWay,jdbcType=OTHER},
+            </if>
+            <if test="where.payKind == null and set.payKind != null">
+                pay_kind = #{set.payKind,jdbcType=OTHER},
             </if>
             <if test="where.integral == null and set.integral != null">
                 integral = #{set.integral,jdbcType=INTEGER},
             </if>
+            <if test="where.updateTime == null and set.updateTime != null">
+                update_time = #{set.updateTime,jdbcType=TIMESTAMP},
+            </if>
             <if test="where.createTime == null and set.createTime != null">
-                create_time = #{set.createTime,jdbcType=OTHER},
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         <where>
@@ -333,6 +408,9 @@
             </if>
             <if test="where.distributorId != null">
                 and distributor_id = #{where.distributorId,jdbcType=INTEGER}
+            </if>
+            <if test="where.userName != null">
+                and user_name = #{where.userName,jdbcType=VARCHAR}
             </if>
             <if test="where.orderSerial != null">
                 and order_serial = #{where.orderSerial,jdbcType=VARCHAR}
@@ -352,14 +430,23 @@
             <if test="where.totalAmount != null">
                 and total_amount = #{where.totalAmount,jdbcType=NUMERIC}
             </if>
+            <if test="where.userAddress != null">
+                and user_address = #{where.userAddress,jdbcType=VARCHAR}
+            </if>
             <if test="where.transportWay != null">
                 and transport_way = #{where.transportWay,jdbcType=OTHER}
+            </if>
+            <if test="where.payKind != null">
+                and pay_kind = #{where.payKind,jdbcType=OTHER}
             </if>
             <if test="where.integral != null">
                 and integral = #{where.integral,jdbcType=INTEGER}
             </if>
+            <if test="where.updateTime != null">
+                and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
+            </if>
             <if test="where.createTime != null">
-                and create_time = #{where.createTime,jdbcType=OTHER}
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </update>
@@ -381,6 +468,11 @@
             <trim prefix="distributor_id = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.distributorId}
+                 </foreach>
+            </trim>
+            <trim prefix="user_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userName}
                  </foreach>
             </trim>
             <trim prefix="order_serial = case" suffix="end,">
@@ -413,14 +505,29 @@
                   when id = #{item.id} then #{item.totalAmount}
                  </foreach>
             </trim>
+            <trim prefix="user_address = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userAddress}
+                 </foreach>
+            </trim>
             <trim prefix="transport_way = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.transportWay}
                  </foreach>
             </trim>
+            <trim prefix="pay_kind = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.payKind}
+                 </foreach>
+            </trim>
             <trim prefix="integral = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.integral}
+                 </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
                  </foreach>
             </trim>
             <trim prefix="create_time = case" suffix="end,">
@@ -434,7 +541,7 @@
             #{item.id,jdbcType=INTEGER}
         </foreach>
     </update>
-
+    
     <!--通过主键删除-->
     <delete id="deleteById" parameterType="java.lang.Long">
         delete from order_form where id = #{id,jdbcType=INTEGER}
@@ -453,6 +560,9 @@
             <if test="distributorId != null">
                 and distributor_id = #{distributorId,jdbcType=INTEGER}
             </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
             <if test="orderSerial != null">
                 and order_serial = #{orderSerial,jdbcType=VARCHAR}
             </if>
@@ -471,18 +581,27 @@
             <if test="totalAmount != null">
                 and total_amount = #{totalAmount,jdbcType=NUMERIC}
             </if>
+            <if test="userAddress != null">
+                and user_address = #{userAddress,jdbcType=VARCHAR}
+            </if>
             <if test="transportWay != null">
                 and transport_way = #{transportWay,jdbcType=OTHER}
+            </if>
+            <if test="payKind != null">
+                and pay_kind = #{payKind,jdbcType=OTHER}
             </if>
             <if test="integral != null">
                 and integral = #{integral,jdbcType=INTEGER}
             </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
             <if test="createTime != null">
-                and create_time = #{createTime,jdbcType=OTHER}
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </delete>
-
+    
     <!--通过主键列表删除，列表长度不能为0-->
     <delete id="deleteByIds" parameterType="list">
         delete from order_form where id in
@@ -490,11 +609,11 @@
             #{item}
         </foreach>
     </delete>
-
+    
     <select id="countAll" resultType="int">
         select count(id) from order_form
     </select>
-
+    
     <select id="countByEntity" parameterType="com.mawkun.core.base.entity.OrderForm" resultType="int">
         select count(id) from order_form
         <where>
@@ -510,6 +629,9 @@
             <if test="distributorId != null">
                 and distributor_id = #{distributorId,jdbcType=INTEGER}
             </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
             <if test="orderSerial != null">
                 and order_serial = #{orderSerial,jdbcType=VARCHAR}
             </if>
@@ -528,14 +650,23 @@
             <if test="totalAmount != null">
                 and total_amount = #{totalAmount,jdbcType=NUMERIC}
             </if>
+            <if test="userAddress != null">
+                and user_address = #{userAddress,jdbcType=VARCHAR}
+            </if>
             <if test="transportWay != null">
                 and transport_way = #{transportWay,jdbcType=OTHER}
+            </if>
+            <if test="payKind != null">
+                and pay_kind = #{payKind,jdbcType=OTHER}
             </if>
             <if test="integral != null">
                 and integral = #{integral,jdbcType=INTEGER}
             </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
             <if test="createTime != null">
-                and create_time = #{createTime,jdbcType=OTHER}
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>

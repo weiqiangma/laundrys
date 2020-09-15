@@ -33,8 +33,7 @@ public class GoodsServiceExt extends GoodsService {
         }
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<Goods> list = goodsDaoExt.listByEntity(query);
-        List<Goods> resutlList = list.stream().filter(a -> a.getStatus() == Constant.GOODS_UNDERCARRIAGE).collect(Collectors.toList());
-        return new PageInfo(resutlList);
+        return new PageInfo(list);
     }
 
     public int insertWithPic(Goods goods, MultipartFile file) {

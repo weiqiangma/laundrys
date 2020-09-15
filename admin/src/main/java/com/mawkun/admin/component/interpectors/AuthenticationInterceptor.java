@@ -29,7 +29,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String authorization = request.getHeader("Authorization");
-        UserSession session = userCacheService.getUserSession(authorization);
+        UserSession session = userCacheService.getAdminSession(authorization);
         request.setAttribute("session", session);
         return true;
     }

@@ -50,7 +50,7 @@ public class UserLoginInterceptor extends BaseHandlerInterceptor {
         if (userCacheService == null) {
             userCacheService = SpringContext.getBean("userCacheService", UserCacheService.class);
         }
-        UserSession userSession = userCacheService.getUserSession(token);
+        UserSession userSession = userCacheService.getAdminSession(token);
         if (userSession == null) {
             logger.error("权限错误(登录超时):openId=" + token);
             sendJsonError(request, response, Constant.LOGIN_TIME_OUT, "权限错误(登录超时)");

@@ -8,11 +8,12 @@
         <result property="realName" column="real_name" jdbcType="VARCHAR"/>
         <result property="sysValue" column="sys_value" jdbcType="VARCHAR"/>
         <result property="distance" column="distance" jdbcType="INTEGER"/>
+        <result property="lowAmount" column="low_amount" jdbcType="INTEGER"/>
         <result property="status" column="status" jdbcType="OTHER"/>
     </resultMap>
 
     <sql id="table_field">
-      id, alias_name, real_name, sys_value, distance, status      
+      id, alias_name, real_name, sys_value, distance, low_amount, status      
     </sql>
        
     <!--通过Id查询单个-->
@@ -45,6 +46,9 @@
             <if test="distance != null">
                 and distance = #{distance,jdbcType=INTEGER}
             </if>
+            <if test="lowAmount != null">
+                and low_amount = #{lowAmount,jdbcType=INTEGER}
+            </if>
             <if test="status != null">
                 and status = #{status,jdbcType=OTHER}
             </if>
@@ -71,6 +75,9 @@
             </if>
             <if test="distance != null">
                 and distance = #{distance,jdbcType=INTEGER}
+            </if>
+            <if test="lowAmount != null">
+                and low_amount = #{lowAmount,jdbcType=INTEGER}
             </if>
             <if test="status != null">
                 and status = #{status,jdbcType=OTHER}
@@ -108,6 +115,9 @@
           <if test="distance != null">
              distance,
           </if>
+          <if test="lowAmount != null">
+             low_amount,
+          </if>
           <if test="status != null">
              status,
           </if>
@@ -128,6 +138,9 @@
           <if test="distance != null">
              #{distance,jdbcType=INTEGER},
           </if>
+          <if test="lowAmount != null">
+             #{lowAmount,jdbcType=INTEGER},
+          </if>
           <if test="status != null">
              #{status,jdbcType=OTHER},
           </if>
@@ -137,10 +150,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into sys_param
-         (id, alias_name, real_name, sys_value, distance, status)
+         (id, alias_name, real_name, sys_value, distance, low_amount, status)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.aliasName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.sysValue,jdbcType=VARCHAR}, #{item.distance,jdbcType=INTEGER}, #{item.status,jdbcType=OTHER})
+         (#{item.id,jdbcType=INTEGER}, #{item.aliasName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.sysValue,jdbcType=VARCHAR}, #{item.distance,jdbcType=INTEGER}, #{item.lowAmount,jdbcType=INTEGER}, #{item.status,jdbcType=OTHER})
         </foreach>
     </insert>
 
@@ -159,6 +172,9 @@
             </if>
             <if test="distance != null">
                 distance = #{distance,jdbcType=INTEGER},
+            </if>
+            <if test="lowAmount != null">
+                low_amount = #{lowAmount,jdbcType=INTEGER},
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=OTHER},
@@ -183,6 +199,9 @@
             <if test="where.distance == null and set.distance != null">
                 distance = #{set.distance,jdbcType=INTEGER},
             </if>
+            <if test="where.lowAmount == null and set.lowAmount != null">
+                low_amount = #{set.lowAmount,jdbcType=INTEGER},
+            </if>
             <if test="where.status == null and set.status != null">
                 status = #{set.status,jdbcType=OTHER},
             </if>
@@ -202,6 +221,9 @@
             </if>
             <if test="where.distance != null">
                 and distance = #{where.distance,jdbcType=INTEGER}
+            </if>
+            <if test="where.lowAmount != null">
+                and low_amount = #{where.lowAmount,jdbcType=INTEGER}
             </if>
             <if test="where.status != null">
                 and status = #{where.status,jdbcType=OTHER}
@@ -231,6 +253,11 @@
             <trim prefix="distance = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.distance}
+                 </foreach>
+            </trim>
+            <trim prefix="low_amount = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.lowAmount}
                  </foreach>
             </trim>
             <trim prefix="status = case" suffix="end,">
@@ -265,6 +292,9 @@
             </if>
             <if test="distance != null">
                 and distance = #{distance,jdbcType=INTEGER}
+            </if>
+            <if test="lowAmount != null">
+                and low_amount = #{lowAmount,jdbcType=INTEGER}
             </if>
             <if test="status != null">
                 and status = #{status,jdbcType=OTHER}
@@ -301,6 +331,9 @@
             </if>
             <if test="distance != null">
                 and distance = #{distance,jdbcType=INTEGER}
+            </if>
+            <if test="lowAmount != null">
+                and low_amount = #{lowAmount,jdbcType=INTEGER}
             </if>
             <if test="status != null">
                 and status = #{status,jdbcType=OTHER}

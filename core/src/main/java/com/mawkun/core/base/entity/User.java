@@ -30,24 +30,25 @@ public class User {
     /**
      * 真实姓名
      */
-    @ExcelProperty("realName")
+    @ExcelProperty("真实姓名")
     private String realName;
     /**
      * 头像
      */
-    @ExcelProperty("avatartUrl")
     private String avatartUrl;
     /**
      * 联系方式
      */
+    @ExcelProperty("联系方式")
     private String mobile;
     /**
      * 性别 0：未知 1：男 2：女
      */
-    private Object gender;
+    private Integer gender;
     /**
      * 地址
      */
+    @ExcelProperty("地址")
     private String address;
     /**
      * 类型
@@ -56,6 +57,7 @@ public class User {
     /**
      * 余额
      */
+    @ExcelProperty("余额")
     private Double sumOfMoney;
     /**
      * 积分
@@ -76,7 +78,7 @@ public class User {
     /**
      * 状态
      */
-    private Object status;
+    private Integer status;
     /**
      * 更新时间
      */

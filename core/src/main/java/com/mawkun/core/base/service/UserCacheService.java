@@ -105,6 +105,11 @@ public class UserCacheService extends BaseService {
         return cacheService.get(key, UserSession.class);
     }
 
+    public UserSession getAdminSession(String token) {
+        String key = String.format(CacheKeyConstants.ADMIN_OPEN_ID_KEY, token);
+        return cacheService.get(key, UserSession.class);
+    }
+
 
     /**
      * 退出，清除rendis缓存

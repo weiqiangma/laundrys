@@ -3,6 +3,7 @@ package com.mawkun.app.controller;
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.NumberUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.vo.ShopVo;
@@ -88,12 +89,12 @@ public class ShoppingCartController extends BaseController {
      * @param address
      */
     @GetMapping("/countTransportFee")
-    public JsonResult countTransportFee(String address, String shopLocation) {
+    public JsonResult countTransportFee(String address, String shopLocation, Integer amount) {
         /**
          * 1.根据用户收货地址及门店坐标计算距离
          * 2.根据距离计算运费
          */
-        String fee = "";
+        JSONObject object = new JSONObject();
         String location = gaoDeApiServiceExt.getLalByAddress(address);
         String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(location, shopLocation);
         Integer distance = NumberUtils.str2Int(distanceStr);
@@ -105,10 +106,23 @@ public class ShoppingCartController extends BaseController {
             int max = sortList.get(paramList.size() -1).getDistance() * 1000;
             if(distance >= max) return sendSuccess("ok", "所选地址附近洗衣店正在建设中，请耐心等待");
             if(distance >= front && distance < next) {
-                fee = sortList.get(i).getSysValue();
+                int fee = 0;
+                int feeDiff = 0;
+                int lowAmount = sortList.get(i).getLowAmount();
+                if(amount >= lowAmount) {
+                    object.put("fee", 0);
+                    object.put("feeDiff", "");
+                    return sendSuccess(object);
+                }
+                String feeStr = sortList.get(i).getSysValue();
+                fee = NumberUtils.str2Int(feeStr);
+                feeDiff = lowAmount - amount;
+                object.put("fee", fee);
+                object.put("feeDiff", feeDiff);
+                break;
             }
         }
-        return sendSuccess("ok",fee);
+        return sendSuccess(object);
     }
 
     public JsonResult countOrderForm(Integer tansportFee, Integer integral, Integer amount) {

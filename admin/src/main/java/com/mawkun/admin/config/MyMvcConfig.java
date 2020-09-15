@@ -48,15 +48,15 @@ public class MyMvcConfig extends WebMvcConfigurationSupport {
     //添加拦截器
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        //registry.addInterceptor(createLoginInterceptor()).addPathPatterns("/adm/**");
-        //registry.addInterceptor(createAuthenticationInterceptor());
+        registry.addInterceptor(createLoginInterceptor()).addPathPatterns("/adm/**");
+        registry.addInterceptor(createAuthenticationInterceptor());
         super.addInterceptors(registry);
     }
 
     //添加swagger-ui.html资源不然访问不到
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**").addResourceLocations("file:/usr/downLoad/image");
+        registry.addResourceHandler("/images/**").addResourceLocations("file:/usr/downLoad/image/");
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
