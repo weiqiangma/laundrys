@@ -36,7 +36,7 @@ public class GaoDeApiServiceExt {
 
     public String getLalByAddress(String address) {
         String distance = "";
-        String url = "https://restapi.amap.com/v3/geocode/geo?address=" + address +"北京市朝阳区阜通东大街6号&output=json&key=" + GaoDeKey;
+        String url = "https://restapi.amap.com/v3/geocode/geo?address=" + address +"&output=json&key=" + GaoDeKey;
         try {
             HttpResult result = HttpUtils.get(url);
             JSONObject object = result.asJSON();

@@ -93,6 +93,12 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         return shoppingCartDaoExt.deleteByEntity(cart);
     }
 
+    public List<ShoppingCart> findByUserId(Long userId) {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUserId(userId);
+        return shoppingCartDaoExt.listByEntity(cart);
+    }
+
     /**
      * 计算购物车商品金额
      * @param goodsIds
@@ -107,35 +113,5 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
                 return Convert.toInt(o, 0);
             }
         });
-    }
-
-
-    /**
-     * 计算运费
-     * @param address
-     */
-    public String countTransportFee(Integer goodsAmount, String address, String shopLocation) {
-        /**
-         * 1.根据用户收货地址及门店坐标计算距离
-         * 2.根据距离计算运费
-         */
-        String fee = "";
-        String location = gaoDeApiServiceExt.getLalByAddress(address);
-        String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(location, shopLocation);
-        Integer distance = NumberUtils.str2Int(distanceStr);
-        List<SysParam> paramList = sysParamDaoExt.selectTransportFee();
-        for(int i = 0; i < paramList.size(); i++) {
-            int min = paramList.get(i).getDistance();
-            int max = paramList.get(i+1).getDistance();
-            if(distance >= min && distance < max) {
-                String minGoodsAmount = paramList.get(i+1).getSysValue();
-                fee = paramList.get(i+1).getSysValue();
-            }
-            if(distance < min) {
-                fee = paramList.get(i).getSysValue();
-            }
-            if(distance >= max) log.info("配送距离超过范围");
-        }
-        return fee;
     }
 }

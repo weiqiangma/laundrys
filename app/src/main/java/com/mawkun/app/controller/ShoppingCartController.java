@@ -6,16 +6,18 @@ import cn.pertech.common.utils.NumberUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
+import com.mawkun.core.base.data.query.OrderFormQuery;
+import com.mawkun.core.base.data.query.ShoppingCartQuery;
 import com.mawkun.core.base.data.vo.ShopVo;
-import com.mawkun.core.base.entity.ShoppingCart;
-import com.mawkun.core.base.entity.SysParam;
+import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.ShoppingCartService;
 import com.mawkun.core.dao.SysParamDaoExt;
-import com.mawkun.core.service.GaoDeApiServiceExt;
-import com.mawkun.core.service.ShoppingCartServiceExt;
+import com.mawkun.core.service.*;
 import com.mawkun.core.spring.annotation.LoginedAuth;
+import com.mawkun.core.utils.StringUtils;
 import com.xiaoleilu.hutool.convert.Convert;
 import com.xiaoleilu.hutool.util.ArrayUtil;
+import com.xiaoleilu.hutool.util.NumberUtil;
 import io.jsonwebtoken.lang.Assert;
 import io.swagger.annotations.Api;
 import net.sf.cglib.core.CollectionUtils;
@@ -25,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Validation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -42,6 +41,12 @@ public class ShoppingCartController extends BaseController {
     private GaoDeApiServiceExt gaoDeApiServiceExt;
     @Autowired
     private SysParamDaoExt sysParamDaoExt;
+    @Autowired
+    private UserAddressServiceExt userAddressServiceExt;
+    @Autowired
+    private UserServiceExt userServiceExt;
+    @Autowired
+    private OrderFormServiceExt orderFormServiceExt;
 
     @GetMapping("/get")
     public JsonResult getById(Long id) {
@@ -101,8 +106,8 @@ public class ShoppingCartController extends BaseController {
         List<SysParam> paramList = sysParamDaoExt.selectTransportFee();
         List<SysParam> sortList = paramList.stream().sorted(Comparator.comparingInt(SysParam::getDistance)).collect(Collectors.toList());
         for(int i = 0; i < sortList.size() - 1; i++) {
-            int front = sortList.get(i).getDistance();
-            int next = sortList.get(i+1).getDistance();
+            int front = sortList.get(i).getDistance() * 1000;
+            int next = sortList.get(i+1).getDistance() * 1000;
             int max = sortList.get(paramList.size() -1).getDistance() * 1000;
             if(distance >= max) return sendSuccess("ok", "所选地址附近洗衣店正在建设中，请耐心等待");
             if(distance >= front && distance < next) {
@@ -125,7 +130,59 @@ public class ShoppingCartController extends BaseController {
         return sendSuccess(object);
     }
 
-    public JsonResult countOrderForm(Integer tansportFee, Integer integral, Integer amount) {
+    public JsonResult countOrderForm(@LoginedAuth UserSession session, OrderFormQuery query) {
+        /**
+         * 1.查询用户是否存在
+         * 2.查询用户购物车商品总金额与前端传入是否相同
+         * 3.判断用户是否使用积分抵消消费金额，如果使用减去相应积分
+         * 4.判断用户运费生成最终金额
+         */
+        User user = userServiceExt.getById(session.getId());
+        if(user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
+        List<ShoppingCart> cartList = shoppingCartServiceExt.findByUserId(user.getId());
+        if(cartList.isEmpty()) return sendArgsError("购物车内无商品信息,请先添加");
+        double resultAmount = 0;
+        for(ShoppingCart cart : cartList) {
+            //商品单价，商品数量计算该商品总价
+            Double price = cart.getGoodsPrice();
+            Integer goodsNum = cart.getGoodsNum();
+            double goodsAmount = price * goodsNum;
+            resultAmount = goodsAmount + resultAmount;
+        }
+        if(resultAmount != query.getAmount()) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
+        if(query.getIntegral() != null && query.getIntegral() > 0) {
+            Integer integral = user.getIntegral();
+            resultAmount = resultAmount - NumberUtil.div(integral, 100, 1);
+        }
+        if(query.getTransportFee() != null && query.getTransportFee() > 0) {
+            resultAmount = resultAmount + query.getTransportFee();
+        }
+        //获取用户收货地址
+        UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getShopId(), user.getId());
+        String city = (address.getCity() != null) ? address.getCity() : "";
+        String region = (address.getArea() != null) ? address.getArea() : "";
+        String street = (address.getStreet() != null) ? address.getStreet() : "";
+        String detail = (address.getDetail() != null) ? address.getDetail() : "";
+        String detailAddress = city + region + street + detail;
+        //生成订单
+        OrderForm form = new OrderForm();
+        form.setUserId(user.getId());
+        form.setShopId(query.getShopId());
+        form.setAddressId(address.getId());
+        form.setUserName(user.getUserName());
+        form.setRemark(query.getRemark());
+        form.setStatus(Constant.ORDER_STATUS_PAID);
+        form.setTotalAmount(query.getAmount());
+        form.setRealAmount(resultAmount);
+        form.setUserAddress(detailAddress);
+        form.setTransportWay(query.getTransportWay());
+        form.setPayKind(Constant.PAY_WITH_WEIXIN);
+        form.setUpdateTime(new Date());
+        form.setCreateTime(new Date());
+        int orderKey = orderFormServiceExt.insert(form);
+        String orderSerial = StringUtils.createOrderFormNo(String.valueOf(orderKey));
+        form.setOrderSerial(orderSerial);
+        orderFormServiceExt.update(null, form);
         return sendSuccess();
     }
 

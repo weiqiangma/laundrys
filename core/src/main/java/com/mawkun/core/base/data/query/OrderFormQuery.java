@@ -13,6 +13,9 @@ public class OrderFormQuery extends OrderForm {
     private Date createTimeStart;
     private Date createTimeEnd;
 
+    private Double amount;
+    private Integer integral;
+
     public void init() {
         if(pageNo == null) pageNo = 1;
         if(pageSize == null) pageSize = 20;

@@ -31,6 +31,10 @@ public interface Constant {
     int SYS_PARAM_OPEN = 1;     //开启
     int SYS_PARAM_CLOSE = 0;    //关闭
 
+    //=============================支付类型=============================//
+    int PAY_WITH_WEIXIN = 0;    //微信支付
+    int PAY_WITH_ZHIFUBAO = 1;  //支付宝支付
+    int PAY_WITH_CASH = 2;      //现金支付
     //=============================商品状态=============================//
     int GOODS_GROUNDING = 0;    //上架
     int GOODS_UNDERCARRIAGE = 1;//下架

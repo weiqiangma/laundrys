@@ -1,7 +1,11 @@
 package com.mawkun.core.utils;
 
+import cn.pertech.common.utils.DateUtils;
+import cn.pertech.common.utils.RandomUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 import static com.xiaoleilu.hutool.util.StrUtil.isEmpty;
@@ -490,12 +494,34 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            System.out.println("好的".getBytes("gbk").length);
-        } catch (UnsupportedEncodingException var2) {
-            var2.printStackTrace();
+    /**
+     * 创建指定长度的随机字符串
+     * @param length
+     * @return
+     */
+    public static String createRandomStr(Integer length) {
+        Random random = new Random();
+        String str = "abcdefghijklmnopqrstuvwxyz1234567890";
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0; i < length; i ++) {
+            int number = random.nextInt(str.length());
+            builder.append(str.charAt(number));
         }
+        return builder.toString();
+    }
 
+    /**
+     * 创建订单号
+     * @return
+     */
+    public static String createOrderFormNo(String orderKey){
+        String currentDate = DateUtils.getCurrDate("yyyyMMddhh");
+        String result = currentDate + orderKey;
+        return result;
+    }
+
+    public static void main(String[] args) {
+        String date = DateUtils.getCurrDate("yyyyMMddhhmmss");
+        System.out.println(date);
     }
 }
