@@ -4,28 +4,38 @@ import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.RequestUtils;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
+import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.service.UserServiceExt;
+import com.mawkun.core.service.WxApiServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
+import com.xiaoleilu.hutool.lang.Base64;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.core.CollectionUtils;
 import net.sf.cglib.core.Transformer;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.security.AlgorithmParameters;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -43,6 +53,8 @@ public class UserController extends BaseController {
     
     @Autowired
     private UserServiceExt userServiceExt;
+    @Autowired
+    private WxApiServiceExt wxApiServiceExt;
 
     @GetMapping("/get")
     @ResponseBody
@@ -137,6 +149,18 @@ public class UserController extends BaseController {
             e.printStackTrace();
         }
     }
+
+    @PostMapping("/getUserMobile")
+    @ApiOperation(value="获取用户手机号", notes="获取用户手机号")
+    public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String code, String iv) {
+        User user = userServiceExt.getById(session.getId());
+        if(user == null) return sendArgsError("未查询到该用户信息");
+        String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, code, iv);
+        user.setMobile(mobile);
+        userServiceExt.update(user, null);
+        return sendSuccess(user);
+    }
+
 
     //查询统计对象(首页统计)
     private StateQuery createQueryStateVo(){

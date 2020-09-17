@@ -2,6 +2,7 @@ package com.mawkun.app.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import cn.pertech.common.utils.NumberUtils;
 import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
@@ -10,6 +11,7 @@ import com.mawkun.core.base.entity.User;
 import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
+import com.xiaoleilu.hutool.lang.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.cglib.core.CollectionUtils;
@@ -80,7 +82,11 @@ public class UserController extends BaseController {
     @ResponseBody
     @PostMapping("/rechargetMoney")
     @ApiOperation(value = "充值接口", notes = "充值接口")
-    public JsonResult investMoney() {
-       return sendError();
+    public JsonResult rechargetMoney(@LoginedAuth UserSession session, String money) {
+        Validator.isMoney(money);
+        User user = userServiceExt.getById(session.getId());
+        int result = userServiceExt.rechargeMoney(user, NumberUtils.str2MoneyUp(money));
+        if(result > 0) return sendSuccess("充值成功");
+        return sendArgsError("充值失败");
     }
 }

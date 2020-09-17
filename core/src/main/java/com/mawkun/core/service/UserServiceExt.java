@@ -1,16 +1,19 @@
 package com.mawkun.core.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.dao.SysParamDao;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.UserVo;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.dao.ShopUserDaoExt;
+import com.mawkun.core.dao.SysParamDaoExt;
 import com.mawkun.core.dao.UserDaoExt;
 import com.mawkun.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -22,6 +25,8 @@ public class UserServiceExt extends UserService {
     private UserDaoExt userDaoExt;
     @Resource
     private ShopUserDaoExt shopUserDaoExt;
+    @Resource
+    private SysParamDaoExt sysParamDaoExt;
     /**
      * 列表分页
      * @param query
@@ -57,7 +62,9 @@ public class UserServiceExt extends UserService {
     /**
      * 充值
      */
-    public void rechargeMoney(Integer money) {
-
+    @Transactional
+    public int rechargeMoney(User user, Double money) {
+        user.setSumOfMoney(money);
+        return userDaoExt.update(user);
     }
 }
