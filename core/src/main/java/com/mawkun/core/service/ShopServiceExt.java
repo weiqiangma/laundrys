@@ -13,7 +13,9 @@ import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.OrderFormVo;
 import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.Shop;
+import com.mawkun.core.base.entity.UserAddress;
 import com.mawkun.core.base.service.ShopService;
+import com.mawkun.core.base.service.UserAddressService;
 import com.mawkun.core.dao.OrderFormDaoExt;
 import com.mawkun.core.dao.ShopDaoExt;
 import com.mawkun.core.utils.ImageUtils;
@@ -36,6 +38,8 @@ public class ShopServiceExt extends ShopService {
 
     @Autowired
     private ShopDaoExt shopDaoExt;
+    @Autowired
+    private UserAddressServiceExt userAddressServiceExt;
     @Autowired
     private OrderFormDaoExt orderFormDaoExt;
     @Autowired
@@ -175,9 +179,10 @@ public class ShopServiceExt extends ShopService {
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<ShopVo> list = shopDaoExt.selectList(query);
         //根据用户收货地址计和各门店距离
-        if(StringUtils.isNotEmpty(query.getUserAddress())) {
+        if(query.getAddressId() != null) {
             for(ShopVo shopVo : list) {
-                String originalLal = gaoDeApiServiceExt.getLalByAddress(query.getUserAddress());
+                String detailAddress = userAddressServiceExt.getDetailAddressById(query.getAddressId());
+                String originalLal = gaoDeApiServiceExt.getLalByAddress(detailAddress);
                 String destincation =   shopVo.getLocation();
                 String distance = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
                 shopVo.setLength(NumberUtils.str2Int(distance));
@@ -190,6 +195,7 @@ public class ShopServiceExt extends ShopService {
 
         return new PageInfo<ShopVo>(list);
     }
+
 
     /**
      * 根据门店名查询

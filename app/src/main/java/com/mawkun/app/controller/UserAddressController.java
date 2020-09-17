@@ -5,6 +5,7 @@ import cn.pertech.common.spring.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.entity.UserAddress;
 import com.mawkun.core.base.service.UserAddressService;
+import com.mawkun.core.service.UserAddressServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import net.sf.cglib.core.CollectionUtils;
@@ -25,37 +26,38 @@ import java.util.List;
 public class UserAddressController extends BaseController {
     
     @Autowired
-    private UserAddressService userAddressService;
+    private UserAddressServiceExt userAddressServiceExt;
 
     @GetMapping("/get")
     public JsonResult getByEntity(UserAddress userAddress) {
-        UserAddress address = userAddressService.getByEntity(userAddress);
+        UserAddress address = userAddressServiceExt.getByEntity(userAddress);
         return sendSuccess(address);
     }
 
     @GetMapping("/list")
     public JsonResult list(@LoginedAuth UserSession session, UserAddress userAddress) {
         if(session.getId() > 0) userAddress.setUserId(session.getId());
-        List<UserAddress> userAddressList = userAddressService.listByEntity(userAddress);
+        List<UserAddress> userAddressList = userAddressServiceExt.listByEntity(userAddress);
         return sendSuccess(userAddressList);
     }
 
     @PostMapping("/insert")
     public JsonResult insert(@LoginedAuth UserSession session, UserAddress userAddress){
         if(session.getId() > 0) userAddress.setUserId(session.getId());
-        int result = userAddressService.insert(userAddress);
+        int result = userAddressServiceExt.insert(userAddress);
         return sendSuccess(result);
     }
 
     @PostMapping("/update")
-    public JsonResult update(UserAddress userAddress){
-        int result = userAddressService.update(userAddress);
+    public JsonResult update(@LoginedAuth UserSession session, UserAddress userAddress){
+        if(session.getId() > 0) userAddress.setUserId(session.getId());
+        int result = userAddressServiceExt.updateUserAddress(userAddress);
         return sendSuccess(result);
     }
 
     @PostMapping("/delete")
     public JsonResult deleteOne(Long id){
-        int result = userAddressService.deleteById(id);
+        int result = userAddressServiceExt.deleteById(id);
         return sendSuccess(result);
     }
 
@@ -70,7 +72,7 @@ public class UserAddressController extends BaseController {
                 return Convert.toInt(o, 0);
             }
         });
-        if (idList.size()>0) result = userAddressService.deleteByIds(idList);
+        if (idList.size()>0) result = userAddressServiceExt.deleteByIds(idList);
         return sendSuccess(result);
     }
 

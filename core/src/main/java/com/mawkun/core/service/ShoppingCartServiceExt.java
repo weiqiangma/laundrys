@@ -99,6 +99,20 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         return shoppingCartDaoExt.listByEntity(cart);
     }
 
+    public Double getAmountByUserId(Long userId) {
+        ShoppingCart cart = new ShoppingCart();
+        cart.setUserId(userId);
+        List<ShoppingCart> list = shoppingCartDaoExt.listByEntity(cart);
+        double result = 0;
+        for(ShoppingCart resultCart : list) {
+            Integer goodsNum = resultCart.getGoodsNum();
+            Double goodsPrice = resultCart.getGoodsPrice();
+            Double goodsAmount = goodsNum * goodsPrice;
+            result = goodsAmount + result;
+        }
+        return result;
+    }
+
     /**
      * 计算购物车商品金额
      * @param goodsIds

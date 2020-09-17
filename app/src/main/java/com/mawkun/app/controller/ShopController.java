@@ -56,18 +56,19 @@ public class ShopController extends BaseController {
         return sendSuccess(resultShop);
     }
 
-    @GetMapping("/list")
-    @ApiOperation(value="门店列表", notes="门店列表")
-    public JsonResult list(Shop shop) {
-        List<Shop> shopList = shopServiceExt.listByEntity(shop);
-        return sendSuccess(shopList);
-    }
+//    @GetMapping("/list")
+//    @ApiOperation(value="门店列表", notes="门店列表")
+//    public JsonResult list(Shop shop) {
+//        List<Shop> shopList = shopServiceExt.listByEntity(shop);
+//        return sendSuccess(shopList);
+//    }
 
-    @GetMapping("/pageList")
+    @GetMapping("/list")
     @ApiOperation(value="门店列表分业", notes="门店列表分业")
     public JsonResult pageList(ShopQuery shopQuery) {
         PageInfo<ShopVo> page = shopServiceExt.pageByEntity(shopQuery);
-        return sendSuccess(page);
+        List<ShopVo> list = page.getList();
+        return sendSuccess(list);
     }
 
 }

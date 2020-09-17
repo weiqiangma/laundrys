@@ -53,4 +53,11 @@ public class UserServiceExt extends UserService {
         }
         return userDaoExt.pageByEntity(query);
     }
+
+    /**
+     * 充值
+     */
+    public void rechargeMoney(Integer money) {
+
+    }
 }

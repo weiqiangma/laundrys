@@ -10,6 +10,7 @@ public class ShopQuery extends Shop {
     private Integer pageNo;
     private Integer pageSize;
     private String userAddress;
+    private Long addressId;
     private String lal;
     private Date createTimeStart;
     private Date createTimeEnd;

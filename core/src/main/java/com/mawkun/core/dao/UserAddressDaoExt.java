@@ -13,4 +13,10 @@ import java.util.List;
 @Repository
 public interface UserAddressDaoExt extends UserAddressDao {
 
+    /**
+     * 设置用户地址非默认状态
+     * @return
+     */
+    int setAddressUnUsed(Long userId);
+
 }

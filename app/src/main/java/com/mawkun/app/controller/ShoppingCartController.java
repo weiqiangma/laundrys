@@ -46,6 +46,8 @@ public class ShoppingCartController extends BaseController {
     @Autowired
     private UserServiceExt userServiceExt;
     @Autowired
+    private ShopServiceExt shopServiceExt;
+    @Autowired
     private OrderFormServiceExt orderFormServiceExt;
 
     @GetMapping("/get")
@@ -91,17 +93,24 @@ public class ShoppingCartController extends BaseController {
 
     /**
      * 计算运费
-     * @param address
+     * @param addressId
+     * @param shopId
+     * @param amount
+     * @return
      */
     @GetMapping("/countTransportFee")
-    public JsonResult countTransportFee(String address, String shopLocation, Integer amount) {
+    public JsonResult countTransportFee(@LoginedAuth UserSession session, Long addressId, Long shopId, Integer amount) {
         /**
          * 1.根据用户收货地址及门店坐标计算距离
          * 2.根据距离计算运费
          */
         JSONObject object = new JSONObject();
-        String location = gaoDeApiServiceExt.getLalByAddress(address);
-        String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(location, shopLocation);
+        String userAddress = userAddressServiceExt.getDetailAddressById(addressId);
+        Shop shop = shopServiceExt.getById(shopId);
+        String location = gaoDeApiServiceExt.getLalByAddress(userAddress);
+        String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(location, shop.getLocation());
+        double resultAmount = shoppingCartServiceExt.getAmountByUserId(session.getId());
+        if(resultAmount != amount) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
         Integer distance = NumberUtils.str2Int(distanceStr);
         List<SysParam> paramList = sysParamDaoExt.selectTransportFee();
         List<SysParam> sortList = paramList.stream().sorted(Comparator.comparingInt(SysParam::getDistance)).collect(Collectors.toList());
@@ -109,7 +118,7 @@ public class ShoppingCartController extends BaseController {
             int front = sortList.get(i).getDistance() * 1000;
             int next = sortList.get(i+1).getDistance() * 1000;
             int max = sortList.get(paramList.size() -1).getDistance() * 1000;
-            if(distance >= max) return sendSuccess("ok", "所选地址附近洗衣店正在建设中，请耐心等待");
+            if(distance >= max) return sendArgsError("所选地址附近洗衣店即将开放，请耐心等待");
             if(distance >= front && distance < next) {
                 int fee = 0;
                 int feeDiff = 0;

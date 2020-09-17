@@ -76,4 +76,11 @@ public class UserController extends BaseController {
         int result = userServiceExt.update(user, null);
         return sendSuccess(result);
     }
+
+    @ResponseBody
+    @PostMapping("/rechargetMoney")
+    @ApiOperation(value = "充值接口", notes = "充值接口")
+    public JsonResult investMoney() {
+       return sendError();
+    }
 }
