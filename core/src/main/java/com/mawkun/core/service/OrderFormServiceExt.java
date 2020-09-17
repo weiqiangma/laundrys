@@ -1,5 +1,6 @@
 package com.mawkun.core.service;
 
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.query.OrderFormQuery;
 import com.mawkun.core.base.data.vo.GoodsVo;
@@ -25,10 +26,11 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param orderFormQuery
      * @return
      */
-    public PageInfo pageByEntity(OrderFormQuery orderFormQuery) {
+    public PageInfo<OrderFormVo> pageByEntity(OrderFormQuery orderFormQuery) {
         orderFormQuery.init();
+        PageHelper.startPage(orderFormQuery.getPageNo(), orderFormQuery.getPageSize());
         List<OrderFormVo> list = orderFormDaoExt.selectList(orderFormQuery);
-        return new PageInfo(list);
+        return new PageInfo<>(list);
     }
 
     /**

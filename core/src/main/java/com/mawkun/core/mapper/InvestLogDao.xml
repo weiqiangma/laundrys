@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.InvestLogDao">
+
+    <resultMap type="com.mawkun.core.base.entity.InvestLog" id="InvestLogResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="cartId" column="cart_id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="cartName" column="cart_name" jdbcType="VARCHAR"/>
+        <result property="cartNum" column="cart_num" jdbcType="INTEGER"/>
+        <result property="investMoney" column="invest_money" jdbcType="NUMERIC"/>
+        <result property="giftMoney" column="gift_money" jdbcType="NUMERIC"/>
+        <result property="residueMoney" column="residue_money" jdbcType="NUMERIC"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, residue_money, create_time      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="InvestLogResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from invest_log
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="InvestLogResultMap" parameterType="com.mawkun.core.base.entity.InvestLog">
+        select
+          <include refid="table_field" />
+        from invest_log
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="cartId != null">
+                and cart_id = #{cartId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="cartName != null">
+                and cart_name = #{cartName,jdbcType=VARCHAR}
+            </if>
+            <if test="cartNum != null">
+                and cart_num = #{cartNum,jdbcType=INTEGER}
+            </if>
+            <if test="investMoney != null">
+                and invest_money = #{investMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="giftMoney != null">
+                and gift_money = #{giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="residueMoney != null">
+                and residue_money = #{residueMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="InvestLogResultMap" parameterType="com.mawkun.core.base.entity.InvestLog">
+        select
+          <include refid="table_field" />
+        from invest_log
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="cartId != null">
+                and cart_id = #{cartId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="cartName != null">
+                and cart_name = #{cartName,jdbcType=VARCHAR}
+            </if>
+            <if test="cartNum != null">
+                and cart_num = #{cartNum,jdbcType=INTEGER}
+            </if>
+            <if test="investMoney != null">
+                and invest_money = #{investMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="giftMoney != null">
+                and gift_money = #{giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="residueMoney != null">
+                and residue_money = #{residueMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="InvestLogResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from invest_log
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.InvestLog">
+        insert into invest_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="userId != null">
+             user_id,
+          </if>
+          <if test="cartId != null">
+             cart_id,
+          </if>
+          <if test="userName != null">
+             user_name,
+          </if>
+          <if test="cartName != null">
+             cart_name,
+          </if>
+          <if test="cartNum != null">
+             cart_num,
+          </if>
+          <if test="investMoney != null">
+             invest_money,
+          </if>
+          <if test="giftMoney != null">
+             gift_money,
+          </if>
+          <if test="residueMoney != null">
+             residue_money,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="userId != null">
+             #{userId,jdbcType=INTEGER},
+          </if>
+          <if test="cartId != null">
+             #{cartId,jdbcType=INTEGER},
+          </if>
+          <if test="userName != null">
+             #{userName,jdbcType=VARCHAR},
+          </if>
+          <if test="cartName != null">
+             #{cartName,jdbcType=VARCHAR},
+          </if>
+          <if test="cartNum != null">
+             #{cartNum,jdbcType=INTEGER},
+          </if>
+          <if test="investMoney != null">
+             #{investMoney,jdbcType=NUMERIC},
+          </if>
+          <if test="giftMoney != null">
+             #{giftMoney,jdbcType=NUMERIC},
+          </if>
+          <if test="residueMoney != null">
+             #{residueMoney,jdbcType=NUMERIC},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into invest_log
+         (id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, residue_money, create_time)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.cartNum,jdbcType=INTEGER}, #{item.investMoney,jdbcType=NUMERIC}, #{item.giftMoney,jdbcType=NUMERIC}, #{item.residueMoney,jdbcType=NUMERIC}, #{item.createTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.InvestLog">
+        update invest_log
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="cartId != null">
+                cart_id = #{cartId,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="cartName != null and cartName != ''">
+                cart_name = #{cartName,jdbcType=VARCHAR},
+            </if>
+            <if test="cartNum != null">
+                cart_num = #{cartNum,jdbcType=INTEGER},
+            </if>
+            <if test="investMoney != null">
+                invest_money = #{investMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="giftMoney != null">
+                gift_money = #{giftMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="residueMoney != null">
+                residue_money = #{residueMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update invest_log
+        <set>
+            <if test="where.userId == null and set.userId != null">
+                user_id = #{set.userId,jdbcType=INTEGER},
+            </if>
+            <if test="where.cartId == null and set.cartId != null">
+                cart_id = #{set.cartId,jdbcType=INTEGER},
+            </if>
+            <if test="where.userName == null and set.userName != null and set.userName != ''">
+                user_name = #{set.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.cartName == null and set.cartName != null and set.cartName != ''">
+                cart_name = #{set.cartName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.cartNum == null and set.cartNum != null">
+                cart_num = #{set.cartNum,jdbcType=INTEGER},
+            </if>
+            <if test="where.investMoney == null and set.investMoney != null">
+                invest_money = #{set.investMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="where.giftMoney == null and set.giftMoney != null">
+                gift_money = #{set.giftMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="where.residueMoney == null and set.residueMoney != null">
+                residue_money = #{set.residueMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.userId != null">
+                and user_id = #{where.userId,jdbcType=INTEGER}
+            </if>
+            <if test="where.cartId != null">
+                and cart_id = #{where.cartId,jdbcType=INTEGER}
+            </if>
+            <if test="where.userName != null">
+                and user_name = #{where.userName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.cartName != null">
+                and cart_name = #{where.cartName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.cartNum != null">
+                and cart_num = #{where.cartNum,jdbcType=INTEGER}
+            </if>
+            <if test="where.investMoney != null">
+                and invest_money = #{where.investMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="where.giftMoney != null">
+                and gift_money = #{where.giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="where.residueMoney != null">
+                and residue_money = #{where.residueMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update invest_log
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="user_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userId}
+                 </foreach>
+            </trim>
+            <trim prefix="cart_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.cartId}
+                 </foreach>
+            </trim>
+            <trim prefix="user_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userName}
+                 </foreach>
+            </trim>
+            <trim prefix="cart_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.cartName}
+                 </foreach>
+            </trim>
+            <trim prefix="cart_num = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.cartNum}
+                 </foreach>
+            </trim>
+            <trim prefix="invest_money = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.investMoney}
+                 </foreach>
+            </trim>
+            <trim prefix="gift_money = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.giftMoney}
+                 </foreach>
+            </trim>
+            <trim prefix="residue_money = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.residueMoney}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from invest_log where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.InvestLog">
+        delete from invest_log
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="cartId != null">
+                and cart_id = #{cartId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="cartName != null">
+                and cart_name = #{cartName,jdbcType=VARCHAR}
+            </if>
+            <if test="cartNum != null">
+                and cart_num = #{cartNum,jdbcType=INTEGER}
+            </if>
+            <if test="investMoney != null">
+                and invest_money = #{investMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="giftMoney != null">
+                and gift_money = #{giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="residueMoney != null">
+                and residue_money = #{residueMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from invest_log where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from invest_log
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.InvestLog" resultType="int">
+        select count(id) from invest_log
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="cartId != null">
+                and cart_id = #{cartId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="cartName != null">
+                and cart_name = #{cartName,jdbcType=VARCHAR}
+            </if>
+            <if test="cartNum != null">
+                and cart_num = #{cartNum,jdbcType=INTEGER}
+            </if>
+            <if test="investMoney != null">
+                and invest_money = #{investMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="giftMoney != null">
+                and gift_money = #{giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="residueMoney != null">
+                and residue_money = #{residueMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+</mapper>

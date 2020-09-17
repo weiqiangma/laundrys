@@ -85,15 +85,13 @@
         <result property="shopName" column="shop_name"/>
         <result property="distributorId" column="distributor_id" jdbcType="INTEGER"/>
         <result property="orderSerial" column="order_serial" jdbcType="VARCHAR"/>
-        <result property="price" column="price" jdbcType="NUMERIC"/>
         <result property="remark" column="remark" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="realAmount" column="real_amount" jdbcType="NUMERIC"/>
         <result property="totalAmount" column="total_amount" jdbcType="NUMERIC"/>
-        <result property="transportWay" column="transport_way" jdbcType="OTHER"/>
-        <result property="integral" column="integral" jdbcType="INTEGER"/>
+        <result property="transportWay" column="transport_way" jdbcType="INTEGER"/>
         <result property="type" column="type"/>
-        <result property="createTime" column="create_time" jdbcType="OTHER"/>
+        <result property="createTime" column="create_time"/>
     </resultMap>
     <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.OrderFormQuery">
         select order_form.*, shop.shop_name from order_form left join  shop on order_form.shop_id = shop.id
