@@ -19,7 +19,7 @@ public interface Constant {
     int ORDER_DELIVERY_GET = 1;     //配送员上门取货
 
     //=============================订单状态=============================//
-    int ORDER_STATUS_PAID = 1;          //待支付
+    int ORDER_STATUS_WAITING_PAY = 1;          //待支付
     int ORDER_STATUS_WAITING_REAP = 2;  //待收货
     int ORDER_STATUS_SURE_REAP = 3;     //确认收货
     int ORDER_STATUS_CLEANING = 4;      //清洗中
@@ -31,11 +31,11 @@ public interface Constant {
     int SYS_PARAM_OPEN = 1;     //开启
     int SYS_PARAM_CLOSE = 0;    //关闭
 
-    //=============================支付类型=============================//
+    //=============================支付类型================================//
     int PAY_WITH_WEIXIN = 0;    //微信支付
     int PAY_WITH_ZHIFUBAO = 1;  //支付宝支付
     int PAY_WITH_CASH = 2;      //现金支付
-    //=============================商品状态=============================//
+    //=============================商品状态================================//
     int GOODS_GROUNDING = 0;    //上架
     int GOODS_UNDERCARRIAGE = 1;//下架
 
@@ -44,6 +44,10 @@ public interface Constant {
     String TRANSPORT_LEVEL2 = "transport_level2";
     String TRANSPORT_LEVEL3 = "transport_level3";
     String TRANSPORT_LEVEL4 = "transport_level4";
+
+    //=============================充值卡券状态=============================//
+    int MEMBER_CART_ON = 0;     //上架
+    int MEMBER_CART_DOWN = 1;   //下架
 
     //=============================用户地址状态=============================//
     int USER_ADDRESS_USED = 0;      //默认地址

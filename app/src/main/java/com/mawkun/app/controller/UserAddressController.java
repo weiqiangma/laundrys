@@ -42,10 +42,11 @@ public class UserAddressController extends BaseController {
     }
 
     @PostMapping("/insert")
-    public JsonResult insert(@LoginedAuth UserSession session, UserAddress userAddress){
-        if(session.getId() > 0) userAddress.setUserId(session.getId());
-        int result = userAddressServiceExt.insert(userAddress);
-        return sendSuccess(result);
+    public JsonResult insert(@LoginedAuth UserSession session, UserAddress address){
+        if(session.getId() > 0) address.setUserId(session.getId());
+        if(address.getProvince() == null || address.getCity() == null || address.getArea() == null || address.getStreet() == null)
+            return sendArgsError("请填写完整格式地址");
+        return userAddressServiceExt.insertUserAddress(address);
     }
 
     @PostMapping("/update")

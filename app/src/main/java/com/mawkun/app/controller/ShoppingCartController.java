@@ -150,6 +150,7 @@ public class ShoppingCartController extends BaseController {
         if(user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
         List<ShoppingCart> cartList = shoppingCartServiceExt.findByUserId(user.getId());
         if(cartList.isEmpty()) return sendArgsError("购物车内无商品信息,请先添加");
+        //计算购物车内商品总价格
         double resultAmount = 0;
         for(ShoppingCart cart : cartList) {
             //商品单价，商品数量计算该商品总价
@@ -159,6 +160,7 @@ public class ShoppingCartController extends BaseController {
             resultAmount = goodsAmount + resultAmount;
         }
         if(resultAmount != query.getAmount()) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
+        //判断用户是否使用余额支付，如果是减去对应积分
         if(query.getIntegral() != null && query.getIntegral() > 0) {
             Integer integral = user.getIntegral();
             resultAmount = resultAmount - NumberUtil.div(integral, 100, 1);
@@ -167,31 +169,10 @@ public class ShoppingCartController extends BaseController {
             resultAmount = resultAmount + query.getTransportFee();
         }
         //获取用户收货地址
-        UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getShopId(), user.getId());
-        String city = (address.getCity() != null) ? address.getCity() : "";
-        String region = (address.getArea() != null) ? address.getArea() : "";
-        String street = (address.getStreet() != null) ? address.getStreet() : "";
-        String detail = (address.getDetail() != null) ? address.getDetail() : "";
-        String detailAddress = city + region + street + detail;
-        //生成订单
-        OrderForm form = new OrderForm();
-        form.setUserId(user.getId());
-        form.setShopId(query.getShopId());
-        form.setAddressId(address.getId());
-        form.setUserName(user.getUserName());
-        form.setRemark(query.getRemark());
-        form.setStatus(Constant.ORDER_STATUS_PAID);
-        form.setTotalAmount(query.getAmount());
-        form.setRealAmount(resultAmount);
-        form.setUserAddress(detailAddress);
-        form.setTransportWay(query.getTransportWay());
-        form.setPayKind(Constant.PAY_WITH_WEIXIN);
-        form.setUpdateTime(new Date());
-        form.setCreateTime(new Date());
-        int orderKey = orderFormServiceExt.insert(form);
-        String orderSerial = StringUtils.createOrderFormNo(String.valueOf(orderKey));
-        form.setOrderSerial(orderSerial);
-        orderFormServiceExt.update(null, form);
+        UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getAddressId(), user.getId());
+        if(address == null) return sendArgsError("未查询到该收获地址,请选择其它地址或重新添加");
+        //生成待支付订单
+        orderFormServiceExt.generateOrderForm(user, query, address, resultAmount);
         return sendSuccess();
     }
 

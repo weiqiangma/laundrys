@@ -11,12 +11,13 @@
         <result property="cartNum" column="cart_num" jdbcType="INTEGER"/>
         <result property="investMoney" column="invest_money" jdbcType="NUMERIC"/>
         <result property="giftMoney" column="gift_money" jdbcType="NUMERIC"/>
+        <result property="amountMoney" column="amount_money" jdbcType="NUMERIC"/>
         <result property="residueMoney" column="residue_money" jdbcType="NUMERIC"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, residue_money, create_time      
+      id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, amount_money, residue_money, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -58,6 +59,9 @@
             <if test="giftMoney != null">
                 and gift_money = #{giftMoney,jdbcType=NUMERIC}
             </if>
+            <if test="amountMoney != null">
+                and amount_money = #{amountMoney,jdbcType=NUMERIC}
+            </if>
             <if test="residueMoney != null">
                 and residue_money = #{residueMoney,jdbcType=NUMERIC}
             </if>
@@ -96,6 +100,9 @@
             </if>
             <if test="giftMoney != null">
                 and gift_money = #{giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="amountMoney != null">
+                and amount_money = #{amountMoney,jdbcType=NUMERIC}
             </if>
             <if test="residueMoney != null">
                 and residue_money = #{residueMoney,jdbcType=NUMERIC}
@@ -145,6 +152,9 @@
           <if test="giftMoney != null">
              gift_money,
           </if>
+          <if test="amountMoney != null">
+             amount_money,
+          </if>
           <if test="residueMoney != null">
              residue_money,
           </if>
@@ -177,6 +187,9 @@
           <if test="giftMoney != null">
              #{giftMoney,jdbcType=NUMERIC},
           </if>
+          <if test="amountMoney != null">
+             #{amountMoney,jdbcType=NUMERIC},
+          </if>
           <if test="residueMoney != null">
              #{residueMoney,jdbcType=NUMERIC},
           </if>
@@ -189,10 +202,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into invest_log
-         (id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, residue_money, create_time)
+         (id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, amount_money, residue_money, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.cartNum,jdbcType=INTEGER}, #{item.investMoney,jdbcType=NUMERIC}, #{item.giftMoney,jdbcType=NUMERIC}, #{item.residueMoney,jdbcType=NUMERIC}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.cartNum,jdbcType=INTEGER}, #{item.investMoney,jdbcType=NUMERIC}, #{item.giftMoney,jdbcType=NUMERIC}, #{item.amountMoney,jdbcType=NUMERIC}, #{item.residueMoney,jdbcType=NUMERIC}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -220,6 +233,9 @@
             </if>
             <if test="giftMoney != null">
                 gift_money = #{giftMoney,jdbcType=NUMERIC},
+            </if>
+            <if test="amountMoney != null">
+                amount_money = #{amountMoney,jdbcType=NUMERIC},
             </if>
             <if test="residueMoney != null">
                 residue_money = #{residueMoney,jdbcType=NUMERIC},
@@ -256,6 +272,9 @@
             <if test="where.giftMoney == null and set.giftMoney != null">
                 gift_money = #{set.giftMoney,jdbcType=NUMERIC},
             </if>
+            <if test="where.amountMoney == null and set.amountMoney != null">
+                amount_money = #{set.amountMoney,jdbcType=NUMERIC},
+            </if>
             <if test="where.residueMoney == null and set.residueMoney != null">
                 residue_money = #{set.residueMoney,jdbcType=NUMERIC},
             </if>
@@ -287,6 +306,9 @@
             </if>
             <if test="where.giftMoney != null">
                 and gift_money = #{where.giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="where.amountMoney != null">
+                and amount_money = #{where.amountMoney,jdbcType=NUMERIC}
             </if>
             <if test="where.residueMoney != null">
                 and residue_money = #{where.residueMoney,jdbcType=NUMERIC}
@@ -336,6 +358,11 @@
                   when id = #{item.id} then #{item.giftMoney}
                  </foreach>
             </trim>
+            <trim prefix="amount_money = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.amountMoney}
+                 </foreach>
+            </trim>
             <trim prefix="residue_money = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.residueMoney}
@@ -382,6 +409,9 @@
             </if>
             <if test="giftMoney != null">
                 and gift_money = #{giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="amountMoney != null">
+                and amount_money = #{amountMoney,jdbcType=NUMERIC}
             </if>
             <if test="residueMoney != null">
                 and residue_money = #{residueMoney,jdbcType=NUMERIC}
@@ -430,6 +460,9 @@
             </if>
             <if test="giftMoney != null">
                 and gift_money = #{giftMoney,jdbcType=NUMERIC}
+            </if>
+            <if test="amountMoney != null">
+                and amount_money = #{amountMoney,jdbcType=NUMERIC}
             </if>
             <if test="residueMoney != null">
                 and residue_money = #{residueMoney,jdbcType=NUMERIC}

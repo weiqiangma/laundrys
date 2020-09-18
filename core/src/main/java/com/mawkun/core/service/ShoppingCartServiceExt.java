@@ -1,25 +1,28 @@
 package com.mawkun.core.service;
 
+import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.NumberUtils;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.dao.ShoppingCartDao;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsQuery;
-import com.mawkun.core.base.entity.Goods;
-import com.mawkun.core.base.entity.ShoppingCart;
-import com.mawkun.core.base.entity.SysParam;
+import com.mawkun.core.base.data.query.OrderFormQuery;
+import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.ShoppingCartService;
+import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.dao.GoodsDaoExt;
 import com.mawkun.core.dao.ShoppingCartDaoExt;
 import com.mawkun.core.dao.SysParamDaoExt;
 import com.xiaoleilu.hutool.convert.Convert;
 import com.xiaoleilu.hutool.lang.Validator;
+import com.xiaoleilu.hutool.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.core.CollectionUtils;
 import net.sf.cglib.core.Transformer;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Validation;
 import java.util.ArrayList;
@@ -40,6 +43,12 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
     private SysParamDaoExt sysParamDaoExt;
     @Autowired
     private GoodsDaoExt goodsDaoExt;
+    @Autowired
+    private UserServiceExt userServiceExt;
+    @Autowired
+    private UserAddressServiceExt userAddressServiceExt;
+    @Autowired
+    private OrderFormServiceExt orderFormServiceExt;
     @Autowired
     private GaoDeApiServiceExt gaoDeApiServiceExt;
 
@@ -113,19 +122,35 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         return result;
     }
 
-    /**
-     * 计算购物车商品金额
-     * @param goodsIds
-     */
-    public void countCartTotal(UserSession session, String goodsIds) {
-        Validate.notEmpty(goodsIds, "请至少选择一项购物车内商品");
-        List<String> idArray = Arrays.asList(goodsIds.split(","));
-        List idList = new ArrayList<>();
-        idList = CollectionUtils.transform(idArray, new Transformer() {
-            @Override
-            public Object transform(Object o) {
-                return Convert.toInt(o, 0);
-            }
-        });
+    @Transactional
+    public JsonResult countOrderForm(UserSession session, OrderFormQuery query) {
+        User user = userServiceExt.getById(session.getId());
+        if(user == null) return new JsonResult().error("数据库中未查询到该用户信息,请联系管理员");
+        List<ShoppingCart> cartList = findByUserId(user.getId());
+        if(cartList.isEmpty()) return new JsonResult().error("购物车内无商品信息,请先添加");
+        //计算购物车内商品总价格
+        double resultAmount = 0;
+        for(ShoppingCart cart : cartList) {
+            //商品单价，商品数量计算该商品总价
+            Double price = cart.getGoodsPrice();
+            Integer goodsNum = cart.getGoodsNum();
+            double goodsAmount = price * goodsNum;
+            resultAmount = goodsAmount + resultAmount;
+        }
+        if(resultAmount != query.getAmount()) return new JsonResult().error("所选商品价格和购物车内商品价格不一致,请重新添加");
+        //判断用户是否使用余额支付，如果是减去对应积分
+        if(query.getIntegral() != null && query.getIntegral() > 0) {
+            Integer integral = user.getIntegral();
+            resultAmount = resultAmount - NumberUtil.div(integral, 100, 1);
+        }
+        if(query.getTransportFee() != null && query.getTransportFee() > 0) {
+            resultAmount = resultAmount + query.getTransportFee();
+        }
+        //获取用户收货地址
+        UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getAddressId(), user.getId());
+        if(address == null) return new JsonResult().error("未查询到该收获地址,请选择其它地址或重新添加");
+        //生成待支付订单
+        orderFormServiceExt.generateOrderForm(user, query, address, resultAmount);
+        return new JsonResult().success("下单成功");
     }
 }

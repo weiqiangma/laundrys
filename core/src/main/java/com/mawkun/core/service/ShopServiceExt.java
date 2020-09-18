@@ -181,8 +181,8 @@ public class ShopServiceExt extends ShopService {
         //根据用户收货地址计和各门店距离
         if(query.getAddressId() != null) {
             for(ShopVo shopVo : list) {
-                String detailAddress = userAddressServiceExt.getDetailAddressById(query.getAddressId());
-                String originalLal = gaoDeApiServiceExt.getLalByAddress(detailAddress);
+                UserAddress address = userAddressServiceExt.getById(query.getAddressId());
+                String originalLal = address.getLocation();
                 String destincation =   shopVo.getLocation();
                 String distance = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
                 shopVo.setLength(NumberUtils.str2Int(distance));

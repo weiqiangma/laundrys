@@ -5,9 +5,14 @@ import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.NumberUtils;
 import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.UserQuery;
+import com.mawkun.core.base.entity.InvestLog;
+import com.mawkun.core.base.entity.MemberCart;
 import com.mawkun.core.base.entity.User;
+import com.mawkun.core.service.InvestLogServiceExt;
+import com.mawkun.core.service.MemberCartServiceExt;
 import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
@@ -32,23 +37,25 @@ import java.util.List;
  * @author mawkun
  * @date 2020-08-19 21:44:11
  */
-@Controller
+@RestController
 @RequestMapping("/api/user")
 @Api(tags={"用户操作接口"})
 public class UserController extends BaseController {
     
     @Autowired
     private UserServiceExt userServiceExt;
+    @Autowired
+    private InvestLogServiceExt investLogServiceExt;
+    @Autowired
+    private MemberCartServiceExt memberCartServiceExt;
 
     @GetMapping("/get")
-    @ResponseBody
     @ApiOperation(value="用户详情", notes="用户详情")
     public JsonResult getById(Long id) {
         User user = userServiceExt.getById(id);
         return sendSuccess(user);
     }
 
-    @ResponseBody
     @GetMapping("/getByEntity")
     @ApiOperation(value="用户详情", notes="用户详情")
     public JsonResult getByEntity(@LoginedAuth UserSession session, User user) {
@@ -56,7 +63,6 @@ public class UserController extends BaseController {
         return sendSuccess(resultUser);
     }
 
-    @ResponseBody
     @GetMapping("/list")
     @ApiOperation(value="用户列表", notes="用户列表")
     public JsonResult list(User user) {
@@ -64,14 +70,12 @@ public class UserController extends BaseController {
         return sendSuccess(userList);
     }
 
-    @ResponseBody
     @GetMapping("/pageList")
     public JsonResult pageList(UserQuery userQuery) {
         PageInfo page = userServiceExt.pageByEntity(userQuery);
         return sendSuccess(page);
     }
 
-    @ResponseBody
     @PostMapping("/updateUserInfo")
     @ApiOperation(value="编辑用户", notes="编辑用户")
     public JsonResult update(User user){
@@ -79,14 +83,15 @@ public class UserController extends BaseController {
         return sendSuccess(result);
     }
 
-    @ResponseBody
     @PostMapping("/rechargetMoney")
     @ApiOperation(value = "充值接口", notes = "充值接口")
-    public JsonResult rechargetMoney(@LoginedAuth UserSession session, String money) {
-        Validator.isMoney(money);
+    public JsonResult rechargetMoney(@LoginedAuth UserSession session, Long memberCartId, Integer cartNum) {
+        if(memberCartId == null) return sendArgsError("请输入充值卡券");
+        if(cartNum == null) return sendArgsError("请输入充值卡券数量");
         User user = userServiceExt.getById(session.getId());
-        int result = userServiceExt.rechargeMoney(user, NumberUtils.str2MoneyUp(money));
-        if(result > 0) return sendSuccess("充值成功");
-        return sendArgsError("充值失败");
+        if(user == null) return sendArgsError("未查询到用户信息,请联系客服人员处理");
+        MemberCart cart = memberCartServiceExt.findByIdAndStatus(memberCartId, Constant.MEMBER_CART_ON);
+        if(cart == null) return sendArgsError("未查询到充值卡信息，请重试");
+        return userServiceExt.rechargeMoney(user, cart, cartNum);
     }
 }

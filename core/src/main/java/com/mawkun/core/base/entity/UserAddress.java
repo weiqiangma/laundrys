@@ -1,58 +1,75 @@
 package com.mawkun.core.base.entity;
 
 import lombok.Data;
-
-/**
+                                                                /**
  * (UserAddress)实体类
  *
  * @author mawkun
- * @date 2020-09-13 18:34:09
+ * @since 2020-09-18 14:20:43
  */
-@Data
+@Data 
 public class UserAddress {
-
+    
     private Long id;
     /**
-     * 用户ID
-     */
+    * 用户ID
+    */
     private Long userId;
     /**
-     * 省份
-     */
+    * 省份
+    */
     private String province;
     /**
-     * 市
-     */
+    * 市
+    */
     private String city;
     /**
-     * 区
-     */
+    * 区
+    */
     private String area;
     /**
-     * 街道
-     */
+    * 街道
+    */
     private String street;
     /**
-     * 详细地址
-     */
+    * 详细地址
+    */
     private String detail;
     /**
-     * 联系人
-     */
+    * 精确地址
+    */
+    private String exactAddress;
+    /**
+    * 联系人
+    */
     private String linkMan;
     /**
-     * 联系手机号
-     */
+    * 联系手机号1
+    */
     private String linkMobile1;
-
+    /**
+    * 联系手机号2
+    */
     private String linkMobile2;
     /**
-     * 地址编码
-     */
+    * 地址编码
+    */
     private String code;
     /**
-     * 1：默认使用
-     */
-    private Object status;
+    * 经度
+    */
+    private String longitude;
+    /**
+    * 维度
+    */
+    private String latidute;
+    /**
+    * 经纬度坐标
+    */
+    private String location;
+    /**
+    * 1：默认使用
+    */
+    private Integer status;
 
 }

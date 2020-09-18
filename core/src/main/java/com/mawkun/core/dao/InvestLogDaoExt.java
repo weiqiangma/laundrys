@@ -1,6 +1,7 @@
 package com.mawkun.core.dao;
 
 import com.mawkun.core.base.dao.InvestLogDao;
+import com.mawkun.core.base.data.query.InvestLogQuery;
 import com.mawkun.core.base.entity.InvestLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,6 +18,6 @@ import java.util.List;
 @Repository
 public interface InvestLogDaoExt extends InvestLogDao {
 
-
+    List<InvestLog> selectListByTerms(InvestLogQuery query);
     
 }

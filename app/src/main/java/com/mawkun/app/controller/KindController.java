@@ -61,16 +61,4 @@ public class KindController extends BaseController {
         PageInfo page = kindServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }
-
-    @PostMapping("/insert")
-    @ApiOperation(value="添加商品类型", notes="添加商品类型")
-    public JsonResult insert(@LoginedAuth @ApiIgnore UserSession session, Kind kind, MultipartFile file){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权添加商品分类");
-        if(file == null || kind.getKindName() == null) return sendError("缺少参数");
-        Kind resultKind = kindServiceExt.getByName(kind.getKindName());
-        if(resultKind != null) return sendError("该类型已存在不能重复添加");
-        kindServiceExt.insertWithPic(kind, file);
-        return sendSuccess(kind);
-    }
-
 }

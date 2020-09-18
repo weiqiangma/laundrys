@@ -151,7 +151,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/getUserMobile")
-    @ApiOperation(value="获取用户手机号", notes="获取用户手机号")
+    @ApiOperation(value="获取微信用户手机号", notes="获取微信用户手机号")
     public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String code, String iv) {
         User user = userServiceExt.getById(session.getId());
         if(user == null) return sendArgsError("未查询到该用户信息");

@@ -40,30 +40,4 @@ public class SysParamController extends BaseController {
         List<SysParam> sysParamList = sysParamServiceExt.listByEntity(sysParam);
         return sendSuccess(sysParamList);
     }
-
-    @PostMapping("/insert")
-    public JsonResult insert(SysParam sysParam){
-        sysParamServiceExt.insert(sysParam);
-        return sendSuccess(sysParam);
-    }
-
-    @PutMapping("/update")
-    public JsonResult update(SysParam sysParam, @RequestParam(value = "files", required = false)MultipartFile[] files){
-        int result = sysParamServiceExt.updateWithPic(sysParam, files);
-        return sendSuccess(result);
-    }
-
-    @DeleteMapping("/delete")
-    public JsonResult deleteOne(Long id){
-        int result = sysParamServiceExt.deleteById(id);
-        return sendSuccess(result);
-    }
-
-    @DeleteMapping("/deleteBatch")
-    public int deleteBatch(@RequestBody List<Long> ids){
-        int result = 0;
-        if (ids!=null&&ids.size()>0) result = sysParamServiceExt.deleteByIds(ids);
-        return result;
-    }
-
 }
