@@ -3,8 +3,8 @@ package com.mawkun.admin.controller;
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import com.mawkun.core.base.data.UserSession;
-import com.mawkun.core.base.entity.MemberCart;
-import com.mawkun.core.base.service.MemberCartService;
+import com.mawkun.core.base.entity.MemberCard;
+import com.mawkun.core.base.service.MemberCardService;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import net.sf.cglib.core.CollectionUtils;
@@ -21,48 +21,48 @@ import java.util.List;
  * @date 2020-09-17 22:44:11
  */
 @RestController
-@RequestMapping("/memberCart")
-public class MemberCartController extends BaseController {
+@RequestMapping("/MemberCard")
+public class MemberCardController extends BaseController {
     
     @Autowired
-    private MemberCartService memberCartService;
+    private MemberCardService memberCardService;
 
     @GetMapping("/get")
     public JsonResult getById(@LoginedAuth UserSession session, Long id) {
-        MemberCart memberCart = memberCartService.getById(id);
-        return sendSuccess(memberCart);
+        MemberCard MemberCard = memberCardService.getById(id);
+        return sendSuccess(MemberCard);
     }
 
     @GetMapping("/getByEntity")
-    public JsonResult getByEntity(@LoginedAuth UserSession session, MemberCart memberCart) {
-        MemberCart resultCart = memberCartService.getByEntity(memberCart);
+    public JsonResult getByEntity(@LoginedAuth UserSession session, MemberCard MemberCard) {
+        MemberCard resultCart = memberCardService.getByEntity(MemberCard);
         return sendSuccess(resultCart);
     }
 
     @GetMapping("/list")
-    public JsonResult list(@LoginedAuth UserSession session, MemberCart memberCart) {
-        List<MemberCart> memberCartList = memberCartService.listByEntity(memberCart);
-        return sendSuccess(memberCartList);
+    public JsonResult list(@LoginedAuth UserSession session, MemberCard MemberCard) {
+        List<MemberCard> MemberCardList = memberCardService.listByEntity(MemberCard);
+        return sendSuccess(MemberCardList);
     }
 
     @PostMapping("/insert")
-    public JsonResult insert(@LoginedAuth UserSession session, MemberCart memberCart){
+    public JsonResult insert(@LoginedAuth UserSession session, MemberCard MemberCard){
         if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
-        memberCartService.insert(memberCart);
-        return sendSuccess(memberCart);
+        memberCardService.insert(MemberCard);
+        return sendSuccess(MemberCard);
     }
 
     @PutMapping("/update")
-    public JsonResult update(@LoginedAuth UserSession session, MemberCart memberCart){
+    public JsonResult update(@LoginedAuth UserSession session, MemberCard MemberCard){
         if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
-        int result = memberCartService.update(memberCart);
+        int result = memberCardService.update(MemberCard);
         return sendSuccess(result);
     }
 
     @DeleteMapping("/delete")
     public JsonResult deleteOne(@LoginedAuth UserSession session, Long id){
         if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
-        int result = memberCartService.deleteById(id);
+        int result = memberCardService.deleteById(id);
         return sendSuccess(result);
     }
 
@@ -78,7 +78,7 @@ public class MemberCartController extends BaseController {
                 return Convert.toInt(o, 0);
             }
         });
-        if (idList.size()>0) result = memberCartService.deleteByIds(idList);
+        if (idList.size()>0) result = memberCardService.deleteByIds(idList);
         return sendSuccess(result);
     }
 

@@ -5,7 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.UserVo;
-import com.mawkun.core.base.entity.MemberCart;
+import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.dao.ShopUserDaoExt;
@@ -61,11 +61,17 @@ public class UserServiceExt extends UserService {
         return userDaoExt.pageByEntity(query);
     }
 
+    public User getByOpenId(String openId) {
+        User user = new User();
+        user.setOpenId(openId);
+        return userDaoExt.getByEntity(user);
+    }
+
     /**
      * 充值
      */
     @Transactional
-    public JsonResult rechargeMoney(User user, MemberCart cart, Integer cartNum) {
+    public JsonResult rechargeMoney(User user, MemberCard cart, Integer cartNum) {
         Double investMoney = cart.getModelAmount() * cartNum;
         Double giftMoney = cart.getModelAmount() * cartNum;
         Double amountMoney = investMoney + giftMoney;

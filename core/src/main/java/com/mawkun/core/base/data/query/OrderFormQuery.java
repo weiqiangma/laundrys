@@ -10,6 +10,7 @@ public class OrderFormQuery extends OrderForm {
     private Integer pageNo;
     private Integer pageSize;
     private String shopName;
+    private Integer useIntegral;
     private Date createTimeStart;
     private Date createTimeEnd;
 

@@ -150,18 +150,6 @@ public class UserController extends BaseController {
         }
     }
 
-    @PostMapping("/getUserMobile")
-    @ApiOperation(value="获取微信用户手机号", notes="获取微信用户手机号")
-    public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String code, String iv) {
-        User user = userServiceExt.getById(session.getId());
-        if(user == null) return sendArgsError("未查询到该用户信息");
-        String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, code, iv);
-        user.setMobile(mobile);
-        userServiceExt.update(user, null);
-        return sendSuccess(user);
-    }
-
-
     //查询统计对象(首页统计)
     private StateQuery createQueryStateVo(){
         int type = getIntPar("type",1);

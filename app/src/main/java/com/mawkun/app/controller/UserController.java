@@ -2,35 +2,23 @@ package com.mawkun.app.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
-import cn.pertech.common.utils.NumberUtils;
-import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.UserQuery;
-import com.mawkun.core.base.entity.InvestLog;
-import com.mawkun.core.base.entity.MemberCart;
+import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.service.InvestLogServiceExt;
-import com.mawkun.core.service.MemberCartServiceExt;
+import com.mawkun.core.service.MemberCardServiceExt;
 import com.mawkun.core.service.UserServiceExt;
+import com.mawkun.core.service.WxApiServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
-import com.xiaoleilu.hutool.convert.Convert;
-import com.xiaoleilu.hutool.lang.Validator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.sf.cglib.core.CollectionUtils;
-import net.sf.cglib.core.Transformer;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,12 +35,29 @@ public class UserController extends BaseController {
     @Autowired
     private InvestLogServiceExt investLogServiceExt;
     @Autowired
-    private MemberCartServiceExt memberCartServiceExt;
+    private WxApiServiceExt wxApiServiceExt;
+    @Autowired
+    private MemberCardServiceExt MemberCardServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="用户详情", notes="用户详情")
     public JsonResult getById(Long id) {
         User user = userServiceExt.getById(id);
+        return sendSuccess(user);
+    }
+
+    @GetMapping("/getByOpenId")
+    @ApiOperation(value="用户详情", notes="用户详情")
+    public JsonResult getByOpenId(String openId) {
+        User user = userServiceExt.getByOpenId(openId);
+        return sendSuccess(user);
+    }
+
+    @GetMapping("/getByToken")
+    @ApiOperation(value="用户详情", notes="用户详情")
+    public JsonResult getByToken(@LoginedAuth UserSession session){
+        Validate.notNull(session.getId());
+        User user = userServiceExt.getById(session.getId());
         return sendSuccess(user);
     }
 
@@ -78,19 +83,32 @@ public class UserController extends BaseController {
 
     @PostMapping("/updateUserInfo")
     @ApiOperation(value="编辑用户", notes="编辑用户")
-    public JsonResult update(User user){
+    public JsonResult update(@LoginedAuth UserSession session, User user){
+        user.setId(session.getId());
+        user.setStatus(Constant.STATUS_YES);
         int result = userServiceExt.update(user, null);
         return sendSuccess(result);
     }
 
+    @PostMapping("/getUserMobile")
+    @ApiOperation(value="获取微信用户手机号", notes="获取微信用户手机号")
+    public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String code, String iv) {
+        User user = userServiceExt.getById(session.getId());
+        if(user == null) return sendArgsError("未查询到该用户信息");
+        String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, session.getSessionKey(), iv);
+        user.setMobile(mobile);
+        userServiceExt.update(user, null);
+        return sendSuccess(mobile);
+    }
+
     @PostMapping("/rechargetMoney")
     @ApiOperation(value = "充值接口", notes = "充值接口")
-    public JsonResult rechargetMoney(@LoginedAuth UserSession session, Long memberCartId, Integer cartNum) {
-        if(memberCartId == null) return sendArgsError("请输入充值卡券");
+    public JsonResult rechargetMoney(@LoginedAuth UserSession session, Long MemberCardId, Integer cartNum) {
+        if(MemberCardId == null) return sendArgsError("请输入充值卡券");
         if(cartNum == null) return sendArgsError("请输入充值卡券数量");
         User user = userServiceExt.getById(session.getId());
         if(user == null) return sendArgsError("未查询到用户信息,请联系客服人员处理");
-        MemberCart cart = memberCartServiceExt.findByIdAndStatus(memberCartId, Constant.MEMBER_CART_ON);
+        MemberCard cart = MemberCardServiceExt.findByIdAndStatus(MemberCardId, Constant.MEMBER_CART_ON);
         if(cart == null) return sendArgsError("未查询到充值卡信息，请重试");
         return userServiceExt.rechargeMoney(user, cart, cartNum);
     }

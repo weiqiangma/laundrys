@@ -7,7 +7,7 @@
         <result property="openId" column="open_id" jdbcType="VARCHAR"/>
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="realName" column="real_name" jdbcType="VARCHAR"/>
-        <result property="avatartUrl" column="avatart_url" jdbcType="VARCHAR"/>
+        <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
         <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
         <result property="gender" column="gender" jdbcType="OTHER"/>
         <result property="address" column="address" jdbcType="VARCHAR"/>
@@ -23,7 +23,7 @@
     </resultMap>
 
     <sql id="table_field">
-      id, open_id, user_name, real_name, avatart_url, mobile, gender, address, kind, sum_of_money, integral, country, province, city, status, update_time, create_time      
+      id, open_id, user_name, real_name, avatar_url, mobile, gender, address, kind, sum_of_money, integral, country, province, city, status, update_time, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -53,8 +53,8 @@
             <if test="realName != null">
                 and real_name = #{realName,jdbcType=VARCHAR}
             </if>
-            <if test="avatartUrl != null">
-                and avatart_url = #{avatartUrl,jdbcType=VARCHAR}
+            <if test="avatarUrl != null">
+                and avatar_url = #{avatarUrl,jdbcType=VARCHAR}
             </if>
             <if test="mobile != null">
                 and mobile = #{mobile,jdbcType=VARCHAR}
@@ -113,8 +113,8 @@
             <if test="realName != null">
                 and real_name = #{realName,jdbcType=VARCHAR}
             </if>
-            <if test="avatartUrl != null">
-                and avatart_url = #{avatartUrl,jdbcType=VARCHAR}
+            <if test="avatarUrl != null">
+                and avatar_url = #{avatarUrl,jdbcType=VARCHAR}
             </if>
             <if test="mobile != null">
                 and mobile = #{mobile,jdbcType=VARCHAR}
@@ -182,8 +182,8 @@
           <if test="realName != null">
              real_name,
           </if>
-          <if test="avatartUrl != null">
-             avatart_url,
+          <if test="avatarUrl != null">
+             avatar_url,
           </if>
           <if test="mobile != null">
              mobile,
@@ -235,8 +235,8 @@
           <if test="realName != null">
              #{realName,jdbcType=VARCHAR},
           </if>
-          <if test="avatartUrl != null">
-             #{avatartUrl,jdbcType=VARCHAR},
+          <if test="avatarUrl != null">
+             #{avatarUrl,jdbcType=VARCHAR},
           </if>
           <if test="mobile != null">
              #{mobile,jdbcType=VARCHAR},
@@ -280,10 +280,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into user
-         (id, open_id, user_name, real_name, avatart_url, mobile, gender, address, kind, sum_of_money, integral, country, province, city, status, update_time, create_time)
+         (id, open_id, user_name, real_name, avatar_url, mobile, gender, address, kind, sum_of_money, integral, country, province, city, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.avatartUrl,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.gender,jdbcType=OTHER}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=INTEGER}, #{item.sumOfMoney,jdbcType=NUMERIC}, #{item.integral,jdbcType=INTEGER}, #{item.country,jdbcType=VARCHAR}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.avatarUrl,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.gender,jdbcType=OTHER}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=INTEGER}, #{item.sumOfMoney,jdbcType=NUMERIC}, #{item.integral,jdbcType=INTEGER}, #{item.country,jdbcType=VARCHAR}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -300,8 +300,8 @@
             <if test="realName != null and realName != ''">
                 real_name = #{realName,jdbcType=VARCHAR},
             </if>
-            <if test="avatartUrl != null and avatartUrl != ''">
-                avatart_url = #{avatartUrl,jdbcType=VARCHAR},
+            <if test="avatarUrl != null and avatarUrl != ''">
+                avatar_url = #{avatarUrl,jdbcType=VARCHAR},
             </if>
             <if test="mobile != null and mobile != ''">
                 mobile = #{mobile,jdbcType=VARCHAR},
@@ -356,8 +356,8 @@
             <if test="where.realName == null and set.realName != null and set.realName != ''">
                 real_name = #{set.realName,jdbcType=VARCHAR},
             </if>
-            <if test="where.avatartUrl == null and set.avatartUrl != null and set.avatartUrl != ''">
-                avatart_url = #{set.avatartUrl,jdbcType=VARCHAR},
+            <if test="where.avatarUrl == null and set.avatarUrl != null and set.avatarUrl != ''">
+                avatar_url = #{set.avatarUrl,jdbcType=VARCHAR},
             </if>
             <if test="where.mobile == null and set.mobile != null and set.mobile != ''">
                 mobile = #{set.mobile,jdbcType=VARCHAR},
@@ -409,8 +409,8 @@
             <if test="where.realName != null">
                 and real_name = #{where.realName,jdbcType=VARCHAR}
             </if>
-            <if test="where.avatartUrl != null">
-                and avatart_url = #{where.avatartUrl,jdbcType=VARCHAR}
+            <if test="where.avatarUrl != null">
+                and avatar_url = #{where.avatarUrl,jdbcType=VARCHAR}
             </if>
             <if test="where.mobile != null">
                 and mobile = #{where.mobile,jdbcType=VARCHAR}
@@ -470,9 +470,9 @@
                   when id = #{item.id} then #{item.realName}
                  </foreach>
             </trim>
-            <trim prefix="avatart_url = case" suffix="end,">
+            <trim prefix="avatar_url = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
-                  when id = #{item.id} then #{item.avatartUrl}
+                  when id = #{item.id} then #{item.avatarUrl}
                  </foreach>
             </trim>
             <trim prefix="mobile = case" suffix="end,">
@@ -560,8 +560,8 @@
             <if test="realName != null">
                 and real_name = #{realName,jdbcType=VARCHAR}
             </if>
-            <if test="avatartUrl != null">
-                and avatart_url = #{avatartUrl,jdbcType=VARCHAR}
+            <if test="avatarUrl != null">
+                and avatar_url = #{avatarUrl,jdbcType=VARCHAR}
             </if>
             <if test="mobile != null">
                 and mobile = #{mobile,jdbcType=VARCHAR}
@@ -629,8 +629,8 @@
             <if test="realName != null">
                 and real_name = #{realName,jdbcType=VARCHAR}
             </if>
-            <if test="avatartUrl != null">
-                and avatart_url = #{avatartUrl,jdbcType=VARCHAR}
+            <if test="avatarUrl != null">
+                and avatar_url = #{avatarUrl,jdbcType=VARCHAR}
             </if>
             <if test="mobile != null">
                 and mobile = #{mobile,jdbcType=VARCHAR}

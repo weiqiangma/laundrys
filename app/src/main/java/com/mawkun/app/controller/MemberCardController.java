@@ -2,18 +2,13 @@ package com.mawkun.app.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
-import com.mawkun.core.base.entity.MemberCart;
-import com.mawkun.core.base.service.MemberCartService;
-import com.xiaoleilu.hutool.convert.Convert;
+import com.mawkun.core.base.entity.MemberCard;
+import com.mawkun.core.base.service.MemberCardService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.sf.cglib.core.CollectionUtils;
-import net.sf.cglib.core.Transformer;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,37 +17,37 @@ import java.util.List;
  */
 @RestController
 @Api(tags={"会员卡操作接口"})
-@RequestMapping("/memberCart")
-public class MemberCartController extends BaseController {
+@RequestMapping("/api/memberCard")
+public class MemberCardController extends BaseController {
     
     @Autowired
-    private MemberCartService memberCartService;
+    private MemberCardService memberCardService;
 
     @GetMapping("/get")
     @ApiOperation(value="会员卡详情", notes="会员卡详情")
     public JsonResult getById(Long id) {
-        MemberCart memberCart = memberCartService.getById(id);
-        return sendSuccess(memberCart);
+        MemberCard memberCard = memberCardService.getById(id);
+        return sendSuccess(memberCard);
     }
 
     @GetMapping("/getByEntity")
     @ApiOperation(value="会员卡详情", notes="会员卡详情")
-    public JsonResult getByEntity(MemberCart memberCart) {
-        MemberCart resultCart = memberCartService.getByEntity(memberCart);
+    public JsonResult getByEntity(MemberCard memberCard) {
+        MemberCard resultCart = memberCardService.getByEntity(memberCard);
         return sendSuccess(resultCart);
     }
 
     @GetMapping("/list")
     @ApiOperation(value="会员卡列表", notes="会员卡列表")
-    public JsonResult list(MemberCart memberCart) {
-        List<MemberCart> memberCartList = memberCartService.listByEntity(memberCart);
-        return sendSuccess(memberCartList);
+    public JsonResult list(MemberCard memberCard) {
+        List<MemberCard> MemberCardList = memberCardService.listByEntity(memberCard);
+        return sendSuccess(MemberCardList);
     }
 
     @PutMapping("/update")
     @ApiOperation(value="会员卡编辑", notes="会员卡编辑")
-    public JsonResult update(MemberCart memberCart){
-        int result = memberCartService.update(memberCart);
+    public JsonResult update(MemberCard memberCard){
+        int result = memberCardService.update(memberCard);
         return sendSuccess(result);
     }
 }
