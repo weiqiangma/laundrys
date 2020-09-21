@@ -14,6 +14,7 @@ import com.mawkun.core.base.service.UserCacheService;
 import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,9 +38,9 @@ public class LoginController extends BaseController {
     private UserCacheService userCacheService;
 
     @PostMapping(value = "/login")
+    @ApiOperation(value="小程序登录", notes="小程序登录")
     public JsonResult login(String code) {
         WxLoginResultData resultData = wxApiServiceExt.getOpenIdByCode(code);
-        resultData.setKind(Constant.USER_TYPE_CUSTOMER);
         //根据openID查询数据库中是否存在该用户，没有则添加
         UserQuery query = new UserQuery();
         query.setOpenId(resultData.getOpenId());
@@ -48,6 +49,7 @@ public class LoginController extends BaseController {
             User user = new User();
             user.setOpenId(resultData.getOpenId());
             int userId = userServiceExt.insert(user);
+            resultData.setKind(Constant.USER_TYPE_CUSTOMER);
             resultData.setUserId((long) userId);
         } else {
             resultData.setUserId(list.get(0).getId());

@@ -4,6 +4,7 @@ import com.mawkun.core.base.entity.OrderForm;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class OrderFormQuery extends OrderForm {
@@ -11,11 +12,13 @@ public class OrderFormQuery extends OrderForm {
     private Integer pageSize;
     private String shopName;
     private Integer useIntegral;
+    private Date createTime;
     private Date createTimeStart;
     private Date createTimeEnd;
 
-    private Double amount;
+    private Long amount;
     private Integer integral;
+    private List<Long> shopIdList;
 
     public void init() {
         if(pageNo == null) pageNo = 1;

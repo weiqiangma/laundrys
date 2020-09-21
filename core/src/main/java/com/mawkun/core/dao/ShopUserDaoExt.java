@@ -7,11 +7,12 @@ import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.UserVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 
-@Mapper
+@Repository
 public interface ShopUserDaoExt extends ShopUserDao {
 
     /**

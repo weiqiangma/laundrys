@@ -11,6 +11,7 @@ import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.ShoppingCartService;
 import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.dao.GoodsDaoExt;
+import com.mawkun.core.dao.ShopDaoExt;
 import com.mawkun.core.dao.ShoppingCartDaoExt;
 import com.mawkun.core.dao.SysParamDaoExt;
 import com.xiaoleilu.hutool.convert.Convert;
@@ -25,10 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Validation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Date 2020/9/11 14:42
@@ -41,6 +40,8 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
     private ShoppingCartDaoExt shoppingCartDaoExt;
     @Autowired
     private SysParamDaoExt sysParamDaoExt;
+    @Autowired
+    private ShopDaoExt shopDaoExt;
     @Autowired
     private GoodsDaoExt goodsDaoExt;
     @Autowired
@@ -115,11 +116,38 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         double result = 0;
         for(ShoppingCart resultCart : list) {
             Integer goodsNum = resultCart.getGoodsNum();
-            Double goodsPrice = resultCart.getGoodsPrice();
-            Double goodsAmount = goodsNum * goodsPrice;
+            Long goodsPrice = resultCart.getGoodsPrice();
+            Long goodsAmount = goodsNum * goodsPrice;
             result = goodsAmount + result;
         }
         return result;
+    }
+
+    public Long countTransportFee(Long shopId, Long addressId, Long amount) {
+        UserAddress userAddress = userAddressServiceExt.getById(addressId);
+        Shop shop = shopDaoExt.getById(shopId);
+        String location = userAddress.getLocation();
+        String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(location, shop.getLocation());
+        Integer distance = NumberUtils.str2Int(distanceStr);
+        List<SysParam> paramList = sysParamDaoExt.selectTransportFee();
+        List<SysParam> sortList = paramList.stream().sorted(Comparator.comparingInt(SysParam::getDistance)).collect(Collectors.toList());
+        long fee = 0;
+        for(int i = 0; i < sortList.size() - 1; i++) {
+            int front = sortList.get(i).getDistance() * 1000;
+            int next = sortList.get(i+1).getDistance() * 1000;
+            int max = sortList.get(paramList.size() -1).getDistance() * 1000;
+            if(distance >= max) return (long) -1;
+            if(distance >= front && distance < next) {
+                long lowAmount = sortList.get(i).getLowAmount();
+                if(amount >= lowAmount) {
+                    return fee;
+                }
+                String feeStr = sortList.get(i).getSysValue();
+                fee = NumberUtils.str2Int(feeStr);
+                return fee;
+            }
+        }
+        return (long) -1;
     }
 
     @Transactional
@@ -129,19 +157,19 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         List<ShoppingCart> cartList = findByUserId(user.getId());
         if(cartList.isEmpty()) return new JsonResult().error("购物车内无商品信息,请先添加");
         //计算购物车内商品总价格
-        double resultAmount = 0;
+        long resultAmount = 0;
         for(ShoppingCart cart : cartList) {
             //商品单价，商品数量计算该商品总价
-            Double price = cart.getGoodsPrice();
+            Long price = cart.getGoodsPrice();
             Integer goodsNum = cart.getGoodsNum();
-            double goodsAmount = price * goodsNum;
+            Long goodsAmount = price * goodsNum;
             resultAmount = goodsAmount + resultAmount;
         }
         if(resultAmount != query.getAmount()) return new JsonResult().error("所选商品价格和购物车内商品价格不一致,请重新添加");
         //判断用户是否使用余额支付，如果是减去对应积分
         if(query.getIntegral() != null && query.getIntegral() > 0) {
             Integer integral = user.getIntegral();
-            resultAmount = resultAmount - NumberUtil.div(integral, 100, 1);
+            //resultAmount = resultAmount - NumberUtil.div(integral, 100, 1);
         }
         if(query.getTransportFee() != null && query.getTransportFee() > 0) {
             resultAmount = resultAmount + query.getTransportFee();

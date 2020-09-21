@@ -8,55 +8,55 @@ import org.springframework.format.annotation.DateTimeFormat;
  * (OrderForm)实体类
  *
  * @author mawkun
- * @date 2020-09-17 21:48:53
+ * @since 2020-09-21 09:25:01
  */
 @Data 
 public class OrderForm {
     
-        private Long id;
+    private Long id;
     
-        private Long userId;
+    private Long userId;
     
-        private Long shopId;
+    private Long shopId;
     
-        private Long distributorId;
+    private Long distributorId;
     
-        private Long addressId;
+    private Long addressId;
     
-        private String userName;
+    private String userName;
     
-        private String orderSerial;
+    private String orderSerial;
     
-        private String remark;
+    private String remark;
     
-        private Integer status;
+    private Integer status;
     
-        private Double realAmount;
+    private Long realAmount;
     
-        private Double totalAmount;
+    private Long totalAmount;
     /**
     * 用户地址
     */
-        private String userAddress;
+    private String userAddress;
     /**
     * 运费
     */
-        private Double transportFee;
+    private Long transportFee;
     /**
     * 配送方式
     */
-        private Object transportWay;
+    private Integer transportWay;
     /**
     * 支付类型
     */
-        private Object payKind;
+    private Integer payKind;
     
         @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
+private Date updateTime;
     
         @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+private Date createTime;
 
 }

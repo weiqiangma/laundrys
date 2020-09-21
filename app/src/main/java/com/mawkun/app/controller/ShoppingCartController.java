@@ -20,6 +20,7 @@ import com.xiaoleilu.hutool.util.ArrayUtil;
 import com.xiaoleilu.hutool.util.NumberUtil;
 import io.jsonwebtoken.lang.Assert;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import net.sf.cglib.core.CollectionUtils;
 import net.sf.cglib.core.Transformer;
 import org.apache.commons.lang3.ArrayUtils;
@@ -51,12 +52,14 @@ public class ShoppingCartController extends BaseController {
     private OrderFormServiceExt orderFormServiceExt;
 
     @GetMapping("/get")
+    @ApiOperation(value="门店详情", notes="门店详情")
     public JsonResult getById(Long id) {
         ShoppingCart shoppingCart = shoppingCartServiceExt.getById(id);
         return sendSuccess(shoppingCart);
     }
 
     @GetMapping("/getByEntity")
+    @ApiOperation(value="门店详情", notes="门店详情")
     public JsonResult getByEntity(@LoginedAuth UserSession session, ShoppingCart shoppingCart) {
         if(session.getId() > 0) shoppingCart.setUserId(session.getId());
         ShoppingCart cart = shoppingCartServiceExt.getByEntity(shoppingCart);
@@ -64,14 +67,15 @@ public class ShoppingCartController extends BaseController {
     }
 
     @GetMapping("/list")
+    @ApiOperation(value="购物车列表", notes="购物车列表")
     public JsonResult list(@LoginedAuth UserSession session, ShoppingCart shoppingCart) {
         if(session.getId() > 0) shoppingCart.setUserId(session.getId());
         List<ShoppingCart> shoppingCartList = shoppingCartServiceExt.listByEntity(shoppingCart);
-        //List<ShoppingCart> resutlList = shoppingCartList.stream().filter(a -> a.getStatus() == Constant.GOODS_UNDERCARRIAGE).collect(Collectors.toList());
         return sendSuccess(shoppingCartList);
     }
 
     @PostMapping("/insert")
+    @ApiOperation(value="购物车添加商品", notes="购物车添加商品")
     public JsonResult insert(@LoginedAuth UserSession session, Long goodsId, Integer goodsNum){
         Assert.notNull(goodsId);
         shoppingCartServiceExt.save(session, goodsId, goodsNum);
@@ -79,6 +83,7 @@ public class ShoppingCartController extends BaseController {
     }
 
     @PutMapping("/update")
+    @ApiOperation(value="编辑购物车", notes="编辑购物车")
     public JsonResult update(ShoppingCart shoppingCart){
         int result = shoppingCartServiceExt.update(shoppingCart);
         return sendSuccess(result);
@@ -86,28 +91,23 @@ public class ShoppingCartController extends BaseController {
 
 
     @PostMapping("/deleteByUserId")
+    @ApiOperation(value="删除购物车", notes="删除购物车")
     public JsonResult deleteByUserId(Long userId) {
         int result = shoppingCartServiceExt.deleteByUserId(userId);
         return sendSuccess(result);
     }
 
-    /**
-     * 计算运费
-     * @param addressId
-     * @param shopId
-     * @param amount
-     * @return
-     */
     @GetMapping("/countTransportFee")
+    @ApiOperation(value="计算运费", notes="计算运费")
     public JsonResult countTransportFee(@LoginedAuth UserSession session, Long addressId, Long shopId, Integer amount) {
         /**
          * 1.根据用户收货地址及门店坐标计算距离
          * 2.根据距离计算运费
          */
         JSONObject object = new JSONObject();
-        String userAddress = userAddressServiceExt.getDetailAddressById(addressId);
+        UserAddress userAddress = userAddressServiceExt.getById(addressId);
         Shop shop = shopServiceExt.getById(shopId);
-        String location = gaoDeApiServiceExt.getLalByAddress(userAddress);
+        String location = userAddress.getLocation();
         String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(location, shop.getLocation());
         double resultAmount = shoppingCartServiceExt.getAmountByUserId(session.getId());
         if(resultAmount != amount) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
@@ -150,27 +150,33 @@ public class ShoppingCartController extends BaseController {
         if(user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
         List<ShoppingCart> cartList = shoppingCartServiceExt.findByUserId(user.getId());
         if(cartList.isEmpty()) return sendArgsError("购物车内无商品信息,请先添加");
-        //计算购物车内商品总价格
-        double resultAmount = 0;
+        //计算购物车内商品总价格+运费
+        long resultAmount = 0;
         for(ShoppingCart cart : cartList) {
-            //商品单价，商品数量计算该商品总价
-            Double price = cart.getGoodsPrice();
+            Long price = cart.getGoodsPrice();
             Integer goodsNum = cart.getGoodsNum();
-            double goodsAmount = price * goodsNum;
+            Long goodsAmount = price * goodsNum;
             resultAmount = goodsAmount + resultAmount;
         }
-        if(resultAmount != query.getAmount()) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
-        //判断用户是否使用余额支付，如果是减去对应积分
-        if(query.getIntegral() != null && query.getIntegral() > 0) {
-            Integer integral = user.getIntegral();
-            resultAmount = resultAmount - NumberUtil.div(integral, 100, 1);
-        }
-        if(query.getTransportFee() != null && query.getTransportFee() > 0) {
-            resultAmount = resultAmount + query.getTransportFee();
-        }
-        //获取用户收货地址
         UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getAddressId(), user.getId());
         if(address == null) return sendArgsError("未查询到该收获地址,请选择其它地址或重新添加");
+        Shop shop = shopServiceExt.getById(query.getShopId());
+        if(shop == null) return sendArgsError("所选店铺不存在,请重新选择");
+        Long transportFee = shoppingCartServiceExt.countTransportFee(address.getId(), shop.getId(), resultAmount);
+        if(!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
+        //商品总价+运费
+        resultAmount = resultAmount + transportFee;
+        if(resultAmount != query.getAmount()) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
+        //判断用户是否使用余额支付，如果是减去对应余额
+        if(query.getIntegral() != null && query.getIntegral() > 0) {
+            Integer integral = user.getIntegral();
+            Long sumOfMoney = user.getSumOfMoney();
+            if(sumOfMoney >= resultAmount) {
+                sumOfMoney = sumOfMoney - resultAmount;
+            } else {
+                return sendArgsError("您的余额已不足,请先充值或选择其它支付方式");
+            }
+        }
         //生成待支付订单
         orderFormServiceExt.generateOrderForm(user, query, address, resultAmount);
         return sendSuccess();

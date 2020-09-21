@@ -6,7 +6,7 @@
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="kindId" column="kind_id" jdbcType="INTEGER"/>
         <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
-        <result property="price" column="price" jdbcType="NUMERIC"/>
+        <result property="price" column="price" jdbcType="INTEGER"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="picture" column="picture" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
@@ -40,10 +40,10 @@
                 and kind_id = #{kindId,jdbcType=INTEGER}
             </if>
             <if test="goodsName != null">
-                and goods_name like #{goodsName,jdbcType=VARCHAR}
+                and goods_name = #{goodsName,jdbcType=VARCHAR}
             </if>
             <if test="price != null">
-                and price = #{price,jdbcType=NUMERIC}
+                and price = #{price,jdbcType=INTEGER}
             </if>
             <if test="description != null">
                 and description = #{description,jdbcType=VARCHAR}
@@ -52,7 +52,7 @@
                 and picture = #{picture,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -61,7 +61,6 @@
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
-        order by create_time desc
     </select>
 
     <!--通过实体不为空的属性作为筛选条件查询单个-->
@@ -80,7 +79,7 @@
                 and goods_name = #{goodsName,jdbcType=VARCHAR}
             </if>
             <if test="price != null">
-                and price = #{price,jdbcType=NUMERIC}
+                and price = #{price,jdbcType=INTEGER}
             </if>
             <if test="description != null">
                 and description = #{description,jdbcType=VARCHAR}
@@ -89,7 +88,7 @@
                 and picture = #{picture,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -154,7 +153,7 @@
              #{goodsName,jdbcType=VARCHAR},
           </if>
           <if test="price != null">
-             #{price,jdbcType=NUMERIC},
+             #{price,jdbcType=INTEGER},
           </if>
           <if test="description != null">
              #{description,jdbcType=VARCHAR},
@@ -163,7 +162,7 @@
              #{picture,jdbcType=VARCHAR},
           </if>
           <if test="status != null">
-             #{status,jdbcType=OTHER},
+             #{status,jdbcType=INTEGER},
           </if>
           <if test="updateTime != null">
              #{updateTime,jdbcType=TIMESTAMP},
@@ -180,7 +179,7 @@
          (id, kind_id, goods_name, price, description, picture, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.kindId,jdbcType=INTEGER}, #{item.goodsName,jdbcType=VARCHAR}, #{item.price,jdbcType=NUMERIC}, #{item.description,jdbcType=VARCHAR}, #{item.picture,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.kindId,jdbcType=INTEGER}, #{item.goodsName,jdbcType=VARCHAR}, #{item.price,jdbcType=INTEGER}, #{item.description,jdbcType=VARCHAR}, #{item.picture,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -195,7 +194,7 @@
                 goods_name = #{goodsName,jdbcType=VARCHAR},
             </if>
             <if test="price != null">
-                price = #{price,jdbcType=NUMERIC},
+                price = #{price,jdbcType=INTEGER},
             </if>
             <if test="description != null and description != ''">
                 description = #{description,jdbcType=VARCHAR},
@@ -204,7 +203,7 @@
                 picture = #{picture,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
-                status = #{status,jdbcType=OTHER},
+                status = #{status,jdbcType=INTEGER},
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -227,7 +226,7 @@
                 goods_name = #{set.goodsName,jdbcType=VARCHAR},
             </if>
             <if test="where.price == null and set.price != null">
-                price = #{set.price,jdbcType=NUMERIC},
+                price = #{set.price,jdbcType=INTEGER},
             </if>
             <if test="where.description == null and set.description != null and set.description != ''">
                 description = #{set.description,jdbcType=VARCHAR},
@@ -236,7 +235,7 @@
                 picture = #{set.picture,jdbcType=VARCHAR},
             </if>
             <if test="where.status == null and set.status != null">
-                status = #{set.status,jdbcType=OTHER},
+                status = #{set.status,jdbcType=INTEGER},
             </if>
             <if test="where.updateTime == null and set.updateTime != null">
                 update_time = #{set.updateTime,jdbcType=TIMESTAMP},
@@ -256,7 +255,7 @@
                 and goods_name = #{where.goodsName,jdbcType=VARCHAR}
             </if>
             <if test="where.price != null">
-                and price = #{where.price,jdbcType=NUMERIC}
+                and price = #{where.price,jdbcType=INTEGER}
             </if>
             <if test="where.description != null">
                 and description = #{where.description,jdbcType=VARCHAR}
@@ -265,7 +264,7 @@
                 and picture = #{where.picture,jdbcType=VARCHAR}
             </if>
             <if test="where.status != null">
-                and status = #{where.status,jdbcType=OTHER}
+                and status = #{where.status,jdbcType=INTEGER}
             </if>
             <if test="where.updateTime != null">
                 and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
@@ -343,7 +342,7 @@
                 and goods_name = #{goodsName,jdbcType=VARCHAR}
             </if>
             <if test="price != null">
-                and price = #{price,jdbcType=NUMERIC}
+                and price = #{price,jdbcType=INTEGER}
             </if>
             <if test="description != null">
                 and description = #{description,jdbcType=VARCHAR}
@@ -352,7 +351,7 @@
                 and picture = #{picture,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -388,7 +387,7 @@
                 and goods_name = #{goodsName,jdbcType=VARCHAR}
             </if>
             <if test="price != null">
-                and price = #{price,jdbcType=NUMERIC}
+                and price = #{price,jdbcType=INTEGER}
             </if>
             <if test="description != null">
                 and description = #{description,jdbcType=VARCHAR}
@@ -397,7 +396,7 @@
                 and picture = #{picture,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}

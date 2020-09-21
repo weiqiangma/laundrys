@@ -71,12 +71,12 @@ public class UserServiceExt extends UserService {
      * 充值
      */
     @Transactional
-    public JsonResult rechargeMoney(User user, MemberCard cart, Integer cartNum) {
-        Double investMoney = cart.getModelAmount() * cartNum;
-        Double giftMoney = cart.getModelAmount() * cartNum;
-        Double amountMoney = investMoney + giftMoney;
+    public JsonResult rechargeMoney(User user, MemberCard cart, Long cartNum) {
+        Long investMoney = cart.getModelAmount() * cartNum;
+        Long giftMoney = cart.getModelAmount() * cartNum;
+        Long amountMoney = investMoney + giftMoney;
         user.setSumOfMoney(user.getSumOfMoney() + amountMoney);
-        Double residueMoeny = user.getSumOfMoney();
+        Long residueMoeny = user.getSumOfMoney();
         user.setSumOfMoney(user.getSumOfMoney() + amountMoney);
         int upResult = userDaoExt.update(user);
         if(upResult < 1) return new JsonResult().error("用户充值失败");

@@ -111,6 +111,16 @@
             <if test="userId != null and userId > 0">
                 and order_form.user_id = #{userId}
             </if>
+            <if test="shopIdList != null">
+                and order_form.shop_id in
+                <foreach item="item" index="index" collection="shopIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="createTime != null">
+                and DATE_FORMAT( order_form.create_time, '%Y-%m-%d' ) = DATE_FORMAT( #{createTime}, '%Y-%m-%d' )
+            </if>
         </where>
+        order by order_form.create_time desc
     </select>
 </mapper>

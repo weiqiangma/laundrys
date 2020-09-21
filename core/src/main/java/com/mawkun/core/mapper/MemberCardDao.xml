@@ -5,12 +5,12 @@
     <resultMap type="com.mawkun.core.base.entity.MemberCard" id="MemberCardResultMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="modelName" column="model_name" jdbcType="VARCHAR"/>
-        <result property="modelAmount" column="model_amount" jdbcType="NUMERIC"/>
-        <result property="modelGift" column="model_gift" jdbcType="NUMERIC"/>
+        <result property="modelAmount" column="model_amount" jdbcType="INTEGER"/>
+        <result property="modelGift" column="model_gift" jdbcType="INTEGER"/>
         <result property="discount" column="discount" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="ishot" column="ishot" jdbcType="OTHER"/>
-        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="ishot" column="ishot" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
@@ -41,10 +41,10 @@
                 and model_name = #{modelName,jdbcType=VARCHAR}
             </if>
             <if test="modelAmount != null">
-                and model_amount = #{modelAmount,jdbcType=NUMERIC}
+                and model_amount = #{modelAmount,jdbcType=INTEGER}
             </if>
             <if test="modelGift != null">
-                and model_gift = #{modelGift,jdbcType=NUMERIC}
+                and model_gift = #{modelGift,jdbcType=INTEGER}
             </if>
             <if test="discount != null">
                 and discount = #{discount,jdbcType=VARCHAR}
@@ -53,10 +53,10 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="ishot != null">
-                and ishot = #{ishot,jdbcType=OTHER}
+                and ishot = #{ishot,jdbcType=INTEGER}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -80,10 +80,10 @@
                 and model_name = #{modelName,jdbcType=VARCHAR}
             </if>
             <if test="modelAmount != null">
-                and model_amount = #{modelAmount,jdbcType=NUMERIC}
+                and model_amount = #{modelAmount,jdbcType=INTEGER}
             </if>
             <if test="modelGift != null">
-                and model_gift = #{modelGift,jdbcType=NUMERIC}
+                and model_gift = #{modelGift,jdbcType=INTEGER}
             </if>
             <if test="discount != null">
                 and discount = #{discount,jdbcType=VARCHAR}
@@ -92,10 +92,10 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="ishot != null">
-                and ishot = #{ishot,jdbcType=OTHER}
+                and ishot = #{ishot,jdbcType=INTEGER}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -160,10 +160,10 @@
              #{modelName,jdbcType=VARCHAR},
           </if>
           <if test="modelAmount != null">
-             #{modelAmount,jdbcType=NUMERIC},
+             #{modelAmount,jdbcType=INTEGER},
           </if>
           <if test="modelGift != null">
-             #{modelGift,jdbcType=NUMERIC},
+             #{modelGift,jdbcType=INTEGER},
           </if>
           <if test="discount != null">
              #{discount,jdbcType=VARCHAR},
@@ -172,10 +172,10 @@
              #{description,jdbcType=VARCHAR},
           </if>
           <if test="ishot != null">
-             #{ishot,jdbcType=OTHER},
+             #{ishot,jdbcType=INTEGER},
           </if>
           <if test="status != null">
-             #{status,jdbcType=OTHER},
+             #{status,jdbcType=INTEGER},
           </if>
           <if test="updateTime != null">
              #{updateTime,jdbcType=TIMESTAMP},
@@ -192,7 +192,7 @@
          (id, model_name, model_amount, model_gift, discount, description, ishot, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.modelName,jdbcType=VARCHAR}, #{item.modelAmount,jdbcType=NUMERIC}, #{item.modelGift,jdbcType=NUMERIC}, #{item.discount,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.ishot,jdbcType=OTHER}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.modelName,jdbcType=VARCHAR}, #{item.modelAmount,jdbcType=INTEGER}, #{item.modelGift,jdbcType=INTEGER}, #{item.discount,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.ishot,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -204,10 +204,10 @@
                 model_name = #{modelName,jdbcType=VARCHAR},
             </if>
             <if test="modelAmount != null">
-                model_amount = #{modelAmount,jdbcType=NUMERIC},
+                model_amount = #{modelAmount,jdbcType=INTEGER},
             </if>
             <if test="modelGift != null">
-                model_gift = #{modelGift,jdbcType=NUMERIC},
+                model_gift = #{modelGift,jdbcType=INTEGER},
             </if>
             <if test="discount != null and discount != ''">
                 discount = #{discount,jdbcType=VARCHAR},
@@ -216,10 +216,10 @@
                 description = #{description,jdbcType=VARCHAR},
             </if>
             <if test="ishot != null">
-                ishot = #{ishot,jdbcType=OTHER},
+                ishot = #{ishot,jdbcType=INTEGER},
             </if>
             <if test="status != null">
-                status = #{status,jdbcType=OTHER},
+                status = #{status,jdbcType=INTEGER},
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -239,10 +239,10 @@
                 model_name = #{set.modelName,jdbcType=VARCHAR},
             </if>
             <if test="where.modelAmount == null and set.modelAmount != null">
-                model_amount = #{set.modelAmount,jdbcType=NUMERIC},
+                model_amount = #{set.modelAmount,jdbcType=INTEGER},
             </if>
             <if test="where.modelGift == null and set.modelGift != null">
-                model_gift = #{set.modelGift,jdbcType=NUMERIC},
+                model_gift = #{set.modelGift,jdbcType=INTEGER},
             </if>
             <if test="where.discount == null and set.discount != null and set.discount != ''">
                 discount = #{set.discount,jdbcType=VARCHAR},
@@ -251,10 +251,10 @@
                 description = #{set.description,jdbcType=VARCHAR},
             </if>
             <if test="where.ishot == null and set.ishot != null">
-                ishot = #{set.ishot,jdbcType=OTHER},
+                ishot = #{set.ishot,jdbcType=INTEGER},
             </if>
             <if test="where.status == null and set.status != null">
-                status = #{set.status,jdbcType=OTHER},
+                status = #{set.status,jdbcType=INTEGER},
             </if>
             <if test="where.updateTime == null and set.updateTime != null">
                 update_time = #{set.updateTime,jdbcType=TIMESTAMP},
@@ -271,10 +271,10 @@
                 and model_name = #{where.modelName,jdbcType=VARCHAR}
             </if>
             <if test="where.modelAmount != null">
-                and model_amount = #{where.modelAmount,jdbcType=NUMERIC}
+                and model_amount = #{where.modelAmount,jdbcType=INTEGER}
             </if>
             <if test="where.modelGift != null">
-                and model_gift = #{where.modelGift,jdbcType=NUMERIC}
+                and model_gift = #{where.modelGift,jdbcType=INTEGER}
             </if>
             <if test="where.discount != null">
                 and discount = #{where.discount,jdbcType=VARCHAR}
@@ -283,10 +283,10 @@
                 and description = #{where.description,jdbcType=VARCHAR}
             </if>
             <if test="where.ishot != null">
-                and ishot = #{where.ishot,jdbcType=OTHER}
+                and ishot = #{where.ishot,jdbcType=INTEGER}
             </if>
             <if test="where.status != null">
-                and status = #{where.status,jdbcType=OTHER}
+                and status = #{where.status,jdbcType=INTEGER}
             </if>
             <if test="where.updateTime != null">
                 and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
@@ -366,10 +366,10 @@
                 and model_name = #{modelName,jdbcType=VARCHAR}
             </if>
             <if test="modelAmount != null">
-                and model_amount = #{modelAmount,jdbcType=NUMERIC}
+                and model_amount = #{modelAmount,jdbcType=INTEGER}
             </if>
             <if test="modelGift != null">
-                and model_gift = #{modelGift,jdbcType=NUMERIC}
+                and model_gift = #{modelGift,jdbcType=INTEGER}
             </if>
             <if test="discount != null">
                 and discount = #{discount,jdbcType=VARCHAR}
@@ -378,10 +378,10 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="ishot != null">
-                and ishot = #{ishot,jdbcType=OTHER}
+                and ishot = #{ishot,jdbcType=INTEGER}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -414,10 +414,10 @@
                 and model_name = #{modelName,jdbcType=VARCHAR}
             </if>
             <if test="modelAmount != null">
-                and model_amount = #{modelAmount,jdbcType=NUMERIC}
+                and model_amount = #{modelAmount,jdbcType=INTEGER}
             </if>
             <if test="modelGift != null">
-                and model_gift = #{modelGift,jdbcType=NUMERIC}
+                and model_gift = #{modelGift,jdbcType=INTEGER}
             </if>
             <if test="discount != null">
                 and discount = #{discount,jdbcType=VARCHAR}
@@ -426,10 +426,10 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="ishot != null">
-                and ishot = #{ishot,jdbcType=OTHER}
+                and ishot = #{ishot,jdbcType=INTEGER}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}

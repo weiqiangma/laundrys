@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
  * (InvestLog)实体类
  *
  * @author mawkun
- * @since 2020-09-18 10:28:43
+ * @since 2020-09-21 09:56:27
  */
 @Data 
 public class InvestLog {
@@ -23,15 +23,15 @@ public class InvestLog {
     
     private String cartName;
     
-    private Integer cartNum;
+    private Long cartNum;
     
-    private Double investMoney;
+    private Long investMoney;
     
-    private Double giftMoney;
+    private Long giftMoney;
     
-    private Double amountMoney;
+    private Long amountMoney;
     
-    private Double residueMoney;
+    private Long residueMoney;
     
         @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")

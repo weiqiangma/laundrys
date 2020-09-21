@@ -23,7 +23,7 @@ public class UserSession {
 
     private String mobile;
 
-    private Double sumOfMoney;
+    private Long sumOfMoney;
 
     private String address;
 

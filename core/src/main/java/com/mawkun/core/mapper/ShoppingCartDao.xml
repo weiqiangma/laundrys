@@ -10,7 +10,7 @@
         <result property="goodsNum" column="goods_num" jdbcType="INTEGER"/>
         <result property="goodsPic" column="goods_pic" jdbcType="VARCHAR"/>
         <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
-        <result property="goodsPrice" column="goods_price" jdbcType="NUMERIC"/>
+        <result property="goodsPrice" column="goods_price" jdbcType="INTEGER"/>
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
@@ -58,7 +58,7 @@
                 and goods_name = #{goodsName,jdbcType=VARCHAR}
             </if>
             <if test="goodsPrice != null">
-                and goods_price = #{goodsPrice,jdbcType=NUMERIC}
+                and goods_price = #{goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="userName != null">
                 and user_name = #{userName,jdbcType=VARCHAR}
@@ -103,7 +103,7 @@
                 and goods_name = #{goodsName,jdbcType=VARCHAR}
             </if>
             <if test="goodsPrice != null">
-                and goods_price = #{goodsPrice,jdbcType=NUMERIC}
+                and goods_price = #{goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="userName != null">
                 and user_name = #{userName,jdbcType=VARCHAR}
@@ -195,7 +195,7 @@
              #{goodsName,jdbcType=VARCHAR},
           </if>
           <if test="goodsPrice != null">
-             #{goodsPrice,jdbcType=NUMERIC},
+             #{goodsPrice,jdbcType=INTEGER},
           </if>
           <if test="userName != null">
              #{userName,jdbcType=VARCHAR},
@@ -218,7 +218,7 @@
          (id, goods_id, kind_id, user_id, goods_num, goods_pic, goods_name, goods_price, user_name, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.goodsId,jdbcType=INTEGER}, #{item.kindId,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.goodsNum,jdbcType=INTEGER}, #{item.goodsPic,jdbcType=VARCHAR}, #{item.goodsName,jdbcType=VARCHAR}, #{item.goodsPrice,jdbcType=NUMERIC}, #{item.userName,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.goodsId,jdbcType=INTEGER}, #{item.kindId,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.goodsNum,jdbcType=INTEGER}, #{item.goodsPic,jdbcType=VARCHAR}, #{item.goodsName,jdbcType=VARCHAR}, #{item.goodsPrice,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -245,7 +245,7 @@
                 goods_name = #{goodsName,jdbcType=VARCHAR},
             </if>
             <if test="goodsPrice != null">
-                goods_price = #{goodsPrice,jdbcType=NUMERIC},
+                goods_price = #{goodsPrice,jdbcType=INTEGER},
             </if>
             <if test="userName != null and userName != ''">
                 user_name = #{userName,jdbcType=VARCHAR},
@@ -286,7 +286,7 @@
                 goods_name = #{set.goodsName,jdbcType=VARCHAR},
             </if>
             <if test="where.goodsPrice == null and set.goodsPrice != null">
-                goods_price = #{set.goodsPrice,jdbcType=NUMERIC},
+                goods_price = #{set.goodsPrice,jdbcType=INTEGER},
             </if>
             <if test="where.userName == null and set.userName != null and set.userName != ''">
                 user_name = #{set.userName,jdbcType=VARCHAR},
@@ -324,7 +324,7 @@
                 and goods_name = #{where.goodsName,jdbcType=VARCHAR}
             </if>
             <if test="where.goodsPrice != null">
-                and goods_price = #{where.goodsPrice,jdbcType=NUMERIC}
+                and goods_price = #{where.goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="where.userName != null">
                 and user_name = #{where.userName,jdbcType=VARCHAR}
@@ -435,7 +435,7 @@
                 and goods_name = #{goodsName,jdbcType=VARCHAR}
             </if>
             <if test="goodsPrice != null">
-                and goods_price = #{goodsPrice,jdbcType=NUMERIC}
+                and goods_price = #{goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="userName != null">
                 and user_name = #{userName,jdbcType=VARCHAR}
@@ -489,7 +489,7 @@
                 and goods_name = #{goodsName,jdbcType=VARCHAR}
             </if>
             <if test="goodsPrice != null">
-                and goods_price = #{goodsPrice,jdbcType=NUMERIC}
+                and goods_price = #{goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="userName != null">
                 and user_name = #{userName,jdbcType=VARCHAR}

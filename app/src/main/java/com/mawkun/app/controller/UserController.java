@@ -92,7 +92,7 @@ public class UserController extends BaseController {
 
     @PostMapping("/getUserMobile")
     @ApiOperation(value="获取微信用户手机号", notes="获取微信用户手机号")
-    public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String code, String iv) {
+    public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String iv) {
         User user = userServiceExt.getById(session.getId());
         if(user == null) return sendArgsError("未查询到该用户信息");
         String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, session.getSessionKey(), iv);
@@ -103,8 +103,8 @@ public class UserController extends BaseController {
 
     @PostMapping("/rechargetMoney")
     @ApiOperation(value = "充值接口", notes = "充值接口")
-    public JsonResult rechargetMoney(@LoginedAuth UserSession session, Long MemberCardId, Integer cartNum) {
-        if(MemberCardId == null) return sendArgsError("请输入充值卡券");
+    public JsonResult rechargetMoney(@LoginedAuth UserSession session, Long MemberCardId, Long cartNum) {
+        if(MemberCardId == null) return sendArgsError("请选择充值卡券");
         if(cartNum == null) return sendArgsError("请输入充值卡券数量");
         User user = userServiceExt.getById(session.getId());
         if(user == null) return sendArgsError("未查询到用户信息,请联系客服人员处理");

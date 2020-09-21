@@ -8,79 +8,79 @@ import org.springframework.format.annotation.DateTimeFormat;
  * (User)实体类
  *
  * @author mawkun
- * @date 2020-09-20 20:37:16
+ * @since 2020-09-21 10:06:56
  */
 @Data 
 public class User {
     
-        private Long id;
+    private Long id;
     /**
     * 微信用户唯一ID
     */
-        private String openId;
+    private String openId;
     /**
     * 用户昵称
     */
-        private String userName;
+    private String userName;
     /**
     * 真实姓名
     */
-        private String realName;
+    private String realName;
     /**
     * 头像
     */
-        private String avatarUrl;
+    private String avatarUrl;
     /**
     * 联系方式
     */
-        private String mobile;
+    private String mobile;
     /**
     * 性别 0：未知 1：男 2：女
     */
-        private Object gender;
+    private Integer gender;
     /**
     * 地址
     */
-        private String address;
+    private String address;
     /**
     * 类型
     */
-        private Integer kind;
+    private Integer kind;
     /**
     * 余额
     */
-        private Double sumOfMoney;
+    private Long sumOfMoney;
     /**
     * 积分
     */
-        private Integer integral;
+    private Integer integral;
     /**
     * 国家
     */
-        private String country;
+    private String country;
     /**
     * 省份
     */
-        private String province;
+    private String province;
     /**
     * 城市
     */
-        private String city;
+    private String city;
     /**
     * 状态
     */
-        private Object status;
+    private Integer status;
     /**
     * 更新时间
     */
         @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date updateTime;
+private Date updateTime;
     /**
     * 创建时间
     */
         @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+private Date createTime;
 
 }

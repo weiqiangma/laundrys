@@ -9,10 +9,10 @@
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="cartName" column="cart_name" jdbcType="VARCHAR"/>
         <result property="cartNum" column="cart_num" jdbcType="INTEGER"/>
-        <result property="investMoney" column="invest_money" jdbcType="NUMERIC"/>
-        <result property="giftMoney" column="gift_money" jdbcType="NUMERIC"/>
-        <result property="amountMoney" column="amount_money" jdbcType="NUMERIC"/>
-        <result property="residueMoney" column="residue_money" jdbcType="NUMERIC"/>
+        <result property="investMoney" column="invest_money" jdbcType="INTEGER"/>
+        <result property="giftMoney" column="gift_money" jdbcType="INTEGER"/>
+        <result property="amountMoney" column="amount_money" jdbcType="INTEGER"/>
+        <result property="residueMoney" column="residue_money" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
@@ -54,16 +54,16 @@
                 and cart_num = #{cartNum,jdbcType=INTEGER}
             </if>
             <if test="investMoney != null">
-                and invest_money = #{investMoney,jdbcType=NUMERIC}
+                and invest_money = #{investMoney,jdbcType=INTEGER}
             </if>
             <if test="giftMoney != null">
-                and gift_money = #{giftMoney,jdbcType=NUMERIC}
+                and gift_money = #{giftMoney,jdbcType=INTEGER}
             </if>
             <if test="amountMoney != null">
-                and amount_money = #{amountMoney,jdbcType=NUMERIC}
+                and amount_money = #{amountMoney,jdbcType=INTEGER}
             </if>
             <if test="residueMoney != null">
-                and residue_money = #{residueMoney,jdbcType=NUMERIC}
+                and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -96,16 +96,16 @@
                 and cart_num = #{cartNum,jdbcType=INTEGER}
             </if>
             <if test="investMoney != null">
-                and invest_money = #{investMoney,jdbcType=NUMERIC}
+                and invest_money = #{investMoney,jdbcType=INTEGER}
             </if>
             <if test="giftMoney != null">
-                and gift_money = #{giftMoney,jdbcType=NUMERIC}
+                and gift_money = #{giftMoney,jdbcType=INTEGER}
             </if>
             <if test="amountMoney != null">
-                and amount_money = #{amountMoney,jdbcType=NUMERIC}
+                and amount_money = #{amountMoney,jdbcType=INTEGER}
             </if>
             <if test="residueMoney != null">
-                and residue_money = #{residueMoney,jdbcType=NUMERIC}
+                and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -182,16 +182,16 @@
              #{cartNum,jdbcType=INTEGER},
           </if>
           <if test="investMoney != null">
-             #{investMoney,jdbcType=NUMERIC},
+             #{investMoney,jdbcType=INTEGER},
           </if>
           <if test="giftMoney != null">
-             #{giftMoney,jdbcType=NUMERIC},
+             #{giftMoney,jdbcType=INTEGER},
           </if>
           <if test="amountMoney != null">
-             #{amountMoney,jdbcType=NUMERIC},
+             #{amountMoney,jdbcType=INTEGER},
           </if>
           <if test="residueMoney != null">
-             #{residueMoney,jdbcType=NUMERIC},
+             #{residueMoney,jdbcType=INTEGER},
           </if>
           <if test="createTime != null">
              #{createTime,jdbcType=TIMESTAMP},
@@ -205,7 +205,7 @@
          (id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, amount_money, residue_money, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.cartNum,jdbcType=INTEGER}, #{item.investMoney,jdbcType=NUMERIC}, #{item.giftMoney,jdbcType=NUMERIC}, #{item.amountMoney,jdbcType=NUMERIC}, #{item.residueMoney,jdbcType=NUMERIC}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.cartNum,jdbcType=INTEGER}, #{item.investMoney,jdbcType=INTEGER}, #{item.giftMoney,jdbcType=INTEGER}, #{item.amountMoney,jdbcType=INTEGER}, #{item.residueMoney,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -229,16 +229,16 @@
                 cart_num = #{cartNum,jdbcType=INTEGER},
             </if>
             <if test="investMoney != null">
-                invest_money = #{investMoney,jdbcType=NUMERIC},
+                invest_money = #{investMoney,jdbcType=INTEGER},
             </if>
             <if test="giftMoney != null">
-                gift_money = #{giftMoney,jdbcType=NUMERIC},
+                gift_money = #{giftMoney,jdbcType=INTEGER},
             </if>
             <if test="amountMoney != null">
-                amount_money = #{amountMoney,jdbcType=NUMERIC},
+                amount_money = #{amountMoney,jdbcType=INTEGER},
             </if>
             <if test="residueMoney != null">
-                residue_money = #{residueMoney,jdbcType=NUMERIC},
+                residue_money = #{residueMoney,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -267,16 +267,16 @@
                 cart_num = #{set.cartNum,jdbcType=INTEGER},
             </if>
             <if test="where.investMoney == null and set.investMoney != null">
-                invest_money = #{set.investMoney,jdbcType=NUMERIC},
+                invest_money = #{set.investMoney,jdbcType=INTEGER},
             </if>
             <if test="where.giftMoney == null and set.giftMoney != null">
-                gift_money = #{set.giftMoney,jdbcType=NUMERIC},
+                gift_money = #{set.giftMoney,jdbcType=INTEGER},
             </if>
             <if test="where.amountMoney == null and set.amountMoney != null">
-                amount_money = #{set.amountMoney,jdbcType=NUMERIC},
+                amount_money = #{set.amountMoney,jdbcType=INTEGER},
             </if>
             <if test="where.residueMoney == null and set.residueMoney != null">
-                residue_money = #{set.residueMoney,jdbcType=NUMERIC},
+                residue_money = #{set.residueMoney,jdbcType=INTEGER},
             </if>
             <if test="where.createTime == null and set.createTime != null">
                 create_time = #{set.createTime,jdbcType=TIMESTAMP},
@@ -302,16 +302,16 @@
                 and cart_num = #{where.cartNum,jdbcType=INTEGER}
             </if>
             <if test="where.investMoney != null">
-                and invest_money = #{where.investMoney,jdbcType=NUMERIC}
+                and invest_money = #{where.investMoney,jdbcType=INTEGER}
             </if>
             <if test="where.giftMoney != null">
-                and gift_money = #{where.giftMoney,jdbcType=NUMERIC}
+                and gift_money = #{where.giftMoney,jdbcType=INTEGER}
             </if>
             <if test="where.amountMoney != null">
-                and amount_money = #{where.amountMoney,jdbcType=NUMERIC}
+                and amount_money = #{where.amountMoney,jdbcType=INTEGER}
             </if>
             <if test="where.residueMoney != null">
-                and residue_money = #{where.residueMoney,jdbcType=NUMERIC}
+                and residue_money = #{where.residueMoney,jdbcType=INTEGER}
             </if>
             <if test="where.createTime != null">
                 and create_time = #{where.createTime,jdbcType=TIMESTAMP}
@@ -405,16 +405,16 @@
                 and cart_num = #{cartNum,jdbcType=INTEGER}
             </if>
             <if test="investMoney != null">
-                and invest_money = #{investMoney,jdbcType=NUMERIC}
+                and invest_money = #{investMoney,jdbcType=INTEGER}
             </if>
             <if test="giftMoney != null">
-                and gift_money = #{giftMoney,jdbcType=NUMERIC}
+                and gift_money = #{giftMoney,jdbcType=INTEGER}
             </if>
             <if test="amountMoney != null">
-                and amount_money = #{amountMoney,jdbcType=NUMERIC}
+                and amount_money = #{amountMoney,jdbcType=INTEGER}
             </if>
             <if test="residueMoney != null">
-                and residue_money = #{residueMoney,jdbcType=NUMERIC}
+                and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -456,16 +456,16 @@
                 and cart_num = #{cartNum,jdbcType=INTEGER}
             </if>
             <if test="investMoney != null">
-                and invest_money = #{investMoney,jdbcType=NUMERIC}
+                and invest_money = #{investMoney,jdbcType=INTEGER}
             </if>
             <if test="giftMoney != null">
-                and gift_money = #{giftMoney,jdbcType=NUMERIC}
+                and gift_money = #{giftMoney,jdbcType=INTEGER}
             </if>
             <if test="amountMoney != null">
-                and amount_money = #{amountMoney,jdbcType=NUMERIC}
+                and amount_money = #{amountMoney,jdbcType=INTEGER}
             </if>
             <if test="residueMoney != null">
-                and residue_money = #{residueMoney,jdbcType=NUMERIC}
+                and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
