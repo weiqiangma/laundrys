@@ -123,9 +123,7 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         return result;
     }
 
-    public Long countTransportFee(Long shopId, Long addressId, Long amount) {
-        UserAddress userAddress = userAddressServiceExt.getById(addressId);
-        Shop shop = shopDaoExt.getById(shopId);
+    public Long countTransportFee(Shop shop, UserAddress userAddress, Long amount) {
         String location = userAddress.getLocation();
         String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(location, shop.getLocation());
         Integer distance = NumberUtils.str2Int(distanceStr);

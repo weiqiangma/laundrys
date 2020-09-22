@@ -11,6 +11,7 @@ import com.mawkun.core.utils.WechatDecryptDataUtil;
 import com.xiaoleilu.hutool.crypto.SecureUtil;
 import com.xiaoleilu.hutool.lang.Base64;
 import com.xiaoleilu.hutool.lang.Validator;
+import com.xiaoleilu.hutool.util.XmlUtil;
 import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.security.SecurityUtil;
@@ -40,7 +41,9 @@ public class WxApiServiceExt {
     @Value("${wx.AppSecret}")
     private String AppSecret;
     @Value("${wx.macId}")
-    private String machId;
+    private String macId;
+    @Value("${wx.macKey}")
+    private String macKey;
 
     private static final String KEY_ALGORITHM = "AES";
     private static final String ALGORITHM_STR = "AES/CBC/PKCS7Padding";
@@ -81,22 +84,36 @@ public class WxApiServiceExt {
     public String getPhoneNumber(String encryptedData, String sessionKey, String iv) {
         String result = "";
         result = WechatDecryptDataUtil.decrypt(AppId,encryptedData,sessionKey,iv);
+        JSONObject object = JSONObject.parseObject(result);
+        result = object.getString("phoneNumber");
         return result;
     }
 
     /**
-     * 统一下单接口
+     * 统一下单接口(生成预支付ID)
      */
-    public void unifyOrder(String openId, String orderNo, String totalFee, String body, String detail, String notifyUrl, String tradeType, String spbillCreateIp) {
+    public Map<String, String> unifyOrder(String openId, String orderNo, String totalFee, String body, String detail, String notifyUrl, String tradeType, String spbillCreateIp) {
+        String prepayId = "";
         String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
         String param = createParam(openId, orderNo, totalFee, body, detail, notifyUrl, tradeType, spbillCreateIp);
         try {
             HttpResult result = HttpUtils.post(url, param, "UTF-8");
-            String message = result.getMessage();
-            System.out.println(message);
+            String message = result.getHtml();
+            Map<String, String> map = XmlUtils.xmlStr2Map(message);
+            String resultCode = map.get("result_code");
+            String resultMsg = map.get("result_msg");
+            if(StringUtils.equals("success", resultCode)&&StringUtils.equals("OK", resultMsg)) {
+                return map;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return Collections.emptyMap();
+    }
+
+    public void wxPay(Map<String, String> map) {
+        String prepayId = map.get("prepay_id");
+        String nonceStr = map.get("nonce_str");
 
     }
 
@@ -115,7 +132,7 @@ public class WxApiServiceExt {
         String randomStr = StringUtils.createRandomStr(30);
         SortedMap<String, String> param = new TreeMap<>();
         param.put("appid", AppId);
-        param.put("mch_id", machId);
+        param.put("mch_id", macId);
         param.put("nonce_str", randomStr);          //生成32位一下的随机字符串
         param.put("body", body);                    //商品名称
         param.put("detail", detail);                //商品详情
@@ -147,7 +164,7 @@ public class WxApiServiceExt {
                 if(iterator.hasNext()) {
                     sb.append("&");
                 } else {
-                    sb.append("&key=" + machId);
+                    sb.append("&key=" + macKey);
                 }
             }
         }

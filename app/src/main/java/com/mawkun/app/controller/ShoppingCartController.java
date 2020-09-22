@@ -124,7 +124,7 @@ public class ShoppingCartController extends BaseController {
                 int feeDiff = 0;
                 int lowAmount = sortList.get(i).getLowAmount();
                 if(amount >= lowAmount) {
-                    object.put("fee", 0);
+                    object.put("transportFee", 0);
                     object.put("feeDiff", "");
                     return sendSuccess(object);
                 }
@@ -139,6 +139,7 @@ public class ShoppingCartController extends BaseController {
         return sendSuccess(object);
     }
 
+    @PostMapping("/countOrderForm")
     public JsonResult countOrderForm(@LoginedAuth UserSession session, OrderFormQuery query) {
         /**
          * 1.查询用户是否存在
@@ -147,31 +148,32 @@ public class ShoppingCartController extends BaseController {
          * 4.判断用户运费生成最终金额
          */
         User user = userServiceExt.getById(session.getId());
-        if(user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
+        if (user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
         List<ShoppingCart> cartList = shoppingCartServiceExt.findByUserId(user.getId());
-        if(cartList.isEmpty()) return sendArgsError("购物车内无商品信息,请先添加");
+        if (cartList.isEmpty()) return sendArgsError("购物车内无商品信息,请先添加");
         //计算购物车内商品总价格+运费
         long resultAmount = 0;
-        for(ShoppingCart cart : cartList) {
+        for (ShoppingCart cart : cartList) {
             Long price = cart.getGoodsPrice();
             Integer goodsNum = cart.getGoodsNum();
             Long goodsAmount = price * goodsNum;
             resultAmount = goodsAmount + resultAmount;
         }
         UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getAddressId(), user.getId());
-        if(address == null) return sendArgsError("未查询到该收获地址,请选择其它地址或重新添加");
+        if (address == null) return sendArgsError("未查询到该收获地址,请选择其它地址或重新添加");
         Shop shop = shopServiceExt.getById(query.getShopId());
-        if(shop == null) return sendArgsError("所选店铺不存在,请重新选择");
-        Long transportFee = shoppingCartServiceExt.countTransportFee(address.getId(), shop.getId(), resultAmount);
-        if(!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
+        if (shop == null) return sendArgsError("所选店铺不存在,请重新选择");
+        Long transportFee = shoppingCartServiceExt.countTransportFee(shop, address, resultAmount);
+        if (!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
         //商品总价+运费
         resultAmount = resultAmount + transportFee;
-        if(resultAmount != query.getAmount()) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
+        Long amount = query.getAmount() + query.getTransportFee();
+        if (resultAmount != amount) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
         //判断用户是否使用余额支付，如果是减去对应余额
-        if(query.getIntegral() != null && query.getIntegral() > 0) {
+        if (query.getIntegral() != null && query.getIntegral() > 0) {
             Integer integral = user.getIntegral();
             Long sumOfMoney = user.getSumOfMoney();
-            if(sumOfMoney >= resultAmount) {
+            if (sumOfMoney >= resultAmount) {
                 sumOfMoney = sumOfMoney - resultAmount;
             } else {
                 return sendArgsError("您的余额已不足,请先充值或选择其它支付方式");
@@ -179,7 +181,9 @@ public class ShoppingCartController extends BaseController {
         }
         //生成待支付订单
         orderFormServiceExt.generateOrderForm(user, query, address, resultAmount);
-        return sendSuccess();
+        //清空购物车
+        shoppingCartServiceExt.deleteByUserId(session.getId());
+        return sendSuccess("下单成功");
     }
 
 }

@@ -56,4 +56,16 @@ public class GoodsServiceExt extends GoodsService {
         return goodsDaoExt.selectByName(name);
     }
 
+    public Goods convertUnit(Goods goods) {
+        goods.setPrice(goods.getPrice());
+        return goods;
+    }
+
+    public List<Goods> convertUnit(List<Goods> list) {
+        for(Goods goods : list) {
+            goods.setPrice(goods.getPrice()/1000);
+        }
+        return list;
+    }
+
 }

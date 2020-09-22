@@ -66,7 +66,7 @@ public class MemberCardController extends BaseController {
         return sendSuccess(result);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deleteBatch")
     public JsonResult deleteBatch(@LoginedAuth UserSession session, String ids){
         int result = 0;
         if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");

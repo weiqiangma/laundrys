@@ -41,21 +41,21 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param query
      * @return
      */
-    public PageInfo<OrderFormVo> pageByEntity(UserSession session, OrderFormQuery query) {
+    public PageInfo<OrderFormVo> pageByEntity(OrderFormQuery query) {
         query.init();
-        //如果是顾客只能查看自己的订单
-        if(session.isCustomer()) {
-            query.setUserId(session.getId());
-        }
-        //配送员可以查看与之关联店铺的订单
-        if(session.isDistributor()) {
-            ShopUser shopUser = new ShopUser();
-            shopUser.setUserId(session.getId());
-            List<ShopUser> suList = shopUserDaoExt.listByEntity(shopUser);
-            List<Long> shopIdList = suList.stream().map(ShopUser::getShopId).collect(Collectors.toList());
-            query.setShopIdList(shopIdList);
-            query.setCreateTime(new Date());
-        }
+        PageHelper.startPage(query.getPageNo(), query.getPageSize());
+        List<OrderFormVo> list = orderFormDaoExt.selectList(query);
+        return new PageInfo<>(list);
+    }
+
+    public PageInfo<OrderFormVo> getDistributorOrder(Long userId, OrderFormQuery query) {
+        query.init();
+        ShopUser shopUser = new ShopUser();
+        shopUser.setUserId(userId);
+        List<ShopUser> suList = shopUserDaoExt.listByEntity(shopUser);
+        List<Long> shopIdList = suList.stream().map(ShopUser::getShopId).collect(Collectors.toList());
+        query.setShopIdList(shopIdList);
+        query.setCreateTime(new Date());
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<OrderFormVo> list = orderFormDaoExt.selectList(query);
         return new PageInfo<>(list);

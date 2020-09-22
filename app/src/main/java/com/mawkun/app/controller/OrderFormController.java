@@ -59,7 +59,15 @@ public class OrderFormController extends BaseController {
     @GetMapping("/pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
     public JsonResult pageList(@LoginedAuth UserSession session, OrderFormQuery query) {
-        PageInfo page = orderFormServiceExt.pageByEntity(session, query);
+        if(session.getId() > 0) query.setUserId(session.getId());
+        PageInfo page = orderFormServiceExt.pageByEntity(query);
+        return sendSuccess(page);
+    }
+
+    @GetMapping("/getDistributorOrder")
+    @ApiOperation(value="配送员订单列表分页", notes="配送员订单列表分页")
+    public JsonResult getDistributorOrder(@LoginedAuth UserSession session, OrderFormQuery query) {
+        PageInfo page = orderFormServiceExt.getDistributorOrder(session.getId(), query);
         return sendSuccess(page);
     }
 
