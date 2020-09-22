@@ -13,11 +13,12 @@
         <result property="giftMoney" column="gift_money" jdbcType="INTEGER"/>
         <result property="amountMoney" column="amount_money" jdbcType="INTEGER"/>
         <result property="residueMoney" column="residue_money" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, amount_money, residue_money, create_time      
+      id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, amount_money, residue_money, status, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -65,6 +66,9 @@
             <if test="residueMoney != null">
                 and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
+            </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
@@ -106,6 +110,9 @@
             </if>
             <if test="residueMoney != null">
                 and residue_money = #{residueMoney,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -158,6 +165,9 @@
           <if test="residueMoney != null">
              residue_money,
           </if>
+          <if test="status != null">
+             status,
+          </if>
           <if test="createTime != null">
              create_time,
           </if>
@@ -193,6 +203,9 @@
           <if test="residueMoney != null">
              #{residueMoney,jdbcType=INTEGER},
           </if>
+          <if test="status != null">
+             #{status,jdbcType=INTEGER},
+          </if>
           <if test="createTime != null">
              #{createTime,jdbcType=TIMESTAMP},
           </if>
@@ -202,10 +215,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into invest_log
-         (id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, amount_money, residue_money, create_time)
+         (id, user_id, cart_id, user_name, cart_name, cart_num, invest_money, gift_money, amount_money, residue_money, status, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.cartNum,jdbcType=INTEGER}, #{item.investMoney,jdbcType=INTEGER}, #{item.giftMoney,jdbcType=INTEGER}, #{item.amountMoney,jdbcType=INTEGER}, #{item.residueMoney,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.cartNum,jdbcType=INTEGER}, #{item.investMoney,jdbcType=INTEGER}, #{item.giftMoney,jdbcType=INTEGER}, #{item.amountMoney,jdbcType=INTEGER}, #{item.residueMoney,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -239,6 +252,9 @@
             </if>
             <if test="residueMoney != null">
                 residue_money = #{residueMoney,jdbcType=INTEGER},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -278,6 +294,9 @@
             <if test="where.residueMoney == null and set.residueMoney != null">
                 residue_money = #{set.residueMoney,jdbcType=INTEGER},
             </if>
+            <if test="where.status == null and set.status != null">
+                status = #{set.status,jdbcType=INTEGER},
+            </if>
             <if test="where.createTime == null and set.createTime != null">
                 create_time = #{set.createTime,jdbcType=TIMESTAMP},
             </if>
@@ -312,6 +331,9 @@
             </if>
             <if test="where.residueMoney != null">
                 and residue_money = #{where.residueMoney,jdbcType=INTEGER}
+            </if>
+            <if test="where.status != null">
+                and status = #{where.status,jdbcType=INTEGER}
             </if>
             <if test="where.createTime != null">
                 and create_time = #{where.createTime,jdbcType=TIMESTAMP}
@@ -368,6 +390,11 @@
                   when id = #{item.id} then #{item.residueMoney}
                  </foreach>
             </trim>
+            <trim prefix="status = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.status}
+                 </foreach>
+            </trim>
             <trim prefix="create_time = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.createTime}
@@ -415,6 +442,9 @@
             </if>
             <if test="residueMoney != null">
                 and residue_money = #{residueMoney,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -466,6 +496,9 @@
             </if>
             <if test="residueMoney != null">
                 and residue_money = #{residueMoney,jdbcType=INTEGER}
+            </if>
+            <if test="status != null">
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}

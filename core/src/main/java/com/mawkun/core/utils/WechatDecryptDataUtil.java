@@ -7,23 +7,31 @@ import org.bouncycastle.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
 import java.security.Key;
 import java.security.Security;
+import java.util.regex.Pattern;
+
 public class WechatDecryptDataUtil {
 
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws UnknownHostException, UnsupportedEncodingException {
 //        String appId = "wx4f4bc4dec97d474b";
-//        String encryptedData = "CiyLU1Aw2KjvrjMdj8YKliAjtP4gsMZMQmRzooG2xrDcvSnxIMXFufNstNGTyaGS9uT5geRa0W4oTOb1WT7fJlAC+oNPdbB+3hVbJSRgv+4lGOETKUQz6OYStslQ142dNCuabNPGBzlooOmB231qMM85d2/fV6ChevvXvQP8Hkue1poOFtnEtpyxVLW1zAo6/1Xx1COxFvrc2d7UL/lmHInNlxuacJXwu0fjpXfz/YqYzBIBzD6WUfTIF9GRHpOn/Hz7saL8xz+W//FRAUid1OksQaQx4CMs8LOddcQhULW4ucetDf96JcR3g0gfRK4PC7E/r7Z6xNrXd2UIeorGj5Ef7b1pJAYB6Y5anaHqZ9J6nKEBvB4DnNLIVWSgARns/8wR2SiRS7MNACwTyrGvt9ts8p12PKFdlqYTopNHR1Vf7XjfhQlVsAJdNiKdYmYVoKlaRv85IfVunYzO0IKXsyl7JCUjCpoG20f0a04COwfneQAGGwd5oa+T8yO5hzuyDb/XcxxmK01EpqOyuxINew==";
-//        String sessionKey = "tiihtNczf5v6AKRyjwEUhQ==";
-//        String iv = "r7BXXKkLb8qrSNn05n0qiA==";
+//        String encryptedData = "ia8m7n+A9fvFyXYgRAvL+iPCZX1eg2yszvfN1QObjBA7V8Dhjf3S+GcineUxjev1lRDQfJpYOtZQ4TcJFe3UyNXZ9lVUwB10bnBE6LFCA9Y6a/ETgMw1aatck38IYn8OrEoK2Rf6zb1cH7cRwQUIJH8VcJOaXoKSAw8n/UsfA37MAWnM2UXg7o+5hwfe/TQpxQny4bUMkrFKWHjeQLs3XO2tXWXNgFVOG/hzMvGkFKAhvWM9cm2wurbXFSQwK8Kx8kPcsOszq7QKRB19RDZp9v7EM47mtu7UQponkalFh1OXeFw8Ky2CpbzO26s2jBGJHHtRqWv8KytZ2vSqQ4Nu4riU5cQuvJqQsRwKkSYnFqGMpSA0/Lb1ayk1qHxVhsG7oKzaVG6jRt6K7erWT4B/qnMOfafS83OjL+fvwNd7C+guYq8jZYXvelmxiGxw37LqomAv1edjutwTAv3ojg1BDRvVkZHVZMvOXBHzMBorBRy0IfHuo1NGFjYvhyKSwriDV6ME/43erUDpWKzFg2q1eA==";
+//        String sessionKey = "9cZbb6alMMECYRaLAjzFiQ==";
+//        String iv ="zTnqlW1TsJmkHgftI/Ka0A==";
 //        String result = decrypt(appId, encryptedData, sessionKey, iv);
-//        System.out.println(decrypt(appId, encryptedData, sessionKey, iv));
+//        System.out.println(result);
         InetAddress addr = InetAddress.getLocalHost();
-        System.out.println(addr);
-        String hostname = addr.getHostName();
-        System.out.println("Local host name: "+hostname);
+        String hostName = addr.getHostName();
+        String ip = addr.getHostAddress();
+        byte[] addressByte = addr.getAddress();
+        String address = new String(addressByte, "UTF-8");
+        System.out.println("host:" + addr.getHostName());
+        System.out.println("ip:" + addr.getHostAddress());
     }
 
     private static final String KEY_ALGORITHM = "AES";
@@ -98,6 +106,4 @@ public class WechatDecryptDataUtil {
         }
         return result;
     }
-
-
 }

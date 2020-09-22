@@ -38,7 +38,12 @@ public interface Constant {
     //=============================商品状态================================//
     int GOODS_GROUNDING = 0;    //上架
     int GOODS_UNDERCARRIAGE = 1;//下架
+    //=============================充值方式================================//
+    int RECHARGE_WITH_MONEY = 1;    //直接使用金额
+    int RECHARGE_WITH_CARD = 2;     //购买充值卡
 
+    String INVEST_WITH_MONEY = "用户金额充值";
+    String INVEST_WITH_CARD = "充值卡";
     //=============================运费等级配置=============================//
     String TRANSPORT_LEVEL1 = "transport_level1";
     String TRANSPORT_LEVEL2 = "transport_level2";

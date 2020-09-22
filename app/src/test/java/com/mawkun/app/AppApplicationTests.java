@@ -1,5 +1,6 @@
 package com.mawkun.app;
 
+import cn.pertech.common.http.HttpUtils;
 import com.mawkun.core.base.entity.OrderForm;
 import com.mawkun.core.service.OrderFormServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
@@ -34,15 +35,16 @@ class AppApplicationTests {
     @Test
     void createOrder() {
         String openId = "owrdq5NOMPpRLdTI7MJ-ihHU0iVQ";
-        String orderNo = "20150806125346";
-        String totalFee = "15000";
+        String orderNo = "20150806120341";
+        String totalFee = "1";
         String body = "短袖";
         String detail = "夏日清凉短袖";
         String notifyUrl = "http://www.baidu.com";
         String tradeType = "JSAPI";
         String ip = "125.111.199.42";
 
-        wxApiServiceExt.unifyOrder(openId, orderNo, totalFee, body, detail, notifyUrl, tradeType, ip);
+        String msg = wxApiServiceExt.unifyOrder(openId, orderNo, totalFee, body, detail, notifyUrl, tradeType, ip);
+        System.out.println(msg);
     }
 
 }

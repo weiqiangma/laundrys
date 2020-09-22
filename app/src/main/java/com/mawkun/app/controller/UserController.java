@@ -2,6 +2,7 @@ package com.mawkun.app.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import cn.pertech.common.utils.XmlUtils;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
@@ -17,9 +18,17 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author mawkun
@@ -29,6 +38,11 @@ import java.util.List;
 @RequestMapping("/api/user")
 @Api(tags={"用户操作接口"})
 public class UserController extends BaseController {
+
+    @Value("${wx.AppId}")
+    private String AppId;
+    @Value("${wx.macId}")
+    private String macId;
     
     @Autowired
     private UserServiceExt userServiceExt;
@@ -103,13 +117,54 @@ public class UserController extends BaseController {
 
     @PostMapping("/rechargetMoney")
     @ApiOperation(value = "充值接口", notes = "充值接口")
-    public JsonResult rechargetMoney(@LoginedAuth UserSession session, Long MemberCardId, Long cartNum) {
-        if(MemberCardId == null) return sendArgsError("请选择充值卡券");
-        if(cartNum == null) return sendArgsError("请输入充值卡券数量");
+    public JsonResult rechargetMoney(@LoginedAuth UserSession session,Integer type, Long cardId, Long money) {
+        if(type == null) return sendArgsError("请选择充值方式");
         User user = userServiceExt.getById(session.getId());
         if(user == null) return sendArgsError("未查询到用户信息,请联系客服人员处理");
-        MemberCard cart = MemberCardServiceExt.findByIdAndStatus(MemberCardId, Constant.MEMBER_CART_ON);
-        if(cart == null) return sendArgsError("未查询到充值卡信息，请重试");
-        return userServiceExt.rechargeMoney(user, cart, cartNum);
+        if(type == Constant.RECHARGE_WITH_CARD) {
+            if(cardId == null) return sendArgsError("请选择充值卡券");
+            MemberCard cart = MemberCardServiceExt.findByIdAndStatus(cardId, Constant.MEMBER_CART_ON);
+            if(cart == null) return sendArgsError("未查询到充值卡信息，请重新选择");
+            userServiceExt.rechargeMoney(user, cart);
+        }
+        if(type == Constant.RECHARGE_WITH_MONEY) {
+            userServiceExt.rechargeMoney(user, money);
+        }
+        return sendSuccess("充值成功");
+    }
+
+    @PostMapping("/rechargeCallBack")
+    public JsonResult rechargeCallBack(HttpServletRequest request, HttpServletResponse response) {
+        String resXml = "";
+        String result = "";
+        try {
+            InputStream is = request.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            resXml = sb.toString();
+            logger.info("微信小程序支付回调报文：" + resXml);
+            Map<String, String> map = XmlUtils.xmlStr2Map(resXml);
+            if (map.get("return_code").equals("SUCCESS") && map.get("appid").equals(AppId) && map.get("mch_id").equals(macId)) {
+                String orderNo = map.get("out_trade_no");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = "<xml><return_code>FAIL</return_code><return_msg>接口请求错误</return_msg></xml>";
+        }
+        return sendSuccess("ok", result);
     }
 }

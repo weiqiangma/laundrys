@@ -2,6 +2,7 @@ package com.mawkun.core.service;
 
 import cn.pertech.common.spring.JsonResult;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.UserVo;
@@ -12,6 +13,7 @@ import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.dao.SysParamDaoExt;
 import com.mawkun.core.dao.UserDaoExt;
 import com.mawkun.core.utils.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +23,16 @@ import java.util.List;
 @Service
 public class UserServiceExt extends UserService {
 
-    @Resource
+    @Autowired
     private UserDaoExt userDaoExt;
-    @Resource
+    @Autowired
     private ShopUserDaoExt shopUserDaoExt;
-    @Resource
+    @Autowired
     private InvestLogServiceExt investLogServiceExt;
-    @Resource
+    @Autowired
     private SysParamDaoExt sysParamDaoExt;
+    @Autowired
+    private WxApiServiceExt wxApiServiceExt;
     /**
      * 列表分页
      * @param query
@@ -71,17 +75,43 @@ public class UserServiceExt extends UserService {
      * 充值
      */
     @Transactional
-    public JsonResult rechargeMoney(User user, MemberCard cart, Long cartNum) {
-        Long investMoney = cart.getModelAmount() * cartNum;
-        Long giftMoney = cart.getModelAmount() * cartNum;
+    public int rechargeMoney(User user, MemberCard card) {
+        int result = -1;
+        Long investMoney = card.getModelAmount();
+        Long giftMoney = card.getModelGift();
         Long amountMoney = investMoney + giftMoney;
+        Long residueMoeny = user.getSumOfMoney() + amountMoney;
+        String orderNo = StringUtils.createRandomStr(18);
+        wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
+        //更新用户余额
         user.setSumOfMoney(user.getSumOfMoney() + amountMoney);
-        Long residueMoeny = user.getSumOfMoney();
-        user.setSumOfMoney(user.getSumOfMoney() + amountMoney);
-        int upResult = userDaoExt.update(user);
-        if(upResult < 1) return new JsonResult().error("用户充值失败");
-        int saveResult = investLogServiceExt.save(user, cart, cartNum, investMoney, giftMoney, amountMoney, residueMoeny);
-        if(saveResult < 1) return new JsonResult().error("用户充值日志添加失败");
-        return new JsonResult().success("用户充值成功");
+        try {
+            result = userDaoExt.update(user);
+            if (result < 1) throw new Exception("用户余额更新失败");
+            result = investLogServiceExt.save(user, card, investMoney, giftMoney, amountMoney, residueMoeny);
+            if (result < 1) throw new Exception("充值日志添加失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Transactional
+    public int rechargeMoney(User user, Long money) {
+        int result = -1;
+        Long investMoney = money;
+        long giftMoney = 0;
+        Long amountMoney = money;
+        Long residueMoeny = user.getSumOfMoney() + money;
+        user.setSumOfMoney(user.getSumOfMoney() + money);
+        try {
+            result = userDaoExt.update(user);
+            if (result < 1) throw new Exception("用户余额更新失败");
+            result = investLogServiceExt.save(user, null, investMoney, giftMoney, amountMoney, residueMoeny);
+            if (result < 1) throw new Exception("充值日志添加失败");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }

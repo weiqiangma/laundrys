@@ -31,13 +31,12 @@ public class InvestLogServiceExt extends InvestLogService {
         return new PageInfo<>(list);
     }
 
-    public int save(User user, MemberCard cart, Long cartNum, Long investMoney, Long giftMoney, Long amoutMoney, Long residueMoney) {
+    public int save(User user, MemberCard cart, Long investMoney, Long giftMoney, Long amoutMoney, Long residueMoney) {
         InvestLog investLog = new InvestLog();
         investLog.setUserId(user.getId());
         investLog.setUserName(user.getUserName());
-        investLog.setCartId(cart.getId());
-        investLog.setCartName(cart.getModelName());
-        investLog.setCartNum(cartNum);
+        if(cart != null) investLog.setCartId(cart.getId());
+        if(cart != null) investLog.setCartName(cart.getModelName());
         investLog.setInvestMoney(investMoney);
         investLog.setGiftMoney(giftMoney);
         investLog.setAmountMoney(amoutMoney);

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.InetAddress;
 import java.security.AlgorithmParameters;
 import java.security.Key;
 import java.security.MessageDigest;
@@ -44,11 +45,10 @@ public class WxApiServiceExt {
     private String macId;
     @Value("${wx.macKey}")
     private String macKey;
+    @Value("${wx.pay.notifyUrl}")
+    private String notifyUrl;
+    private final String trade_type = "JSAPI";
 
-    private static final String KEY_ALGORITHM = "AES";
-    private static final String ALGORITHM_STR = "AES/CBC/PKCS7Padding";
-    private static Key key;
-    private static Cipher cipher;
 
     /**
      * 根据code获取用户openId
@@ -92,29 +92,26 @@ public class WxApiServiceExt {
     /**
      * 统一下单接口(生成预支付ID)
      */
-    public Map<String, String> unifyOrder(String openId, String orderNo, String totalFee, String body, String detail, String notifyUrl, String tradeType, String spbillCreateIp) {
-        String prepayId = "";
+    public String unifyOrder(String openId, String orderNo, String totalFee, String body, String detail) {
+        String msg = "下单失败";
         String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        String param = createParam(openId, orderNo, totalFee, body, detail, notifyUrl, tradeType, spbillCreateIp);
+        String param = createParam(openId, orderNo, totalFee, body, detail);
         try {
             HttpResult result = HttpUtils.post(url, param, "UTF-8");
             String message = result.getHtml();
             Map<String, String> map = XmlUtils.xmlStr2Map(message);
             String resultCode = map.get("result_code");
-            String resultMsg = map.get("result_msg");
-            if(StringUtils.equals("success", resultCode)&&StringUtils.equals("OK", resultMsg)) {
-                return map;
+            if(StringUtils.equals("SUCCESS", resultCode)) {
+                String prepayId = map.get("prepay_id");
+                String nonceStr = map.get("nonce_str");
+                msg = createSecondParam(prepayId, nonceStr, "MD5");
+            } else{
+                throw new Exception("调用微信接口下单失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Collections.emptyMap();
-    }
-
-    public void wxPay(Map<String, String> map) {
-        String prepayId = map.get("prepay_id");
-        String nonceStr = map.get("nonce_str");
-
+        return msg;
     }
 
     /**
@@ -124,12 +121,11 @@ public class WxApiServiceExt {
      * @param totalFee
      * @param body
      * @param detail
-     * @param notifyUrl
-     * @param tradeType
      * @return
      */
-    public String createParam(String openId, String orderNo, String totalFee, String body, String detail, String notifyUrl, String tradeType, String spbillCreateIp) {
+    public String createParam(String openId, String orderNo, String totalFee, String body, String detail) {
         String randomStr = StringUtils.createRandomStr(30);
+        String spbillCreateIp = getHostIp();
         SortedMap<String, String> param = new TreeMap<>();
         param.put("appid", AppId);
         param.put("mch_id", macId);
@@ -139,10 +135,30 @@ public class WxApiServiceExt {
         param.put("out_trade_no", orderNo);         //订单序列号
         param.put("total_fee", totalFee);           //总费用
         param.put("notify_url", notifyUrl);         //回调地址
-        param.put("trade_type", "JSAPI");         //支付类型
+        param.put("trade_type", trade_type);         //支付类型
         param.put("openid", openId);                //用户openId
         param.put("spbill_create_ip", spbillCreateIp);
         param.put("sign", createSign(param));       //签名
+        return XmlUtils.map2Xml(param);
+    }
+
+
+    /**
+     * 生成二次签名所需参数供前端支付使用
+     * @param prepayId
+     * @param nonceStr
+     * @param signType
+     * @return
+     */
+    public String createSecondParam(String prepayId, String nonceStr, String signType) {
+        String timeStamp = String.valueOf(System.currentTimeMillis());
+        SortedMap<String, String> param = new TreeMap<>();
+        param.put("appid", AppId);
+        param.put("nonce_str", nonceStr);
+        param.put("package", "prepay_id=" + prepayId);
+        param.put("signType", signType);
+        param.put("timeStamp", timeStamp);
+        param.put("sign", createSign(param));
         return XmlUtils.map2Xml(param);
     }
 
@@ -177,49 +193,14 @@ public class WxApiServiceExt {
         return sign;
     }
 
-    /**
-     * 除去数组中的空值和签名参数
-     * @param sArray 签名参数组
-     * @return 去掉空值与签名参数后的新签名参数组
-     */
-    public static Map<String, String> paraFilter(Map<String, String> sArray) {
-
-        Map<String, String> result = new HashMap<String, String>();
-
-        if (sArray == null || sArray.size() <= 0) {
-            return result;
+    public String getHostIp() {
+        String ip = "";
+        try {
+            InetAddress addr = InetAddress.getLocalHost();
+            ip = addr.getHostAddress();
+        }catch (Exception e) {
+            e.printStackTrace();
         }
-
-        for (String key : sArray.keySet()) {
-            String value = sArray.get(key);
-            if (value == null || value.equals("") || key.equalsIgnoreCase("sign")
-                    || key.equalsIgnoreCase("sign_type")) {
-                continue;
-            }
-            result.put(key, value);
-        }
-
-        return result;
-    }
-
-    /**
-     * 把数组所有元素排序，并按照“参数=参数值”的模式用“&”字符拼接成字符串
-     * @param params 需要排序并参与字符拼接的参数组
-     * @return 拼接后字符串
-     */
-    public static String createLinkString(Map<String, String> params) {
-        List<String> keys = new ArrayList<String>(params.keySet());
-        Collections.sort(keys);
-        String prestr = "";
-        for (int i = 0; i < keys.size(); i++) {
-            String key = keys.get(i);
-            String value = params.get(key);
-            if (i == keys.size() - 1) {//拼接时，不包括最后一个&字符
-                prestr = prestr + key + "=" + value;
-            } else {
-                prestr = prestr + key + "=" + value + "&";
-            }
-        }
-        return prestr;
+        return ip;
     }
 }

@@ -515,7 +515,7 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
      * @return
      */
     public static String createOrderFormNo(String orderKey){
-        String currentDate = DateUtils.getCurrDate("yyyyMMddhh");
+        String currentDate = DateUtils.getCurrDate("yyyyMMddhhmm");
         String result = currentDate + orderKey;
         return result;
     }

@@ -15,6 +15,7 @@ import com.mawkun.core.base.service.OrderFormService;
 import com.mawkun.core.dao.GoodsDaoExt;
 import com.mawkun.core.dao.OrderFormDaoExt;
 import com.mawkun.core.dao.ShopUserDaoExt;
+import com.mawkun.core.dao.UserDaoExt;
 import com.mawkun.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,13 @@ public class OrderFormServiceExt extends OrderFormService {
     @Autowired
     GoodsDaoExt goodsDaoExt;
     @Autowired
+    UserDaoExt userDaoExt;
+    @Autowired
     private ShopUserDaoExt shopUserDaoExt;
     @Autowired
     UserAddressServiceExt userAddressServiceExt;
+    @Autowired
+    private ShoppingCartServiceExt shoppingCartServiceExt;
 
     /**
      * 列表分页
@@ -81,8 +86,8 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param resultAmount
      */
     @Transactional
-    public void generateOrderForm(User user, OrderFormQuery query, UserAddress address, Long resultAmount) {
-        String exactAddress = address.getExactAddress();
+    public int generateOrderForm(User user, OrderFormQuery query, UserAddress address, Long resultAmount) throws Exception {
+        int result = -1;
         //生成订单
         OrderForm form = new OrderForm();
         form.setUserId(user.getId());
@@ -93,15 +98,36 @@ public class OrderFormServiceExt extends OrderFormService {
         form.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
         form.setTotalAmount(query.getAmount());
         form.setRealAmount(resultAmount);
-        form.setUserAddress(exactAddress);
+        if(address != null && StringUtils.isNotEmpty(address.getDetail())) {
+            String exactAddress = address.getExactAddress();
+            form.setUserAddress(exactAddress);
+        }
         form.setTransportWay(query.getTransportWay());
         form.setPayKind(Constant.PAY_WITH_WEIXIN);
         form.setUpdateTime(new Date());
         form.setCreateTime(new Date());
         int orderKey = orderFormDaoExt.insert(form);
+        if(orderKey < 1) {
+            throw new Exception("订单插入失败");
+        }
+        //根据时间+主键生成订单
         String orderSerial = StringUtils.createOrderFormNo(String.valueOf(orderKey));
         form.setOrderSerial(orderSerial);
-        orderFormDaoExt.update(form);
+        result = orderFormDaoExt.update(form);
+        if(result < 1) {
+            throw new Exception("生成订单号失败");
+        }
+        //清空购物车
+        result = shoppingCartServiceExt.deleteByUserId(user.getId());
+        if(result < 1) {
+            throw new Exception("清空购物车失败");
+        }
+        //更新用户余额
+        result = userDaoExt.update(user);
+        if(result < 1) {
+            throw new Exception("用户余额更新失败");
+        }
+        return result;
     }
 
 }

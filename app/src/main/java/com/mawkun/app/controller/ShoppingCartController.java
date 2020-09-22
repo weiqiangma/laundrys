@@ -147,6 +147,8 @@ public class ShoppingCartController extends BaseController {
          * 3.判断用户是否使用积分抵消消费金额，如果使用减去相应积分
          * 4.判断用户运费生成最终金额
          */
+        int data = -1;
+        String msg = "下单失败";
         User user = userServiceExt.getById(session.getId());
         if (user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
         List<ShoppingCart> cartList = shoppingCartServiceExt.findByUserId(user.getId());
@@ -159,31 +161,40 @@ public class ShoppingCartController extends BaseController {
             Long goodsAmount = price * goodsNum;
             resultAmount = goodsAmount + resultAmount;
         }
-        UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getAddressId(), user.getId());
-        if (address == null) return sendArgsError("未查询到该收获地址,请选择其它地址或重新添加");
+        if(resultAmount != query.getAmount()) return sendArgsError("购物车内所选商品和实际商品价格不符,请重新添加");
         Shop shop = shopServiceExt.getById(query.getShopId());
         if (shop == null) return sendArgsError("所选店铺不存在,请重新选择");
-        Long transportFee = shoppingCartServiceExt.countTransportFee(shop, address, resultAmount);
-        if (!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
-        //商品总价+运费
-        resultAmount = resultAmount + transportFee;
-        Long amount = query.getAmount() + query.getTransportFee();
-        if (resultAmount != amount) return sendArgsError("所选商品价格和购物车内商品价格不一致,请重新添加");
         //判断用户是否使用余额支付，如果是减去对应余额
         if (query.getIntegral() != null && query.getIntegral() > 0) {
             Integer integral = user.getIntegral();
             Long sumOfMoney = user.getSumOfMoney();
             if (sumOfMoney >= resultAmount) {
                 sumOfMoney = sumOfMoney - resultAmount;
+                user.setSumOfMoney(sumOfMoney);
             } else {
-                return sendArgsError("您的余额已不足,请先充值或选择其它支付方式");
+                return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
             }
         }
-        //生成待支付订单
-        orderFormServiceExt.generateOrderForm(user, query, address, resultAmount);
-        //清空购物车
-        shoppingCartServiceExt.deleteByUserId(session.getId());
-        return sendSuccess("下单成功");
+        try {
+            //顾客送至门店
+            if (query.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
+                data = orderFormServiceExt.generateOrderForm(user, query, null, resultAmount);
+            }
+            //配送员上门取货
+            if (query.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
+                UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getAddressId(), user.getId());
+                if (address == null) return sendArgsError("未查询到该收获地址,请选择其它地址或重新添加");
+                Long transportFee = shoppingCartServiceExt.countTransportFee(shop, address, resultAmount);
+                if (!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
+                //商品总价+运费
+                resultAmount = resultAmount + transportFee;
+                data = orderFormServiceExt.generateOrderForm(user, query, address, resultAmount);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(data > 1) return sendSuccess("下单成功");
+        return sendArgsError("下单失败");
     }
 
 }

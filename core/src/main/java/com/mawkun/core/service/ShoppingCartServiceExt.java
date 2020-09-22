@@ -147,36 +147,4 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         }
         return (long) -1;
     }
-
-    @Transactional
-    public JsonResult countOrderForm(UserSession session, OrderFormQuery query) {
-        User user = userServiceExt.getById(session.getId());
-        if(user == null) return new JsonResult().error("数据库中未查询到该用户信息,请联系管理员");
-        List<ShoppingCart> cartList = findByUserId(user.getId());
-        if(cartList.isEmpty()) return new JsonResult().error("购物车内无商品信息,请先添加");
-        //计算购物车内商品总价格
-        long resultAmount = 0;
-        for(ShoppingCart cart : cartList) {
-            //商品单价，商品数量计算该商品总价
-            Long price = cart.getGoodsPrice();
-            Integer goodsNum = cart.getGoodsNum();
-            Long goodsAmount = price * goodsNum;
-            resultAmount = goodsAmount + resultAmount;
-        }
-        if(resultAmount != query.getAmount()) return new JsonResult().error("所选商品价格和购物车内商品价格不一致,请重新添加");
-        //判断用户是否使用余额支付，如果是减去对应积分
-        if(query.getIntegral() != null && query.getIntegral() > 0) {
-            Integer integral = user.getIntegral();
-            //resultAmount = resultAmount - NumberUtil.div(integral, 100, 1);
-        }
-        if(query.getTransportFee() != null && query.getTransportFee() > 0) {
-            resultAmount = resultAmount + query.getTransportFee();
-        }
-        //获取用户收货地址
-        UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getAddressId(), user.getId());
-        if(address == null) return new JsonResult().error("未查询到该收获地址,请选择其它地址或重新添加");
-        //生成待支付订单
-        orderFormServiceExt.generateOrderForm(user, query, address, resultAmount);
-        return new JsonResult().success("下单成功");
-    }
 }

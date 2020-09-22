@@ -10,15 +10,15 @@ import java.util.List;
 public class OrderFormQuery extends OrderForm {
     private Integer pageNo;
     private Integer pageSize;
-    private String shopName;
-    private Integer useIntegral;
-    private Date createTime;
-    private Date createTimeStart;
-    private Date createTimeEnd;
+    private String shopName;        //店名
+    private Integer useIntegral;    //用户积分
+    private Date createTime;        //创建时间
+    private Date createTimeStart;   //开始时间
+    private Date createTimeEnd;     //结束时间
 
-    private Long amount;
-    private Integer integral;
-    private List<Long> shopIdList;
+    private Long amount;            //购物车商品总金额
+    private Integer integral;       //积分
+    private List<Long> shopIdList;  //店铺ids
 
     public void init() {
         if(pageNo == null) pageNo = 1;

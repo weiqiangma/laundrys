@@ -5,11 +5,12 @@ import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.data.vo.UserVo;
 import com.mawkun.core.base.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 
-@Mapper
+@Repository
 public interface UserDaoExt extends UserDao {
     /**
      * 查找用户信息

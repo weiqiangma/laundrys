@@ -52,7 +52,7 @@ public class LoginController extends BaseController {
             resultData.setKind(Constant.USER_TYPE_CUSTOMER);
             resultData.setUserId((long) userId);
         } else {
-            resultData.setKind(Constant.USER_TYPE_CUSTOMER);
+            resultData.setKind(list.get(0).getKind());
             resultData.setUserId(list.get(0).getId());
         }
         //生成token,保存session
