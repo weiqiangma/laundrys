@@ -80,11 +80,12 @@ public class UserServiceExt extends UserService {
         Long investMoney = card.getModelAmount();
         Long giftMoney = card.getModelGift();
         Long amountMoney = investMoney + giftMoney;
-        Long residueMoeny = user.getSumOfMoney() + amountMoney;
+        long sumOfMoney = (user.getSumOfMoney() == null) ? 0 : user.getSumOfMoney();
+        Long residueMoeny = sumOfMoney + amountMoney;
         String orderNo = StringUtils.createRandomStr(18);
         wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
         //更新用户余额
-        user.setSumOfMoney(user.getSumOfMoney() + amountMoney);
+        user.setSumOfMoney(sumOfMoney + amountMoney);
         try {
             result = userDaoExt.update(user);
             if (result < 1) throw new Exception("用户余额更新失败");

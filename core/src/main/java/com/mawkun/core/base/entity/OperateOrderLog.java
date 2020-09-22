@@ -21,13 +21,13 @@ public class OperateOrderLog {
 
     private Long orderFormId;
 
-    private Object userKind;
+    private Integer userKind;
 
     private String operate;
 
     private String description;
 
-    private Object status;
+    private Integer status;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

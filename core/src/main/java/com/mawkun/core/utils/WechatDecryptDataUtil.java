@@ -91,11 +91,12 @@ public class WechatDecryptDataUtil {
         String result = "";
         try {
             AesUtils aes = new AesUtils();
-            byte[] resultByte = aes.decrypt(Base64.decodeBase64(encryptedData), Base64.decodeBase64(sessionKey), Base64.decodeBase64(iv));
+             byte[] resultByte = aes.decrypt(Base64.decodeBase64(encryptedData), Base64.decodeBase64(sessionKey), Base64.decodeBase64(iv));
             if(null != resultByte && resultByte.length > 0){
                 result = new String(WxPKCS7Encoder.decode(resultByte));
                 JSONObject jsonObject = JSONObject.parseObject(result);
-                String decryptAppid = jsonObject.getJSONObject("watermark").getString("appId");
+                JSONObject object = jsonObject.getJSONObject("watermark");
+                String decryptAppid = jsonObject.getJSONObject("watermark").getString("appid");
                 if(!appId.equals(decryptAppid)){
                     result = "";
                 }

@@ -12,6 +12,7 @@ import com.mawkun.core.base.entity.OrderForm;
 import jodd.typeconverter.Convert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -63,6 +64,22 @@ public class OrderFormService {
         return orderFormDao.insertBatch(list);
     }
 
+    @Transactional
+    public void cancel(UserSession session, OrderForm order) {
+        order.setStatus(Constant.ORDER_STATUS_CANCEL);
+        orderFormDao.update(order);
+        OperateOrderLog log = new OperateOrderLog();
+        log.setUserId(session.getId());
+        log.setOrderFormId(order.getId());
+        log.setStatus(Constant.ORDER_STATUS_CANCEL);
+        if(session.isAdmin()) log.setUserKind(Constant.USER_TYPE_ADMIN);
+        if(session.isDistributor()) log.setUserKind(Constant.USER_TYPE_DISTRIBUTOR);
+        if(session.isCustomer()) log.setUserKind(Constant.USER_TYPE_CUSTOMER);
+        log.setDescription("确定操作无误");
+        log.setCreateTime(new Date());
+        operateOrderLogDao.insert(log);
+    }
+
     public JsonResult update(UserSession session, OrderForm orderForm) {
         /**
          * 1.判断status不为空
@@ -76,16 +93,18 @@ public class OrderFormService {
             }
             String operate = "";
             OperateOrderLog log = new OperateOrderLog();
-            if(status == 2) {
+            if(status == Constant.ORDER_STATUS_WAITING_REAP) {
                 operate = "待收货";
-            } else if(status == 3) {
+            } else if(status == Constant.ORDER_STATUS_SURE_REAP) {
                 operate = "确认收货";
-            } else if(status == 4) {
+            } else if(status == Constant.ORDER_STATUS_CLEANING) {
                 operate = "洗涤中";
-            } else if(status == 5) {
+            } else if(status == Constant.ORDER_STATUS_WAITING_TAKE) {
                 operate = "待取货";
-            } else if(status == 6) {
+            } else if(status == Constant.ORDER_STATUS_SURE_TAKE) {
                 operate = "已完成";
+            } else if(status == Constant.ORDER_STATUS_CANCEL) {
+                operate = "取消订单";
             } else {
                 return new JsonResult().success("该订单已完成");
             }

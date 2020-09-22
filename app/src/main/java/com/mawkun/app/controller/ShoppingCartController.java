@@ -131,7 +131,7 @@ public class ShoppingCartController extends BaseController {
                 String feeStr = sortList.get(i).getSysValue();
                 fee = NumberUtils.str2Int(feeStr);
                 feeDiff = lowAmount - amount;
-                object.put("fee", fee);
+                object.put("transportFee", fee);
                 object.put("feeDiff", feeDiff);
                 break;
             }
@@ -193,7 +193,7 @@ public class ShoppingCartController extends BaseController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(data > 1) return sendSuccess("下单成功");
+        if(data > 0) return sendSuccess("下单成功");
         return sendArgsError("下单失败");
     }
 

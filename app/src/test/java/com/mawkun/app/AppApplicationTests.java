@@ -43,8 +43,7 @@ class AppApplicationTests {
         String tradeType = "JSAPI";
         String ip = "125.111.199.42";
 
-        String msg = wxApiServiceExt.unifyOrder(openId, orderNo, totalFee, body, detail, notifyUrl, tradeType, ip);
-        System.out.println(msg);
+
     }
 
 }

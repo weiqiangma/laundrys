@@ -6,9 +6,11 @@ import cn.pertech.common.utils.XmlUtils;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
+import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.entity.User;
+import com.mawkun.core.base.service.UserCacheService;
 import com.mawkun.core.service.InvestLogServiceExt;
 import com.mawkun.core.service.MemberCardServiceExt;
 import com.mawkun.core.service.UserServiceExt;
@@ -48,6 +50,8 @@ public class UserController extends BaseController {
     private UserServiceExt userServiceExt;
     @Autowired
     private InvestLogServiceExt investLogServiceExt;
+    @Autowired
+    private UserCacheService userCacheService;
     @Autowired
     private WxApiServiceExt wxApiServiceExt;
     @Autowired
@@ -106,13 +110,15 @@ public class UserController extends BaseController {
 
     @PostMapping("/getUserMobile")
     @ApiOperation(value="获取微信用户手机号", notes="获取微信用户手机号")
-    public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String iv) {
+    public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String iv, String code) {
         User user = userServiceExt.getById(session.getId());
         if(user == null) return sendArgsError("未查询到该用户信息");
+        WxLoginResultData data = wxApiServiceExt.getOpenIdByCode(code);
+        session.setSessionKey(data.getSessionKey());
         String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, session.getSessionKey(), iv);
         user.setMobile(mobile);
         userServiceExt.update(user, null);
-        return sendSuccess(mobile);
+        return sendSuccess("ok", mobile);
     }
 
     @PostMapping("/rechargetMoney")

@@ -7,15 +7,9 @@ import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.OrderFormQuery;
 import com.mawkun.core.base.data.vo.GoodsVo;
 import com.mawkun.core.base.data.vo.OrderFormVo;
-import com.mawkun.core.base.entity.OrderForm;
-import com.mawkun.core.base.entity.ShopUser;
-import com.mawkun.core.base.entity.User;
-import com.mawkun.core.base.entity.UserAddress;
+import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.OrderFormService;
-import com.mawkun.core.dao.GoodsDaoExt;
-import com.mawkun.core.dao.OrderFormDaoExt;
-import com.mawkun.core.dao.ShopUserDaoExt;
-import com.mawkun.core.dao.UserDaoExt;
+import com.mawkun.core.dao.*;
 import com.mawkun.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +32,8 @@ public class OrderFormServiceExt extends OrderFormService {
     private ShopUserDaoExt shopUserDaoExt;
     @Autowired
     UserAddressServiceExt userAddressServiceExt;
+    @Autowired
+    private OperateOrderLogDaoExt operateOrderLogDaoExt;
     @Autowired
     private ShoppingCartServiceExt shoppingCartServiceExt;
 
@@ -92,7 +88,7 @@ public class OrderFormServiceExt extends OrderFormService {
         OrderForm form = new OrderForm();
         form.setUserId(user.getId());
         form.setShopId(query.getShopId());
-        form.setAddressId(address.getId());
+        if(address != null)form.setAddressId(address.getId());
         form.setUserName(user.getUserName());
         form.setRemark(query.getRemark());
         form.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
@@ -116,6 +112,19 @@ public class OrderFormServiceExt extends OrderFormService {
         result = orderFormDaoExt.update(form);
         if(result < 1) {
             throw new Exception("生成订单号失败");
+        }
+        //生成订单操作记录
+        OperateOrderLog log = new OperateOrderLog();
+        log.setUserId(user.getId());
+        log.setOrderFormId(form.getId());
+        log.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
+        log.setUserKind(Constant.USER_TYPE_CUSTOMER);
+        log.setOperate("生成待支付订单");
+        log.setDescription("确定操作无误");
+        log.setCreateTime(new Date());
+        result = operateOrderLogDaoExt.insert(log);
+        if(result < 1) {
+            throw  new Exception("生成订单操作记录失败");
         }
         //清空购物车
         result = shoppingCartServiceExt.deleteByUserId(user.getId());
