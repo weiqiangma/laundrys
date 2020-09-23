@@ -36,4 +36,10 @@ public class OrderClothesServiceExt extends OrderClothesService {
         return 0;
     }
 
+    public List<OrderClothes> getByOrderId(Long orderId) {
+        OrderClothes clothes = new OrderClothes();
+        clothes.setOrderFormId(orderId);
+        return orderClothesDaoExt.listByEntity(clothes);
+    }
+
 }

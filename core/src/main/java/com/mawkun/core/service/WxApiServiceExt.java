@@ -6,6 +6,7 @@ import cn.pertech.common.utils.RandomUtils;
 import cn.pertech.common.utils.XmlUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.data.WxLoginResultData;
+import com.mawkun.core.base.service.CacheService;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.WechatDecryptDataUtil;
 import com.xiaoleilu.hutool.crypto.SecureUtil;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.security.SecurityUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.provider.JDKMessageDigest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +51,8 @@ public class WxApiServiceExt {
     private String notifyUrl;
     private final String trade_type = "JSAPI";
 
+    @Autowired
+    private CacheService cacheService;
 
     /**
      * 根据code获取用户openId
@@ -93,7 +97,7 @@ public class WxApiServiceExt {
      * 统一下单接口(生成预支付ID)
      */
     public String unifyOrder(String openId, String orderNo, String totalFee, String body, String detail) {
-        String msg = "下单失败";
+        String msg = "";
         String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
         String param = createParam(openId, orderNo, totalFee, body, detail);
         try {
@@ -202,5 +206,49 @@ public class WxApiServiceExt {
             e.printStackTrace();
         }
         return ip;
+    }
+
+    /**
+     * 发送通知给用户
+     *
+     * @param accessToken 接口调用凭证
+     * @param toUser    openId
+     * @param data      五个参数
+     * @param page      小程序模板跳转页面
+     * @param miniprogramState 跳转小程序类型
+     */
+    public void sendMessageToUser(String accessToken, String toUser, String data, String page, String miniprogramState) {
+        String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + accessToken;
+        try {
+            JSONObject object = new JSONObject();
+            object.put("toUser", toUser);
+            object.put("data", data);
+            String param = object.toJSONString();
+            HttpResult result = HttpUtils.post(url, param, "UTF-8");
+            JSONObject jsonObject = result.asJSON();
+            System.out.println(jsonObject);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 获取小程序调用接口凭据
+     * @return
+     */
+    public String getAccessToken() {
+        String accessToken = cacheService.get("accessToken");
+        if(StringUtils.isNotEmpty(accessToken)) return accessToken;
+        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + AppId + "&secret=" + AppSecret;
+        try {
+            HttpResult result = HttpUtils.get(url);
+            JSONObject object = result.asJSON();
+            accessToken = object.getString("access_token");
+            int expires_in = object.getIntValue("expires_in");
+            cacheService.put("accessToken", accessToken, expires_in);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return accessToken;
     }
 }

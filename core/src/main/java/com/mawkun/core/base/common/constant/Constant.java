@@ -22,13 +22,13 @@ public interface Constant {
     int ORDER_DELIVERY_GET = 1;     //配送员上门取货
 
     //=============================订单状态=============================//
-    int ORDER_STATUS_WAITING_PAY = 1;          //待支付
+    int ORDER_STATUS_WAITING_PAY = 1;   //待支付
     int ORDER_STATUS_WAITING_REAP = 2;  //待收货
     int ORDER_STATUS_SURE_REAP = 3;     //确认收货
     int ORDER_STATUS_CLEANING = 4;      //清洗中
     int ORDER_STATUS_WAITING_TAKE = 5;  //待取货
     int ORDER_STATUS_SURE_TAKE = 6;     //已完成
-    int ORDER_STATUS_CANCEL = 7;       //订单取消
+    int ORDER_STATUS_CANCEL = 7;        //订单取消
 
     //=============================系统参数状态=============================//
     int SYS_PARAM_OPEN = 1;     //开启

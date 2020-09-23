@@ -1,6 +1,8 @@
 package com.mawkun.app;
 
 import cn.pertech.common.http.HttpUtils;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.entity.OrderForm;
 import com.mawkun.core.service.OrderFormServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
@@ -34,16 +36,14 @@ class AppApplicationTests {
 
     @Test
     void createOrder() {
-        String openId = "owrdq5NOMPpRLdTI7MJ-ihHU0iVQ";
-        String orderNo = "20150806120341";
-        String totalFee = "1";
-        String body = "短袖";
-        String detail = "夏日清凉短袖";
-        String notifyUrl = "http://www.baidu.com";
-        String tradeType = "JSAPI";
-        String ip = "125.111.199.42";
-
-
+        String accessToken = wxApiServiceExt.getAccessToken();
+        JSONObject object = new JSONObject();
+        object.put("thing1","军大衣");
+        object.put("character_string2","234826423672846");
+        object.put("thing3","2020年4月4日 20:00");
+        object.put("thing4","大双洗衣店");
+        object.put("thing5","您的衣服已经清洗完成请及时领取");
+        wxApiServiceExt.sendMessageToUser(accessToken, "owrdq5Cdbl9sWklPO4tMwoRqkP68", object.toJSONString(), null, null);
     }
 
 }

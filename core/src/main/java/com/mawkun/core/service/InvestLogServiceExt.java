@@ -8,6 +8,7 @@ import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.InvestLogService;
 import com.mawkun.core.dao.InvestLogDaoExt;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,10 +32,17 @@ public class InvestLogServiceExt extends InvestLogService {
         return new PageInfo<>(list);
     }
 
-    public int save(User user, MemberCard cart, Long investMoney, Long giftMoney, Long amoutMoney, Long residueMoney) {
+    public InvestLog getByOrderNo(String orderNo) {
+        InvestLog investLog = new InvestLog();
+        investLog.setOrderNo(orderNo);
+        return investLogDaoExt.getByEntity(investLog);
+    }
+
+    public int save(User user, MemberCard cart, Integer status, Long investMoney, Long giftMoney, Long amoutMoney, Long residueMoney) {
         InvestLog investLog = new InvestLog();
         investLog.setUserId(user.getId());
         investLog.setUserName(user.getUserName());
+        if(status != null) investLog.setStatus(status);
         if(cart != null) investLog.setCartId(cart.getId());
         if(cart != null) investLog.setCartName(cart.getModelName());
         investLog.setInvestMoney(investMoney);
