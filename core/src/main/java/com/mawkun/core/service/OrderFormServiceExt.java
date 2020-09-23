@@ -50,6 +50,8 @@ public class OrderFormServiceExt extends OrderFormService {
     public PageInfo<OrderFormVo> pageByEntity(OrderFormQuery query) {
         query.init();
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
+        if(StringUtils.isNotEmpty(query.getOrderSerial())) query.setOrderSerial("%" + query.getOrderSerial() + "%");
+        if(StringUtils.isNotEmpty(query.getShopName())) query.setShopName("%" + query.getShopName() + "%");
         List<OrderFormVo> list = orderFormDaoExt.selectList(query);
         return new PageInfo<>(list);
     }

@@ -75,7 +75,8 @@ public class OrderFormController extends BaseController {
     @GetMapping("/pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
     public JsonResult pageList(@LoginedAuth UserSession session, OrderFormQuery query) {
-        if(session.getId() > 0) query.setUserId(session.getId());
+        if(session.isCustomer()) query.setUserId(session.getId());
+        if(session.isDistributor()) query.setShopIdList(session.getShopIdList());
         PageInfo page = orderFormServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }
@@ -138,6 +139,7 @@ public class OrderFormController extends BaseController {
     }
 
     @GetMapping("/getOrderLog")
+    @ApiOperation(value="获取订单操作日志", notes="获取订单操作日志")
     public JsonResult getOrderLog(Long orderId) {
         JSONArray array = new JSONArray();
         OperateOrderLog orderLog = new OperateOrderLog();

@@ -7,6 +7,8 @@ import com.mawkun.core.base.entity.User;
 import lombok.Data;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.List;
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserSession {
@@ -39,6 +41,8 @@ public class UserSession {
 
     private String sessionKey;
 
+    private List<Long> shopIdList;
+
     public UserSession(){}
 
     public UserSession(String token, Admin admin) {
@@ -67,6 +71,7 @@ public class UserSession {
         this.openId = data.getOpenId();
         this.sessionKey = data.getSessionKey();
         this.kind = data.getKind();
+        this.shopIdList = data.getShopIdList();
     }
 
     public boolean isAdmin() {
