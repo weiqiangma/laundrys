@@ -9,12 +9,15 @@ public interface Constant {
     int ADMIN_TYPE_SUPER = 1;   //主管理员
     int ADMIN_TYPE_COMMON = 2;  //普通管理员
 
-    //=============================用户类型=============================//
+    //=============================用户类型及状态=============================//
     int USER_TYPE_CUSTOMER = 1;     //顾客
     int USER_TYPE_DISTRIBUTOR = 2;  //配送员
     int USER_TYPE_ADMIN = 3;        //管理员
 
-    //=============================用户类型=============================//
+    int USER_STATUS_LOCK = 0;       //用户封锁
+    int USER_STATUS_ACTIVE = 1;     //用户激活
+
+    //=============================下单类型=============================//
     int ORDER_DELIVERY_SEND = 0;    //客户送至门店
     int ORDER_DELIVERY_GET = 1;     //配送员上门取货
 

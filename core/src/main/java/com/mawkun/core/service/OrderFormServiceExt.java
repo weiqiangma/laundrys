@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,13 +30,17 @@ public class OrderFormServiceExt extends OrderFormService {
     @Autowired
     UserDaoExt userDaoExt;
     @Autowired
+    OrderClothesDaoExt orderClothesDaoExt;
+    @Autowired
     private ShopUserDaoExt shopUserDaoExt;
     @Autowired
     UserAddressServiceExt userAddressServiceExt;
     @Autowired
-    private OperateOrderLogDaoExt operateOrderLogDaoExt;
+    private OperateOrderLogServiceExt operateOrderLogServiceExt;
     @Autowired
     private ShoppingCartServiceExt shoppingCartServiceExt;
+    @Autowired
+    private OrderClothesServiceExt orderClothesServiceExt;
 
     /**
      * 列表分页
@@ -74,6 +79,13 @@ public class OrderFormServiceExt extends OrderFormService {
         return vo;
     }
 
+    public OrderForm getByUserIdAndId(Long id, Long userId) {
+        OrderForm order = new OrderForm();
+        order.setId(id);
+        order.setUserId(userId);
+        return orderFormDaoExt.getByEntity(order);
+    }
+
     /**
      * 生成订单
      * @param user
@@ -82,7 +94,7 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param resultAmount
      */
     @Transactional
-    public int generateOrderForm(User user, OrderFormQuery query, UserAddress address, Long resultAmount) throws Exception {
+    public int generateOrderForm(User user, OrderFormQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
         int result = -1;
         //生成订单
         OrderForm form = new OrderForm();
@@ -114,17 +126,14 @@ public class OrderFormServiceExt extends OrderFormService {
             throw new Exception("生成订单号失败");
         }
         //生成订单操作记录
-        OperateOrderLog log = new OperateOrderLog();
-        log.setUserId(user.getId());
-        log.setOrderFormId(form.getId());
-        log.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
-        log.setUserKind(Constant.USER_TYPE_CUSTOMER);
-        log.setOperate("生成待支付订单");
-        log.setDescription("确定操作无误");
-        log.setCreateTime(new Date());
-        result = operateOrderLogDaoExt.insert(log);
+        result = operateOrderLogServiceExt.createWaitingPayOrder(user.getId(), form.getId(), Constant.ORDER_STATUS_WAITING_PAY, Constant.USER_TYPE_CUSTOMER, "用户创建待支付订单");
         if(result < 1) {
-            throw  new Exception("生成订单操作记录失败");
+            throw new Exception("生成订单操作记录失败");
+        }
+        //订单中的商品加入订单商品表方便后续查询
+        result = orderClothesServiceExt.addByShoppingCarts(cartList);
+        if(result < 1) {
+            throw new Exception("订单商品加入失败");
         }
         //清空购物车
         result = shoppingCartServiceExt.deleteByUserId(user.getId());

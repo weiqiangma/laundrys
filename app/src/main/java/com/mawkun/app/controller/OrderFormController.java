@@ -13,8 +13,12 @@ import com.mawkun.core.base.data.vo.OrderFormVo;
 import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.OperateOrderLog;
 import com.mawkun.core.base.entity.OrderForm;
+import com.mawkun.core.base.entity.User;
+import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.service.OperateOrderLogServiceExt;
 import com.mawkun.core.service.OrderFormServiceExt;
+import com.mawkun.core.service.UserServiceExt;
+import com.mawkun.core.service.WxApiServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
@@ -39,6 +43,10 @@ public class OrderFormController extends BaseController {
     
     @Autowired
     private OrderFormServiceExt orderFormServiceExt;
+    @Autowired
+    private WxApiServiceExt wxApiServiceExt;
+    @Autowired
+    private UserServiceExt userServiceExt;
     @Autowired
     private OperateOrderLogServiceExt operateOrderLogServiceExt;
 
