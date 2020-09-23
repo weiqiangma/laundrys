@@ -1,6 +1,7 @@
 package com.mawkun.core.service;
 
 import cn.pertech.common.spring.JsonResult;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.query.UserQuery;
@@ -83,7 +84,7 @@ public class UserServiceExt extends UserService {
      * 充值
      */
     @Transactional
-    public String rechargeMoney(User user, MemberCard card) {
+    public JSONObject rechargeMoney(User user, MemberCard card) {
         Long investMoney = card.getModelAmount();
         Long giftMoney = card.getModelGift();
         Long amountMoney = investMoney + giftMoney;
@@ -96,12 +97,12 @@ public class UserServiceExt extends UserService {
         investLog.setOrderNo(orderNo);
         investLogServiceExt.update(investLog);
         //调用微信接口生成支付参数供前端调用
-        String payParam = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
-        return payParam;
+        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
+        return object;
     }
 
     @Transactional
-    public String rechargeMoney(User user, Long money) {
+    public JSONObject rechargeMoney(User user, Long money) {
         int result = -1;
         Long investMoney = money;
         long giftMoney = 0;
@@ -114,7 +115,7 @@ public class UserServiceExt extends UserService {
         investLog.setOrderNo(orderNo);
         investLogServiceExt.update(investLog);
         //调用微信接口生成支付参数供前端调用
-        String payParam = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
-        return payParam;
+        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
+        return object;
     }
 }

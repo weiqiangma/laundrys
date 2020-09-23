@@ -26,11 +26,11 @@ public class OrderFormServiceExt extends OrderFormService {
     @Autowired
     OrderFormDaoExt orderFormDaoExt;
     @Autowired
+    OrderClothesDaoExt orderClothesDaoExt;
+    @Autowired
     GoodsDaoExt goodsDaoExt;
     @Autowired
     UserDaoExt userDaoExt;
-    @Autowired
-    OrderClothesDaoExt orderClothesDaoExt;
     @Autowired
     private ShopUserDaoExt shopUserDaoExt;
     @Autowired
@@ -76,7 +76,7 @@ public class OrderFormServiceExt extends OrderFormService {
      */
     public OrderFormVo getDetail(Long id) {
         OrderFormVo vo = orderFormDaoExt.selectDetail(id);
-        List<GoodsVo> goodsList = goodsDaoExt.selectByOrderFormId(id);
+        List<OrderClothes> goodsList = orderClothesServiceExt.getByOrderId(id);
         vo.setList(goodsList);
         return vo;
     }
@@ -112,6 +112,9 @@ public class OrderFormServiceExt extends OrderFormService {
             String exactAddress = address.getExactAddress();
             form.setUserAddress(exactAddress);
         }
+        if(query.getTransportFee() != null) {
+            form.setTransportFee(query.getTransportFee());
+        }
         form.setTransportWay(query.getTransportWay());
         form.setPayKind(Constant.PAY_WITH_WEIXIN);
         form.setUpdateTime(new Date());
@@ -121,7 +124,7 @@ public class OrderFormServiceExt extends OrderFormService {
             throw new Exception("订单插入失败");
         }
         //根据时间+主键生成订单
-        String orderSerial = StringUtils.createOrderFormNo(String.valueOf(orderKey));
+        String orderSerial = StringUtils.createOrderFormNo(String.valueOf(form.getId()));
         form.setOrderSerial(orderSerial);
         result = orderFormDaoExt.update(form);
         if(result < 1) {
@@ -133,7 +136,7 @@ public class OrderFormServiceExt extends OrderFormService {
             throw new Exception("生成订单操作记录失败");
         }
         //订单中的商品加入订单商品表方便后续查询
-        result = orderClothesServiceExt.addByShoppingCarts(cartList);
+        result = orderClothesServiceExt.addByShoppingCarts(cartList, form.getId());
         if(result < 1) {
             throw new Exception("订单商品加入失败");
         }
@@ -148,6 +151,16 @@ public class OrderFormServiceExt extends OrderFormService {
             throw new Exception("用户余额更新失败");
         }
         return result;
+    }
+
+    public void orderTaking(UserSession session, OrderForm order) {
+        /**
+         * 1.更新订单状态
+         * 2.生成订单操作记录
+         */
+        order.setStatus(Constant.ORDER_STATUS_SURE_REAP);
+        orderFormDaoExt.update(order);
+        //operateOrderLogServiceExt.createWaitingPayOrder(session.getId(), order.getId())
     }
 
 }

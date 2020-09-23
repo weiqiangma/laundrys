@@ -43,7 +43,7 @@ public class OrderFormService {
     }
 
     public List<OrderForm> listByEntity(OrderForm orderForm) {
-        if(StringUtils.isEmpty(orderForm.getOrderSerial())) {
+        if(StringUtils.isNotEmpty(orderForm.getOrderSerial())) {
             orderForm.setOrderSerial("%" + orderForm.getOrderSerial() + "%");
         }
         return orderFormDao.listByEntity(orderForm);

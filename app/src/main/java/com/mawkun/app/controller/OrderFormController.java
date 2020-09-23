@@ -75,8 +75,7 @@ public class OrderFormController extends BaseController {
     @GetMapping("/pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
     public JsonResult pageList(@LoginedAuth UserSession session, OrderFormQuery query) {
-        if(session.isCustomer()) query.setUserId(session.getId());
-        if(session.isDistributor()) query.setShopIdList(session.getShopIdList());
+        if(session.getId() > 0) query.setUserId(session.getId());
         PageInfo page = orderFormServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }
@@ -84,6 +83,7 @@ public class OrderFormController extends BaseController {
     @GetMapping("/getDistributorOrder")
     @ApiOperation(value="配送员订单列表分页", notes="配送员订单列表分页")
     public JsonResult getDistributorOrder(@LoginedAuth UserSession session, OrderFormQuery query) {
+        if(!session.isDistributor()) return sendArgsError("非配送员无权查看");
         PageInfo page = orderFormServiceExt.getDistributorOrder(session.getId(), query);
         return sendSuccess(page);
     }
@@ -154,5 +154,14 @@ public class OrderFormController extends BaseController {
             array.add(object);
         }
         return sendSuccess(array);
+    }
+
+    @GetMapping("/orderTaking")
+    public JsonResult orderTaking(@LoginedAuth UserSession session, Long orderId) {
+        if(!session.isDistributor()) return sendArgsError("非配送员无权操作");
+        OrderForm orderForm = orderFormServiceExt.getById(orderId);
+        if(orderForm == null) return sendArgsError("未查询到该订单");
+
+        return sendSuccess();
     }
 }

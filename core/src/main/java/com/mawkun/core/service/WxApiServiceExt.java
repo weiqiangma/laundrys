@@ -96,10 +96,11 @@ public class WxApiServiceExt {
     /**
      * 统一下单接口(生成预支付ID)
      */
-    public String unifyOrder(String openId, String orderNo, String totalFee, String body, String detail) {
+    public JSONObject unifyOrder(String openId, String orderNo, String totalFee, String body, String detail) {
         String msg = "";
+        JSONObject object = new JSONObject();
         String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        String param = createParam(openId, orderNo, totalFee, body, detail);
+        String param = createParam(openId, orderNo, "1", body, detail);
         try {
             HttpResult result = HttpUtils.post(url, param, "UTF-8");
             String message = result.getHtml();
@@ -108,14 +109,22 @@ public class WxApiServiceExt {
             if(StringUtils.equals("SUCCESS", resultCode)) {
                 String prepayId = map.get("prepay_id");
                 String nonceStr = map.get("nonce_str");
+                //String nonceStr = StringUtils.createRandomStr(30);
                 msg = createSecondParam(prepayId, nonceStr, "MD5");
+                Map<String, String> resultMap = XmlUtils.xmlStr2Map(msg);
+                for(Map.Entry<String, String> entry : resultMap.entrySet()) {
+                    String key = entry.getKey();
+                    if(StringUtils.equals("sign", key)) key = "paySign";
+                    String value = entry.getValue();
+                    object.put(key, value);
+                }
             } else{
                 throw new Exception("调用微信接口下单失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return msg;
+        return object;
     }
 
     /**
@@ -143,6 +152,7 @@ public class WxApiServiceExt {
         param.put("openid", openId);                //用户openId
         param.put("spbill_create_ip", spbillCreateIp);
         param.put("sign", createSign(param));       //签名
+
         return XmlUtils.map2Xml(param);
     }
 
@@ -157,8 +167,8 @@ public class WxApiServiceExt {
     public String createSecondParam(String prepayId, String nonceStr, String signType) {
         String timeStamp = String.valueOf(System.currentTimeMillis());
         SortedMap<String, String> param = new TreeMap<>();
-        param.put("appid", AppId);
-        param.put("nonce_str", nonceStr);
+        param.put("appId", AppId);
+        param.put("nonceStr", nonceStr);
         param.put("package", "prepay_id=" + prepayId);
         param.put("signType", signType);
         param.put("timeStamp", timeStamp);

@@ -1,5 +1,6 @@
 package com.mawkun.core.base.data.vo;
 
+import com.mawkun.core.base.entity.OrderClothes;
 import com.mawkun.core.base.entity.OrderForm;
 import lombok.Data;
 
@@ -12,6 +13,6 @@ public class OrderFormVo extends OrderForm {
     private String distributorName;     //配送员姓名
     private String shopName;
     private Double amount;
-    private List<GoodsVo> list;         //订单下商品
+    private List<OrderClothes> list;         //订单下商品
     private String type;
 }

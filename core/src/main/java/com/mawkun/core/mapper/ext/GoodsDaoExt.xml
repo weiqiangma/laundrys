@@ -21,7 +21,7 @@
         order_clothes oc
         LEFT JOIN goods gd ON oc.goods_id = gd.id
     WHERE
-        oc.order_form_id = 1
+        oc.order_form_id = #{orderId}
     </select>
 
     <select id="selectByName" resultMap="com.mawkun.core.base.dao.GoodsDao.GoodsResultMap" parameterType="java.lang.String">

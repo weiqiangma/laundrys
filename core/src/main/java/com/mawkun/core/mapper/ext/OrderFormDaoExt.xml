@@ -53,6 +53,9 @@
         <result column="real_amount" property="realAmount"/>
         <result column="total_amount" property="totalAmount"/>
         <result column="transport_way" property="transportWay"/>
+        <result column="transport_fee" property="transportFee"/>
+        <result column="shop_name" property="shopName"/>
+        <result column="user_address" property="userAddress"/>
         <result column="customerName" property="customerName"/>
         <result column="distributorName" property="distributorName"/>
         <result column="create_time" property="createTime"/>
@@ -68,13 +71,17 @@
         ofm.real_amount,
         ofm.total_amount,
         ofm.transport_way,
+        ofm.user_address,
         ofm.create_time,
+        ifnull(ofm.transport_fee,0) transport_fee,
+        shop.shop_name,
         cus.real_name customerName,
         dis.real_name distributorName
     FROM
         order_form ofm
         left JOIN `user` cus on ofm.user_id =cus.id
         LEFT JOIN `user` dis on ofm.distributor_id=dis.id
+        left join shop on ofm.shop_id = shop.id
     WHERE ofm.id=#{id}
     </select>
 

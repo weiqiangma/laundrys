@@ -9,11 +9,12 @@
         <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
         <result property="goodsPicture" column="goods_picture" jdbcType="VARCHAR"/>
         <result property="goodsNum" column="goods_num" jdbcType="INTEGER"/>
+        <result property="goodsPrice" column="goods_price" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, order_form_id, goods_id, goods_name, goods_picture, goods_num, create_time      
+      id, order_form_id, goods_id, goods_name, goods_picture, goods_num, goods_price, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -49,6 +50,9 @@
             <if test="goodsNum != null">
                 and goods_num = #{goodsNum,jdbcType=INTEGER}
             </if>
+            <if test="goodsPrice != null">
+                and goods_price = #{goodsPrice,jdbcType=INTEGER}
+            </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
@@ -78,6 +82,9 @@
             </if>
             <if test="goodsNum != null">
                 and goods_num = #{goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="goodsPrice != null">
+                and goods_price = #{goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -118,6 +125,9 @@
           <if test="goodsNum != null">
              goods_num,
           </if>
+          <if test="goodsPrice != null">
+             goods_price,
+          </if>
           <if test="createTime != null">
              create_time,
           </if>
@@ -141,6 +151,9 @@
           <if test="goodsNum != null">
              #{goodsNum,jdbcType=INTEGER},
           </if>
+          <if test="goodsPrice != null">
+             #{goodsPrice,jdbcType=INTEGER},
+          </if>
           <if test="createTime != null">
              #{createTime,jdbcType=TIMESTAMP},
           </if>
@@ -150,10 +163,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into order_clothes
-         (id, order_form_id, goods_id, goods_name, goods_picture, goods_num, create_time)
+         (id, order_form_id, goods_id, goods_name, goods_picture, goods_num, goods_price, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.orderFormId,jdbcType=INTEGER}, #{item.goodsId,jdbcType=INTEGER}, #{item.goodsName,jdbcType=VARCHAR}, #{item.goodsPicture,jdbcType=VARCHAR}, #{item.goodsNum,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.orderFormId,jdbcType=INTEGER}, #{item.goodsId,jdbcType=INTEGER}, #{item.goodsName,jdbcType=VARCHAR}, #{item.goodsPicture,jdbcType=VARCHAR}, #{item.goodsNum,jdbcType=INTEGER}, #{item.goodsPrice,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -175,6 +188,9 @@
             </if>
             <if test="goodsNum != null">
                 goods_num = #{goodsNum,jdbcType=INTEGER},
+            </if>
+            <if test="goodsPrice != null">
+                goods_price = #{goodsPrice,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -202,6 +218,9 @@
             <if test="where.goodsNum == null and set.goodsNum != null">
                 goods_num = #{set.goodsNum,jdbcType=INTEGER},
             </if>
+            <if test="where.goodsPrice == null and set.goodsPrice != null">
+                goods_price = #{set.goodsPrice,jdbcType=INTEGER},
+            </if>
             <if test="where.createTime == null and set.createTime != null">
                 create_time = #{set.createTime,jdbcType=TIMESTAMP},
             </if>
@@ -224,6 +243,9 @@
             </if>
             <if test="where.goodsNum != null">
                 and goods_num = #{where.goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="where.goodsPrice != null">
+                and goods_price = #{where.goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="where.createTime != null">
                 and create_time = #{where.createTime,jdbcType=TIMESTAMP}
@@ -258,6 +280,11 @@
             <trim prefix="goods_num = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.goodsNum}
+                 </foreach>
+            </trim>
+            <trim prefix="goods_price = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.goodsPrice}
                  </foreach>
             </trim>
             <trim prefix="create_time = case" suffix="end,">
@@ -295,6 +322,9 @@
             </if>
             <if test="goodsNum != null">
                 and goods_num = #{goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="goodsPrice != null">
+                and goods_price = #{goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -334,6 +364,9 @@
             </if>
             <if test="goodsNum != null">
                 and goods_num = #{goodsNum,jdbcType=INTEGER}
+            </if>
+            <if test="goodsPrice != null">
+                and goods_price = #{goodsPrice,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}

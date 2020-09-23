@@ -23,7 +23,7 @@ public interface OrderFormDao {
 
     List<OrderForm> listByIds(@NotEmpty List<Long> list);
 
-    int insert(@NotNull OrderForm orderForm);
+    int insert(OrderForm orderForm);
 
     int insertBatch(@NotEmpty List<OrderForm> list);
 

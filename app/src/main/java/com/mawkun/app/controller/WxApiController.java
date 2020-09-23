@@ -4,6 +4,7 @@ import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.StringUtils;
 import cn.pertech.common.utils.XmlUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.WxLoginResultData;
@@ -34,7 +35,6 @@ import java.util.stream.Collectors;
  * @Author mawkun
  */
 @RestController
-@RequestMapping("/api/wxApi")
 @Api(tags={"微信api操作接口"})
 public class WxApiController extends BaseController {
     @Value("${wx.AppId}")
@@ -55,7 +55,7 @@ public class WxApiController extends BaseController {
     @Autowired
     private OrderClothesServiceExt orderClothesServiceExt;
 
-    @PostMapping("/wxPay")
+    @PostMapping("/api/wxApi/wxPay")
     @ApiOperation(value="小程序下单支付", notes="小程序下单支付")
     public JsonResult wxPay(@LoginedAuth UserSession session, Long orderId) {
         User user = userServiceExt.getByIdAndStatus(session.getId(), Constant.USER_STATUS_ACTIVE);
@@ -64,9 +64,8 @@ public class WxApiController extends BaseController {
         if(orderForm == null) return sendArgsError("未查询到该订单");
         List<OrderClothes> clothesList = orderClothesServiceExt.getByOrderId(orderId);
         String body = clothesList.stream().map(OrderClothes::getGoodsName).collect(Collectors.joining());
-        String msg = wxApiServiceExt.unifyOrder(user.getOpenId(), orderForm.getOrderSerial(), orderForm.getTotalAmount().toString(), body, body);
-        if(StringUtils.isNotEmpty(msg)) return sendSuccess("ok",msg);
-        return sendArgsError("下单失败");
+        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderForm.getOrderSerial(), orderForm.getTotalAmount().toString(), body, body);
+        return sendSuccess(object);
     }
 
     @PostMapping("/wxPayCallBack")
@@ -89,7 +88,7 @@ public class WxApiController extends BaseController {
         return sendSuccess("ok", result);
     }
 
-    @PostMapping("/getUserMobile")
+    @PostMapping("/api/wxApi/getUserMobile")
     @ApiOperation(value="获取微信用户手机号", notes="获取微信用户手机号")
     public JsonResult getUserMobile(@LoginedAuth UserSession session, String encryptedData, String iv, String code) {
         User user = userServiceExt.getById(session.getId());
@@ -102,10 +101,11 @@ public class WxApiController extends BaseController {
         return sendSuccess("ok", mobile);
     }
 
-    @PostMapping("/rechargetMoney")
+    @PostMapping("/api/wxApi/rechargetMoney")
     @ApiOperation(value = "小程序充值接口", notes = "小程序充值接口")
     public JsonResult rechargetMoney(@LoginedAuth UserSession session,Integer type, Long cardId, Long money) {
         String payParam="";
+        JSONObject object = new JSONObject();
         if(type == null) return sendArgsError("请选择充值方式");
         User user = userServiceExt.getById(session.getId());
         if(user == null) return sendArgsError("未查询到用户信息,请联系客服人员处理");
@@ -113,12 +113,12 @@ public class WxApiController extends BaseController {
             if(cardId == null) return sendArgsError("请选择充值卡券");
             MemberCard cart = memberCardServiceExt.findByIdAndStatus(cardId, Constant.MEMBER_CART_ON);
             if(cart == null) return sendArgsError("未查询到充值卡信息，请重新选择");
-            payParam = userServiceExt.rechargeMoney(user, cart);
+            object = userServiceExt.rechargeMoney(user, cart);
         }
         if(type == Constant.RECHARGE_WITH_MONEY) {
-            payParam = userServiceExt.rechargeMoney(user, money);
+            object = userServiceExt.rechargeMoney(user, money);
         }
-        return sendSuccess("支付参数", payParam);
+        return sendSuccess(object);
     }
 
     @PostMapping("/rechargeCallBack")
