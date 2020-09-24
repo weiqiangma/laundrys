@@ -109,12 +109,13 @@ public class WxApiServiceExt {
             if(StringUtils.equals("SUCCESS", resultCode)) {
                 String prepayId = map.get("prepay_id");
                 String nonceStr = map.get("nonce_str");
-                //String nonceStr = StringUtils.createRandomStr(30);
                 msg = createSecondParam(prepayId, nonceStr, "MD5");
                 Map<String, String> resultMap = XmlUtils.xmlStr2Map(msg);
                 for(Map.Entry<String, String> entry : resultMap.entrySet()) {
                     String key = entry.getKey();
-                    if(StringUtils.equals("sign", key)) key = "paySign";
+                    if(StringUtils.equals("sign", key)) {
+                        key = "paySign";
+                    }
                     String value = entry.getValue();
                     object.put(key, value);
                 }
@@ -128,6 +129,45 @@ public class WxApiServiceExt {
     }
 
     /**
+     * 查询订单状态
+     * @param outTradeNo
+     * @return
+     */
+    public JSONObject getOrderStatus(String outTradeNo) {
+        JSONObject object = new JSONObject();
+        String url = "https://api.mch.weixin.qq.com/pay/orderquery";
+        String param= createQueryParam(outTradeNo);
+        try {
+            HttpResult result = HttpUtils.post(url, param, "UTF-8");
+            String message = result.getHtml();
+            Map<String, String> map = XmlUtils.xmlStr2Map(message);
+            String resultCode = map.get("result_code");
+            for(Map.Entry<String, String> entry : map.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                object.put(key, value);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return object;
+    }
+
+
+
+    public String createQueryParam(String outTradeNo) {
+        String randomStr = StringUtils.createRandomStr(30);
+        SortedMap<String, String> param = new TreeMap<>();
+        param.put("appid", AppId);
+        param.put("mch_id", macId);
+        //生成32位一下的随机字符串
+        param.put("nonce_str", randomStr);
+        param.put("out_trade_no", outTradeNo);
+        param.put("sign", createSign(param));
+        return XmlUtils.map2Xml(param);
+    }
+
+    /**
      * 生成统一下单所需要的参数
      * @param openId
      * @param orderNo
@@ -136,23 +176,30 @@ public class WxApiServiceExt {
      * @param detail
      * @return
      */
-    public String createParam(String openId, String orderNo, String totalFee, String body, String detail) {
+    public String createParam(String openId, String orderNo, String totalFee, String body,  String detail) {
         String randomStr = StringUtils.createRandomStr(30);
         String spbillCreateIp = getHostIp();
         SortedMap<String, String> param = new TreeMap<>();
         param.put("appid", AppId);
         param.put("mch_id", macId);
-        param.put("nonce_str", randomStr);          //生成32位一下的随机字符串
-        param.put("body", body);                    //商品名称
-        param.put("detail", detail);                //商品详情
-        param.put("out_trade_no", orderNo);         //订单序列号
-        param.put("total_fee", totalFee);           //总费用
-        param.put("notify_url", notifyUrl);         //回调地址
-        param.put("trade_type", trade_type);         //支付类型
-        param.put("openid", openId);                //用户openId
+        //生成32位一下的随机字符串
+        param.put("nonce_str", randomStr);
+        //商品名称
+        param.put("body", body);
+        //商品详情
+        param.put("detail", detail);
+        //订单序列号
+        param.put("out_trade_no", orderNo);
+        //总费用
+        param.put("total_fee", totalFee);
+        //回调地址
+        param.put("notify_url", notifyUrl);
+        //支付类型
+        param.put("trade_type", trade_type);
+        //用户openId
+        param.put("openid", openId);
         param.put("spbill_create_ip", spbillCreateIp);
-        param.put("sign", createSign(param));       //签名
-
+        param.put("sign", createSign(param));
         return XmlUtils.map2Xml(param);
     }
 
@@ -227,7 +274,7 @@ public class WxApiServiceExt {
      * @param page      小程序模板跳转页面
      * @param miniprogramState 跳转小程序类型
      */
-    public void sendMessageToUser(String accessToken, String toUser, String data, String page, String miniprogramState) {
+    public void sendMessage(String accessToken, String toUser, String data, String page, String miniprogramState) {
         String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + accessToken;
         try {
             JSONObject object = new JSONObject();
@@ -248,17 +295,25 @@ public class WxApiServiceExt {
      */
     public String getAccessToken() {
         String accessToken = cacheService.get("accessToken");
-        if(StringUtils.isNotEmpty(accessToken)) return accessToken;
+        if(StringUtils.isNotEmpty(accessToken)) {
+            return accessToken;
+        }
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + AppId + "&secret=" + AppSecret;
         try {
             HttpResult result = HttpUtils.get(url);
             JSONObject object = result.asJSON();
             accessToken = object.getString("access_token");
-            int expires_in = object.getIntValue("expires_in");
-            cacheService.put("accessToken", accessToken, expires_in);
+            int expiresIn = object.getIntValue("expires_in");
+            cacheService.put("accessToken", accessToken, expiresIn);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return accessToken;
+    }
+
+    public void sendPaySuccessMsg(String openId, String data) {
+        String accessToken = getAccessToken();
+        JSONObject object = new JSONObject();
+        sendMessage(accessToken, openId, data, null, null);
     }
 }

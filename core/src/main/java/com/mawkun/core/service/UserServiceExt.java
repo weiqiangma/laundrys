@@ -1,13 +1,12 @@
 package com.mawkun.core.service;
 
-import cn.pertech.common.spring.JsonResult;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.UserVo;
-import com.mawkun.core.base.entity.InvestLog;
+import com.mawkun.core.base.entity.InvestOrder;
 import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.UserService;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 @Service
@@ -30,7 +28,7 @@ public class UserServiceExt extends UserService {
     @Autowired
     private ShopUserDaoExt shopUserDaoExt;
     @Autowired
-    private InvestLogServiceExt investLogServiceExt;
+    private InvestOrderServiceExt investOrderServiceExt;
     @Autowired
     private SysParamDaoExt sysParamDaoExt;
     @Autowired
@@ -91,11 +89,11 @@ public class UserServiceExt extends UserService {
         long sumOfMoney = (user.getSumOfMoney() == null) ? 0 : user.getSumOfMoney();
         Long residueMoeny = sumOfMoney + amountMoney;
         //生成待支付订单
-        long primaryKey = investLogServiceExt.save(user, card, Constant.ORDER_STATUS_WAITING_PAY, investMoney, giftMoney, amountMoney, residueMoeny);
+        long primaryKey = investOrderServiceExt.save(user, card, Constant.ORDER_STATUS_WAITING_PAY, investMoney, giftMoney, amountMoney, residueMoeny);
         String orderNo = StringUtils.createOrderFormNo(String.valueOf(primaryKey));
-        InvestLog investLog =investLogServiceExt.getById(primaryKey);
-        investLog.setOrderNo(orderNo);
-        investLogServiceExt.update(investLog);
+        InvestOrder investOrder = investOrderServiceExt.getById(primaryKey);
+        investOrder.setOrderNo(orderNo);
+        investOrderServiceExt.update(investOrder);
         //调用微信接口生成支付参数供前端调用
         JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
         return object;
@@ -103,17 +101,16 @@ public class UserServiceExt extends UserService {
 
     @Transactional
     public JSONObject rechargeMoney(User user, Long money) {
-        int result = -1;
         Long investMoney = money;
         long giftMoney = 0;
         Long amountMoney = money;
         Long residueMoeny = user.getSumOfMoney() + money;
         //生成待支付订单
-        long primaryKey = investLogServiceExt.save(user, null, Constant.ORDER_STATUS_WAITING_PAY, investMoney, giftMoney, amountMoney, residueMoeny);
+        long primaryKey = investOrderServiceExt.save(user, null, Constant.ORDER_STATUS_WAITING_PAY, investMoney, giftMoney, amountMoney, residueMoeny);
         String orderNo = StringUtils.createOrderFormNo(String.valueOf(primaryKey));
-        InvestLog investLog =investLogServiceExt.getById(primaryKey);
+        InvestOrder investLog = investOrderServiceExt.getById(primaryKey);
         investLog.setOrderNo(orderNo);
-        investLogServiceExt.update(investLog);
+        investOrderServiceExt.update(investLog);
         //调用微信接口生成支付参数供前端调用
         JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
         return object;

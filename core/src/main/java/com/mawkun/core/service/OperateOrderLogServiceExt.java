@@ -28,14 +28,15 @@ public class OperateOrderLogServiceExt extends OperateOrderLogService {
     /**
      * 创建生成订单的操作记录
      */
-    public int createWaitingPayOrder(Long userId, Long orderId, Integer userKind, Integer status, String operate) {
+    public int createWaitingPayOrder(Long userId, String userName, Long orderId, Integer userKind, Integer status, String operate, String description) {
         OperateOrderLog log = new OperateOrderLog();
         log.setUserId(userId);
         log.setOrderFormId(orderId);
+        log.setUserName(userName);
         log.setStatus(status);
         log.setUserKind(userKind);
         log.setOperate(operate);
-        log.setDescription("确定操作无误");
+        log.setDescription(description);
         log.setCreateTime(new Date());
         return operateOrderLogDaoExt.insert(log);
     }

@@ -6,15 +6,16 @@
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="orderFormId" column="order_form_id" jdbcType="INTEGER"/>
-        <result property="userKind" column="user_kind" jdbcType="OTHER"/>
+        <result property="userKind" column="user_kind" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="operate" column="operate" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, order_form_id, user_kind, operate, description, status, create_time      
+      id, user_id, order_form_id, user_kind, user_name, operate, description, status, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -42,7 +43,10 @@
                 and order_form_id = #{orderFormId,jdbcType=INTEGER}
             </if>
             <if test="userKind != null">
-                and user_kind = #{userKind,jdbcType=OTHER}
+                and user_kind = #{userKind,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
             </if>
             <if test="operate != null">
                 and operate = #{operate,jdbcType=VARCHAR}
@@ -51,13 +55,12 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
-        order by create_time desc
     </select>
 
     <!--通过实体不为空的属性作为筛选条件查询单个-->
@@ -76,7 +79,10 @@
                 and order_form_id = #{orderFormId,jdbcType=INTEGER}
             </if>
             <if test="userKind != null">
-                and user_kind = #{userKind,jdbcType=OTHER}
+                and user_kind = #{userKind,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
             </if>
             <if test="operate != null">
                 and operate = #{operate,jdbcType=VARCHAR}
@@ -85,7 +91,7 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -120,6 +126,9 @@
           <if test="userKind != null">
              user_kind,
           </if>
+          <if test="userName != null">
+             user_name,
+          </if>
           <if test="operate != null">
              operate,
           </if>
@@ -144,7 +153,10 @@
              #{orderFormId,jdbcType=INTEGER},
           </if>
           <if test="userKind != null">
-             #{userKind,jdbcType=OTHER},
+             #{userKind,jdbcType=INTEGER},
+          </if>
+          <if test="userName != null">
+             #{userName,jdbcType=VARCHAR},
           </if>
           <if test="operate != null">
              #{operate,jdbcType=VARCHAR},
@@ -153,7 +165,7 @@
              #{description,jdbcType=VARCHAR},
           </if>
           <if test="status != null">
-             #{status,jdbcType=OTHER},
+             #{status,jdbcType=INTEGER},
           </if>
           <if test="createTime != null">
              #{createTime,jdbcType=TIMESTAMP},
@@ -164,10 +176,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into operate_order_log
-         (id, user_id, order_form_id, user_kind, operate, description, status, create_time)
+         (id, user_id, order_form_id, user_kind, user_name, operate, description, status, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.orderFormId,jdbcType=INTEGER}, #{item.userKind,jdbcType=OTHER}, #{item.operate,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.orderFormId,jdbcType=INTEGER}, #{item.userKind,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.operate,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -182,7 +194,10 @@
                 order_form_id = #{orderFormId,jdbcType=INTEGER},
             </if>
             <if test="userKind != null">
-                user_kind = #{userKind,jdbcType=OTHER},
+                user_kind = #{userKind,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName,jdbcType=VARCHAR},
             </if>
             <if test="operate != null and operate != ''">
                 operate = #{operate,jdbcType=VARCHAR},
@@ -191,7 +206,7 @@
                 description = #{description,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
-                status = #{status,jdbcType=OTHER},
+                status = #{status,jdbcType=INTEGER},
             </if>
             <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
@@ -211,7 +226,10 @@
                 order_form_id = #{set.orderFormId,jdbcType=INTEGER},
             </if>
             <if test="where.userKind == null and set.userKind != null">
-                user_kind = #{set.userKind,jdbcType=OTHER},
+                user_kind = #{set.userKind,jdbcType=INTEGER},
+            </if>
+            <if test="where.userName == null and set.userName != null and set.userName != ''">
+                user_name = #{set.userName,jdbcType=VARCHAR},
             </if>
             <if test="where.operate == null and set.operate != null and set.operate != ''">
                 operate = #{set.operate,jdbcType=VARCHAR},
@@ -220,7 +238,7 @@
                 description = #{set.description,jdbcType=VARCHAR},
             </if>
             <if test="where.status == null and set.status != null">
-                status = #{set.status,jdbcType=OTHER},
+                status = #{set.status,jdbcType=INTEGER},
             </if>
             <if test="where.createTime == null and set.createTime != null">
                 create_time = #{set.createTime,jdbcType=TIMESTAMP},
@@ -237,7 +255,10 @@
                 and order_form_id = #{where.orderFormId,jdbcType=INTEGER}
             </if>
             <if test="where.userKind != null">
-                and user_kind = #{where.userKind,jdbcType=OTHER}
+                and user_kind = #{where.userKind,jdbcType=INTEGER}
+            </if>
+            <if test="where.userName != null">
+                and user_name = #{where.userName,jdbcType=VARCHAR}
             </if>
             <if test="where.operate != null">
                 and operate = #{where.operate,jdbcType=VARCHAR}
@@ -246,7 +267,7 @@
                 and description = #{where.description,jdbcType=VARCHAR}
             </if>
             <if test="where.status != null">
-                and status = #{where.status,jdbcType=OTHER}
+                and status = #{where.status,jdbcType=INTEGER}
             </if>
             <if test="where.createTime != null">
                 and create_time = #{where.createTime,jdbcType=TIMESTAMP}
@@ -271,6 +292,11 @@
             <trim prefix="user_kind = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.userKind}
+                 </foreach>
+            </trim>
+            <trim prefix="user_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userName}
                  </foreach>
             </trim>
             <trim prefix="operate = case" suffix="end,">
@@ -316,7 +342,10 @@
                 and order_form_id = #{orderFormId,jdbcType=INTEGER}
             </if>
             <if test="userKind != null">
-                and user_kind = #{userKind,jdbcType=OTHER}
+                and user_kind = #{userKind,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
             </if>
             <if test="operate != null">
                 and operate = #{operate,jdbcType=VARCHAR}
@@ -325,7 +354,7 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}
@@ -358,7 +387,10 @@
                 and order_form_id = #{orderFormId,jdbcType=INTEGER}
             </if>
             <if test="userKind != null">
-                and user_kind = #{userKind,jdbcType=OTHER}
+                and user_kind = #{userKind,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
             </if>
             <if test="operate != null">
                 and operate = #{operate,jdbcType=VARCHAR}
@@ -367,7 +399,7 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=OTHER}
+                and status = #{status,jdbcType=INTEGER}
             </if>
             <if test="createTime != null">
                 and create_time = #{createTime,jdbcType=TIMESTAMP}

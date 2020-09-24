@@ -4,10 +4,9 @@ import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
-import com.mawkun.core.base.data.query.InvestLogQuery;
-import com.mawkun.core.base.entity.InvestLog;
-import com.mawkun.core.base.service.InvestLogService;
-import com.mawkun.core.service.InvestLogServiceExt;
+import com.mawkun.core.base.data.query.InvestOrderQuery;
+import com.mawkun.core.base.entity.InvestOrder;
+import com.mawkun.core.service.InvestOrderServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -25,35 +24,39 @@ import java.util.List;
 public class InvestLogController extends BaseController {
     
     @Autowired
-    private InvestLogServiceExt investLogServiceExt;
+    private InvestOrderServiceExt investOrderServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="充值日志详情", notes="充值日志详情")
     public JsonResult getById(Long id) {
-        InvestLog investLog = investLogServiceExt.getById(id);
-        return sendSuccess(investLog);
+        InvestOrder investOrder = investOrderServiceExt.getById(id);
+        return sendSuccess(investOrder);
     }
 
     @GetMapping("/getByEntity")
     @ApiOperation(value="充值日志详情", notes="充值日志详情")
-    public JsonResult getByEntity(InvestLog investLog) {
-        InvestLog resultLog = investLogServiceExt.getByEntity(investLog);
-        return sendSuccess(resultLog);
+    public JsonResult getByEntity(InvestOrder investLog) {
+        InvestOrder resultOrder = investOrderServiceExt.getByEntity(investLog);
+        return sendSuccess(resultOrder);
     }
 
     @GetMapping("/list")
     @ApiOperation(value="充值日志列表", notes="充值日志列表")
-    public JsonResult list(@LoginedAuth UserSession session, InvestLog investLog) {
-        if(session.getId() > 0) investLog.setUserId(session.getId());
-        List<InvestLog> investLogList = investLogServiceExt.listByEntity(investLog);
+    public JsonResult list(@LoginedAuth UserSession session, InvestOrder investOrder) {
+        if(session.getId() > 0) {
+            investOrder.setUserId(session.getId());
+        }
+        List<InvestOrder> investLogList = investOrderServiceExt.listByEntity(investOrder);
         return sendSuccess(investLogList);
     }
 
     @GetMapping("/pageList")
     @ApiOperation(value="充值日志列表分页", notes="充值日志列表分页")
-    public JsonResult pageList(@LoginedAuth UserSession session, InvestLogQuery query) {
-        if(session.getId() > 0) query.setUserId(session.getId());
-        PageInfo<InvestLog> pageInfo = investLogServiceExt.pageList(query);
+    public JsonResult pageList(@LoginedAuth UserSession session, InvestOrderQuery query) {
+        if(session.getId() > 0) {
+            query.setUserId(session.getId());
+        }
+        PageInfo pageInfo = investOrderServiceExt.pageList(query);
         return sendSuccess(pageInfo);
     }
 }

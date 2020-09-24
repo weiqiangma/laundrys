@@ -38,6 +38,7 @@ public interface Constant {
     int PAY_WITH_WEIXIN = 0;    //微信支付
     int PAY_WITH_ZHIFUBAO = 1;  //支付宝支付
     int PAY_WITH_CASH = 2;      //现金支付
+    int PAY_WITH_REMAINDER = 4; //余额支付
     //=============================商品状态================================//
     int GOODS_GROUNDING = 0;    //上架
     int GOODS_UNDERCARRIAGE = 1;//下架
@@ -74,7 +75,7 @@ public interface Constant {
 
     //=============================支付状态=============================
     //状态10:支付成功,20:等待退款,30:退款失败,40:退款成功 50:拒绝退款
-    int PAY_STATU_SUCCESS = 10;
+    String PAY_STATU_SUCCESS = "SUCCESS";
     int PAY_STATU_REFUND_WAIT = 20;
     int PAY_STATU_REFUND_FAIL = 30;
     int PAY_STATU_REFUND_SUCCESS = 30;
@@ -82,11 +83,18 @@ public interface Constant {
 
     //=============================购物车信息状态=============================
 
-    //=============================门店状态=============================
-    int SHOP_LEVEL_FIRST = 0;   //总店
-    int SHOP_LEVEL_SECOND = 1;  //分店
+    //=============================微信返回结果状态=============================
+    String WX_RETURN_SUCCESS = "SUCCESS";
 
-    int SHOP_STATUS_NORMAL = 0; //正常
-    int SHOP_STATUS_LOCK = 1; //锁定
-    int SHOP_STATUS_DELETE = 2; //删除
+    //=============================购物车信息状态=============================
+    int SHOP_LEVEL_FIRST = 0;
+    //分店
+    int SHOP_LEVEL_SECOND = 1;
+
+    //正常
+    int SHOP_STATUS_NORMAL = 0;
+    //锁定
+    int SHOP_STATUS_LOCK = 1;
+    //删除
+    int SHOP_STATUS_DELETE = 2;
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mawkun.core.dao.InvestLogDaoExt">
-        <select id="selectListByTerms" resultMap="com.mawkun.core.base.dao.InvestLogDao.InvestLogResultMap" parameterType="com.mawkun.core.base.data.query.InvestLogQuery">
+<mapper namespace="com.mawkun.core.dao.InvestOrderDaoExt">
+        <select id="selectListByTerms" resultMap="com.mawkun.core.base.dao.InvestOrderDao.InvestLogResultMap" parameterType="com.mawkun.core.base.data.query.InvestOrderQuery">
             select * from invest_log
             <where>
                 <if test="userId != null">and user_id = #{userId}</if>

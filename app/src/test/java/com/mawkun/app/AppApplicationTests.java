@@ -43,7 +43,14 @@ class AppApplicationTests {
         object.put("thing3","2020年4月4日 20:00");
         object.put("thing4","大双洗衣店");
         object.put("thing5","您的衣服已经清洗完成请及时领取");
-        wxApiServiceExt.sendMessageToUser(accessToken, "owrdq5Cdbl9sWklPO4tMwoRqkP68", object.toJSONString(), null, null);
+        //wxApiServiceExt.sendMessageToUser(accessToken, "owrdq5Cdbl9sWklPO4tMwoRqkP68", object.toJSONString(), null, null);
+    }
+
+    @Test
+    void getOrderStatus() {
+        String outTradeNo="20200923114266";
+        JSONObject object = wxApiServiceExt.getOrderStatus(outTradeNo);
+        System.out.println(object);
     }
 
 }

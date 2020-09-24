@@ -5,13 +5,13 @@ import lombok.Data;
                                                     import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 /**
- * (InvestLog)实体类
+ * (InvestOrder)实体类
  *
  * @author mawkun
- * @since 2020-09-23 15:24:18
+ * @since 2020-09-24 15:28:43
  */
 @Data 
-public class InvestLog {
+public class InvestOrder {
     
     private Long id;
     
@@ -52,6 +52,12 @@ public class InvestLog {
     * 状态
     */
     private Integer status;
+    /**
+    * 支付时间
+    */
+        @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+private Date payTime;
     /**
     * 更新时间
     */

@@ -103,6 +103,9 @@
     <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.OrderFormQuery">
         select order_form.*, shop.shop_name from order_form left join  shop on order_form.shop_id = shop.id
         <where>
+            <if test="id != null and id > 0">
+                and order_form.id = #{id}
+            </if>
             <if test="transportWay != null">
                 and order_form.transport_way = #{transportWay}
             </if>

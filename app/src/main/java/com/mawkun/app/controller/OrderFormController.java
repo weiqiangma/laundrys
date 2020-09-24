@@ -3,6 +3,8 @@ package com.mawkun.app.controller;
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.DateUtils;
+import cn.pertech.common.utils.NumberUtils;
+import cn.pertech.common.utils.StringUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
@@ -15,6 +17,7 @@ import com.mawkun.core.base.entity.OperateOrderLog;
 import com.mawkun.core.base.entity.OrderForm;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.UserService;
+import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.service.OperateOrderLogServiceExt;
 import com.mawkun.core.service.OrderFormServiceExt;
 import com.mawkun.core.service.UserServiceExt;
@@ -48,6 +51,8 @@ public class OrderFormController extends BaseController {
     @Autowired
     private UserServiceExt userServiceExt;
     @Autowired
+    private ShopUserDaoExt shopUserDaoExt;
+    @Autowired
     private OperateOrderLogServiceExt operateOrderLogServiceExt;
 
     @GetMapping("/get")
@@ -67,7 +72,9 @@ public class OrderFormController extends BaseController {
     @GetMapping("/list")
     @ApiOperation(value="获取订单列表", notes="获取订单列表")
     public JsonResult list(@LoginedAuth UserSession session, OrderForm orderForm) {
-        if(session.getId() > 0) orderForm.setUserId(session.getId());
+        if(session.getId() > 0) {
+            orderForm.setUserId(session.getId());
+        }
         List<OrderForm> orderFormList = orderFormServiceExt.listByEntity(orderForm);
         return sendSuccess(orderFormList);
     }
@@ -75,17 +82,70 @@ public class OrderFormController extends BaseController {
     @GetMapping("/pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
     public JsonResult pageList(@LoginedAuth UserSession session, OrderFormQuery query) {
-        if(session.getId() > 0) query.setUserId(session.getId());
+        if(session.getId() > 0) {
+            query.setUserId(session.getId());
+        }
         PageInfo page = orderFormServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }
 
-    @GetMapping("/getDistributorOrder")
-    @ApiOperation(value="配送员订单列表分页", notes="配送员订单列表分页")
-    public JsonResult getDistributorOrder(@LoginedAuth UserSession session, OrderFormQuery query) {
-        if(!session.isDistributor()) return sendArgsError("非配送员无权查看");
-        PageInfo page = orderFormServiceExt.getDistributorOrder(session.getId(), query);
-        return sendSuccess(page);
+    /**
+     * 检查付款成功的订单状态
+     * @param session
+     * @param orderId
+     * @return
+     */
+    @RequestMapping("/checkOrderPayStatus")
+    @ApiOperation(value="检查付款成功的订单状态", notes="检查付款成功的订单状态")
+    public JsonResult checkOrderPayStatus(@LoginedAuth UserSession session, Long orderId) {
+        /**
+         * 1.检查当前登录用户是否为下单用户
+         * 2.用户付款成功，成功进入回调订单状态应为待收货，若未正常进入
+         *  回调函数，未能及时更新订单状态，此处要检查并及时更新订单状态并展示给用户付款成功的界面
+         */
+        User user = userServiceExt.getById(session.getId());
+        if(user == null) {
+            return sendArgsError("未查询到该用户");
+        }
+        OrderForm orderForm = orderFormServiceExt.getById(orderId);
+        if(!orderForm.getUserId().equals(session.getId())) {
+            return sendArgsError("非下单用户无权编辑");
+        }
+        JSONObject object = wxApiServiceExt.getOrderStatus(orderForm.getOrderSerial());
+        String resultCode = object.getString("result_code");
+        if(StringUtils.equals(Constant.WX_RETURN_SUCCESS, resultCode)) {
+            String tradeState = object.getString("trade_state");
+            String openId = object.getString("openid");
+            String timeEnd = object.getString("time_end");
+            String totalFee = object.getString("total_fee");
+            Date payTime = new Date();
+            try {
+                payTime = DateUtils.parse("yyyy-MM-dd HH:mm:ss", timeEnd);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //用户已经支付成功，订单状态却未及时更新
+            if(StringUtils.equals(Constant.PAY_STATU_SUCCESS, tradeState) && StringUtils.equals(user.getOpenId(), openId)) {
+                //如果是余额支付,用户余额减去支付费用并更新
+                if(orderForm.getPayKind() == Constant.PAY_WITH_REMAINDER) {
+                    user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
+                    userServiceExt.update(user, null);
+                }
+                //如果订单状态还是待支付
+                if(orderForm.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                    //更新订单
+                    orderForm.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
+                    orderForm.setPayTime(payTime);
+                    orderForm.setUpdateTime(new Date());
+                    orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
+                    orderFormServiceExt.update(null, orderForm);
+                }
+            }
+        } else {
+            return sendArgsError("调用微信接口查询订单异常");
+        }
+        OrderForm resultOrder = orderFormServiceExt.getById(orderId);
+        return sendSuccess(resultOrder);
     }
 
     @PostMapping("/insert")
@@ -104,7 +164,9 @@ public class OrderFormController extends BaseController {
     @PostMapping("/cancel")
     @ApiOperation(value="取消订单", notes="取消订单")
     public JsonResult cancel(@LoginedAuth UserSession session, Long orderId) {
-        if(orderId == null) return sendArgsError("请选择一个订单");
+        if(orderId == null) {
+            return sendArgsError("请选择一个订单");
+        }
         OrderForm order = new OrderForm();
         order.setId(orderId);
         order.setUserId(session.getId());
@@ -134,7 +196,9 @@ public class OrderFormController extends BaseController {
                 return Convert.toInt(o, 0);
             }
         });
-        if (idList.size()>0) result = orderFormServiceExt.deleteByIds(idList);
+        if (idList.size()>0) {
+            result = orderFormServiceExt.deleteByIds(idList);
+        }
         return sendSuccess(result);
     }
 
@@ -156,12 +220,31 @@ public class OrderFormController extends BaseController {
         return sendSuccess(array);
     }
 
-    @GetMapping("/orderTaking")
-    public JsonResult orderTaking(@LoginedAuth UserSession session, Long orderId) {
-        if(!session.isDistributor()) return sendArgsError("非配送员无权操作");
-        OrderForm orderForm = orderFormServiceExt.getById(orderId);
-        if(orderForm == null) return sendArgsError("未查询到该订单");
+    @GetMapping("/getDistributorOrder")
+    @ApiOperation(value="配送员订单列表分页", notes="配送员订单列表分页")
+    public JsonResult getDistributorOrder(@LoginedAuth UserSession session, OrderFormQuery query) {
+        if(!session.isDistributor()) {
+            return sendArgsError("非配送员无权查看");
+        }
+        PageInfo page = orderFormServiceExt.getDistributorOrder(session.getId(), query);
+        return sendSuccess(page);
+    }
 
-        return sendSuccess();
+    @GetMapping("/orderTaking")
+    @ApiOperation(value="配送员确认订单", notes="配送员确认订单")
+    public JsonResult orderTaking(@LoginedAuth UserSession session, Long orderId, String description) {
+        if(!session.isDistributor()) {
+            return sendArgsError("非配送员无权操作");
+        }
+        OrderForm orderForm = orderFormServiceExt.getById(orderId);
+        if(orderForm == null) {
+            return sendArgsError("未查询到该订单");
+        }
+        boolean flag = orderFormServiceExt.checkOrderIsDistributor(session.getId(), orderId);
+        if(!flag) {
+            return sendArgsError("订单不属于配送员关联门店,无权操作");
+        }
+        int result = orderFormServiceExt.orderTaking(session, orderForm, description);
+        return sendSuccess(result);
     }
 }

@@ -1,36 +1,36 @@
 package com.mawkun.core.base.entity;
 
 import java.util.Date;
-
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonFormat;
+                                    import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-
 /**
  * (OperateOrderLog)实体类
  *
  * @author mawkun
- * @date 2020-09-02 21:13:38
+ * @since 2020-09-24 09:10:50
  */
-@Data
+@Data 
 public class OperateOrderLog {
-
+    
     private Long id;
-
+    
     private Long userId;
-
+    
     private Long orderFormId;
-
+    
     private Integer userKind;
-
+    
+    private String userName;
+    
     private String operate;
-
+    
     private String description;
-
+    
     private Integer status;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+    
+        @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+private Date createTime;
 
 }

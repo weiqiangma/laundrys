@@ -11,7 +11,7 @@ import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.UserCacheService;
-import com.mawkun.core.service.InvestLogServiceExt;
+import com.mawkun.core.service.InvestOrderServiceExt;
 import com.mawkun.core.service.MemberCardServiceExt;
 import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
@@ -49,7 +49,7 @@ public class UserController extends BaseController {
     @Autowired
     private UserServiceExt userServiceExt;
     @Autowired
-    private InvestLogServiceExt investLogServiceExt;
+    private InvestOrderServiceExt investOrderServiceExt;
     @Autowired
     private UserCacheService userCacheService;
     @Autowired

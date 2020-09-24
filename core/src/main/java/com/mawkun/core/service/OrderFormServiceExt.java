@@ -56,6 +56,12 @@ public class OrderFormServiceExt extends OrderFormService {
         return new PageInfo<>(list);
     }
 
+    /**
+     * 配送员订单
+     * @param userId
+     * @param query
+     * @return
+     */
     public PageInfo<OrderFormVo> getDistributorOrder(Long userId, OrderFormQuery query) {
         query.init();
         ShopUser shopUser = new ShopUser();
@@ -67,6 +73,18 @@ public class OrderFormServiceExt extends OrderFormService {
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<OrderFormVo> list = orderFormDaoExt.selectList(query);
         return new PageInfo<>(list);
+    }
+
+    /**
+     * 根据订单号和状态查询
+     * @param orderNo
+     * @return
+     */
+    public OrderForm getByOrderSerialAndStatus(String orderNo, Integer status) {
+        OrderForm orderForm = new OrderForm();
+        orderForm.setOrderSerial(orderNo);
+        orderForm.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
+        return orderFormDaoExt.getByEntity(orderForm);
     }
 
     /**
@@ -95,7 +113,7 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param address
      * @param resultAmount
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public int generateOrderForm(User user, OrderFormQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
         int result = -1;
         //生成订单
@@ -131,7 +149,7 @@ public class OrderFormServiceExt extends OrderFormService {
             throw new Exception("生成订单号失败");
         }
         //生成订单操作记录
-        result = operateOrderLogServiceExt.createWaitingPayOrder(user.getId(), form.getId(), Constant.ORDER_STATUS_WAITING_PAY, Constant.USER_TYPE_CUSTOMER, "用户创建待支付订单");
+        result = operateOrderLogServiceExt.createWaitingPayOrder(user.getId(), user.getUserName(), form.getId(), Constant.ORDER_STATUS_WAITING_PAY, Constant.USER_TYPE_CUSTOMER, "用户创建待支付订单", null);
         if(result < 1) {
             throw new Exception("生成订单操作记录失败");
         }
@@ -153,14 +171,42 @@ public class OrderFormServiceExt extends OrderFormService {
         return result;
     }
 
-    public void orderTaking(UserSession session, OrderForm order) {
+    /**
+     * 配送员确认收货
+     * @param session
+     * @param order
+     * @param description
+     * @return
+     */
+    public int orderTaking(UserSession session, OrderForm order, String description) {
         /**
          * 1.更新订单状态
          * 2.生成订单操作记录
          */
         order.setStatus(Constant.ORDER_STATUS_SURE_REAP);
         orderFormDaoExt.update(order);
-        //operateOrderLogServiceExt.createWaitingPayOrder(session.getId(), order.getId())
+        return operateOrderLogServiceExt.createWaitingPayOrder(session.getId(), session.getUserName(), order.getId(), Constant.USER_TYPE_DISTRIBUTOR, Constant.ORDER_STATUS_SURE_REAP, "确认收货", description);
+    }
+
+    /**
+     * 检查订单是否属于该配送员所属门店
+     * @param userId
+     * @param orderId
+     * @return
+     */
+    public boolean checkOrderIsDistributor(Long userId, Long orderId) {
+        ShopUser shopUser = new ShopUser();
+        shopUser.setUserId(userId);
+        List<ShopUser> list = shopUserDaoExt.listByEntity(shopUser);
+        List<Long> shopList = list.stream().map(ShopUser::getShopId).collect(Collectors.toList());
+        OrderFormQuery query = new OrderFormQuery();
+        query.setShopIdList(shopList);
+        query.setId(orderId);
+        List<OrderFormVo> orderList = orderFormDaoExt.selectList(query);
+        if(orderList != null && orderList.size() > 0) {
+            return true;
+        }
+        return false;
     }
 
 }

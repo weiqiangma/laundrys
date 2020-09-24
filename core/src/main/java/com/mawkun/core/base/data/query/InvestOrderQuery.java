@@ -1,12 +1,12 @@
 package com.mawkun.core.base.data.query;
 
-import com.mawkun.core.base.entity.InvestLog;
+import com.mawkun.core.base.entity.InvestOrder;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class InvestLogQuery extends InvestLog {
+public class InvestOrderQuery extends InvestOrder {
     private Integer pageNo;
     private Integer pageSize;
     private Date startTime;

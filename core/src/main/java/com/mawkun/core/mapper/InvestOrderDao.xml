@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mawkun.core.base.dao.InvestLogDao">
+<mapper namespace="com.mawkun.core.base.dao.InvestOrderDao">
 
-    <resultMap type="com.mawkun.core.base.entity.InvestLog" id="InvestLogResultMap">
+    <resultMap type="com.mawkun.core.base.entity.InvestOrder" id="InvestLogResultMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="cartId" column="cart_id" jdbcType="INTEGER"/>
@@ -33,7 +33,7 @@
 
 
     <!--通过实体不为空的属性作为筛选条件查询列表-->
-    <select id="listByEntity" resultMap="InvestLogResultMap" parameterType="com.mawkun.core.base.entity.InvestLog">
+    <select id="listByEntity" resultMap="InvestLogResultMap" parameterType="com.mawkun.core.base.entity.InvestOrder">
         select
           <include refid="table_field" />
         from invest_log
@@ -84,7 +84,7 @@
     </select>
 
     <!--通过实体不为空的属性作为筛选条件查询单个-->
-    <select id="getByEntity" resultMap="InvestLogResultMap" parameterType="com.mawkun.core.base.entity.InvestLog">
+    <select id="getByEntity" resultMap="InvestLogResultMap" parameterType="com.mawkun.core.base.entity.InvestOrder">
         select
           <include refid="table_field" />
         from invest_log
@@ -146,7 +146,7 @@
     </select>
 
     <!--新增实体属性不为null的列-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.InvestLog">
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.InvestOrder">
         insert into invest_log
         <trim prefix="(" suffix=")" suffixOverrides=",">
           <if test="id != null">
@@ -249,7 +249,7 @@
     </insert>
 
     <!--通过主键修改实体属性不为null的列-->
-    <update id="update" parameterType="com.mawkun.core.base.entity.InvestLog">
+    <update id="update" parameterType="com.mawkun.core.base.entity.InvestOrder">
         update invest_log
         <set>
             <if test="userId != null">
@@ -467,7 +467,7 @@
     </delete>
 
     <!--通过实体非空属性删除-->
-    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.InvestLog">
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.InvestOrder">
         delete from invest_log
         <where>
             <if test="userId != null">
@@ -524,7 +524,7 @@
         select count(id) from invest_log
     </select>
     
-    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.InvestLog" resultType="int">
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.InvestOrder" resultType="int">
         select count(id) from invest_log
         <where>
             <if test="id != null">
