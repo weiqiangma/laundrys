@@ -51,6 +51,8 @@ public class WxApiController extends BaseController {
     @Autowired
     private UserServiceExt userServiceExt;
     @Autowired
+    private PayFlowServiceExt payFlowServiceExt;
+    @Autowired
     private InvestOrderServiceExt investOrderServiceExt;
     @Autowired
     private OrderFormServiceExt orderFormServiceExt;
@@ -102,9 +104,9 @@ public class WxApiController extends BaseController {
                 e.printStackTrace();
             }
             OrderForm orderForm = orderFormServiceExt.getByOrderSerialAndStatus(orderNo, Constant.ORDER_STATUS_WAITING_PAY);
+            User user = userServiceExt.getById(orderForm.getUserId());
             //如果是余额支付,减去支付费用并更新
             if(orderForm.getPayKind() == Constant.PAY_WITH_REMAINDER) {
-                User user = userServiceExt.getById(orderForm.getUserId());
                 user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
                 userServiceExt.update(user, null);
             }
@@ -114,6 +116,8 @@ public class WxApiController extends BaseController {
             orderForm.setUpdateTime(new Date());
             orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
             orderFormServiceExt.update(null, orderForm);
+            //生成支付流水
+            payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
             //发送通知
             String accessToken = wxApiServiceExt.getAccessToken();
             return "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
@@ -157,21 +161,25 @@ public class WxApiController extends BaseController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            //用户已经支付成功，订单状态却未及时更新
+            //微信返回订单支付成功
             if(StringUtils.equals(Constant.PAY_STATU_SUCCESS, tradeState) && StringUtils.equals(user.getOpenId(), openId)) {
-                //如果是余额支付,用户余额减去支付费用并更新
-                if(orderForm.getPayKind() == Constant.PAY_WITH_REMAINDER) {
-                    user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
-                    userServiceExt.update(user, null);
-                }
-                //如果订单状态还是待支付
+                //数据库订单状态还是待支付
                 if(orderForm.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                    //如果是余额支付,用户余额减去支付费用并更新
+                    if(orderForm.getPayKind() == Constant.PAY_WITH_REMAINDER) {
+                        user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
+                        userServiceExt.update(user, null);
+                    }
                     //更新订单
                     orderForm.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
                     orderForm.setPayTime(payTime);
                     orderForm.setUpdateTime(new Date());
                     orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
                     orderFormServiceExt.update(null, orderForm);
+                    //生成支付流水
+                    payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
+                    //发送通知
+
                 }
             }
         } else {
@@ -243,6 +251,8 @@ public class WxApiController extends BaseController {
             Long sumOfMoney = user.getSumOfMoney() +investOrder.getAmountMoney();
             user.setSumOfMoney(sumOfMoney);
             userServiceExt.update(user, null);
+            //生成支付流水
+            payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_GOODS);
             return "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
         } else {
             return "<xml><return_code>FAIL</return_code><return_msg>接口请求错误/return_msg></xml>";
@@ -276,13 +286,18 @@ public class WxApiController extends BaseController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            //用户已经支付成功，订单状态却未及时更新
+            //微信返回已经支付成功，数据库订单状态却未及时更新（还是待支付状态）
             if(StringUtils.equals(Constant.PAY_STATU_SUCCESS, tradeState) && StringUtils.equals(user.getOpenId(), openId)) {
-                investOrder.setInvestMoney(NumberUtils.str2Long(totalFee));
-                investOrder.setPayTime(payTime);
-                investOrder.setUpdateTime(new Date());
-                investOrder.setStatus(Constant.ORDER_STATUS_SURE_TAKE);
-                investOrderServiceExt.update(investOrder);
+                //如果数据库订单状态还是待支付更新状态
+                if(investOrder.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                    investOrder.setInvestMoney(NumberUtils.str2Long(totalFee));
+                    investOrder.setPayTime(payTime);
+                    investOrder.setUpdateTime(new Date());
+                    investOrder.setStatus(Constant.ORDER_STATUS_SURE_TAKE);
+                    investOrderServiceExt.update(investOrder);
+                    //生成支付流水
+                    payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_GOODS);
+                }
             }
         } else {
             return sendArgsError("调用微信接口查询订单异常");

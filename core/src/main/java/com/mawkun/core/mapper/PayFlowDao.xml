@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mawkun.core.base.dao.PayFlowDao">
+
+    <resultMap type="com.mawkun.core.base.entity.PayFlow" id="PayFlowResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="openId" column="open_id" jdbcType="VARCHAR"/>
+        <result property="orderId" column="order_id" jdbcType="INTEGER"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="orderNo" column="order_no" jdbcType="VARCHAR"/>
+        <result property="orderType" column="order_type" jdbcType="INTEGER"/>
+        <result property="totalFee" column="total_fee" jdbcType="INTEGER"/>
+        <result property="tradeState" column="trade_state" jdbcType="VARCHAR"/>
+        <result property="payTime" column="pay_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="table_field">
+      id, user_id, open_id, order_id, user_name, order_no, order_type, total_fee, trade_state, pay_time, create_time, update_time      
+    </sql>
+       
+    <!--通过Id查询单个-->
+    <select id="getById" resultMap="PayFlowResultMap" parameterType="java.lang.Long">
+        select
+          <include refid="table_field" />
+        from pay_flow
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+
+    <!--通过实体不为空的属性作为筛选条件查询列表-->
+    <select id="listByEntity" resultMap="PayFlowResultMap" parameterType="com.mawkun.core.base.entity.PayFlow">
+        select
+          <include refid="table_field" />
+        from pay_flow
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="openId != null">
+                and open_id = #{openId,jdbcType=VARCHAR}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo,jdbcType=VARCHAR}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType,jdbcType=INTEGER}
+            </if>
+            <if test="totalFee != null">
+                and total_fee = #{totalFee,jdbcType=INTEGER}
+            </if>
+            <if test="tradeState != null">
+                and trade_state = #{tradeState,jdbcType=VARCHAR}
+            </if>
+            <if test="payTime != null">
+                and pay_time = #{payTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过实体不为空的属性作为筛选条件查询单个-->
+    <select id="getByEntity" resultMap="PayFlowResultMap" parameterType="com.mawkun.core.base.entity.PayFlow">
+        select
+          <include refid="table_field" />
+        from pay_flow
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="openId != null">
+                and open_id = #{openId,jdbcType=VARCHAR}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo,jdbcType=VARCHAR}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType,jdbcType=INTEGER}
+            </if>
+            <if test="totalFee != null">
+                and total_fee = #{totalFee,jdbcType=INTEGER}
+            </if>
+            <if test="tradeState != null">
+                and trade_state = #{tradeState,jdbcType=VARCHAR}
+            </if>
+            <if test="payTime != null">
+                and pay_time = #{payTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
+    <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
+    <select id="listByIds" resultMap="PayFlowResultMap" parameterType="list">
+        select
+          <include refid="table_field" />
+        from pay_flow
+        where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--新增实体属性不为null的列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.PayFlow">
+        insert into pay_flow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             id,
+          </if>
+          <if test="userId != null">
+             user_id,
+          </if>
+          <if test="openId != null">
+             open_id,
+          </if>
+          <if test="orderId != null">
+             order_id,
+          </if>
+          <if test="userName != null">
+             user_name,
+          </if>
+          <if test="orderNo != null">
+             order_no,
+          </if>
+          <if test="orderType != null">
+             order_type,
+          </if>
+          <if test="totalFee != null">
+             total_fee,
+          </if>
+          <if test="tradeState != null">
+             trade_state,
+          </if>
+          <if test="payTime != null">
+             pay_time,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
+          <if test="updateTime != null">
+             update_time,
+          </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+          <if test="id != null">
+             #{id,jdbcType=INTEGER},
+          </if>
+          <if test="userId != null">
+             #{userId,jdbcType=INTEGER},
+          </if>
+          <if test="openId != null">
+             #{openId,jdbcType=VARCHAR},
+          </if>
+          <if test="orderId != null">
+             #{orderId,jdbcType=INTEGER},
+          </if>
+          <if test="userName != null">
+             #{userName,jdbcType=VARCHAR},
+          </if>
+          <if test="orderNo != null">
+             #{orderNo,jdbcType=VARCHAR},
+          </if>
+          <if test="orderType != null">
+             #{orderType,jdbcType=INTEGER},
+          </if>
+          <if test="totalFee != null">
+             #{totalFee,jdbcType=INTEGER},
+          </if>
+          <if test="tradeState != null">
+             #{tradeState,jdbcType=VARCHAR},
+          </if>
+          <if test="payTime != null">
+             #{payTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
+        </trim>
+    </insert>
+
+    <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
+        insert into pay_flow
+         (id, user_id, open_id, order_id, user_name, order_no, order_type, total_fee, trade_state, pay_time, create_time, update_time)
+        values
+        <foreach item="item" collection="list" separator="," open="" close="" index="index">
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.orderId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.orderNo,jdbcType=VARCHAR}, #{item.orderType,jdbcType=INTEGER}, #{item.totalFee,jdbcType=INTEGER}, #{item.tradeState,jdbcType=VARCHAR}, #{item.payTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改实体属性不为null的列-->
+    <update id="update" parameterType="com.mawkun.core.base.entity.PayFlow">
+        update pay_flow
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="openId != null and openId != ''">
+                open_id = #{openId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null and userName != ''">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                order_no = #{orderNo,jdbcType=VARCHAR},
+            </if>
+            <if test="orderType != null">
+                order_type = #{orderType,jdbcType=INTEGER},
+            </if>
+            <if test="totalFee != null">
+                total_fee = #{totalFee,jdbcType=INTEGER},
+            </if>
+            <if test="tradeState != null and tradeState != ''">
+                trade_state = #{tradeState,jdbcType=VARCHAR},
+            </if>
+            <if test="payTime != null">
+                pay_time = #{payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--通过表字段修改实体属性不为null的列-->
+    <update id="updateByField">
+        update pay_flow
+        <set>
+            <if test="where.userId == null and set.userId != null">
+                user_id = #{set.userId,jdbcType=INTEGER},
+            </if>
+            <if test="where.openId == null and set.openId != null and set.openId != ''">
+                open_id = #{set.openId,jdbcType=VARCHAR},
+            </if>
+            <if test="where.orderId == null and set.orderId != null">
+                order_id = #{set.orderId,jdbcType=INTEGER},
+            </if>
+            <if test="where.userName == null and set.userName != null and set.userName != ''">
+                user_name = #{set.userName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.orderNo == null and set.orderNo != null and set.orderNo != ''">
+                order_no = #{set.orderNo,jdbcType=VARCHAR},
+            </if>
+            <if test="where.orderType == null and set.orderType != null">
+                order_type = #{set.orderType,jdbcType=INTEGER},
+            </if>
+            <if test="where.totalFee == null and set.totalFee != null">
+                total_fee = #{set.totalFee,jdbcType=INTEGER},
+            </if>
+            <if test="where.tradeState == null and set.tradeState != null and set.tradeState != ''">
+                trade_state = #{set.tradeState,jdbcType=VARCHAR},
+            </if>
+            <if test="where.payTime == null and set.payTime != null">
+                pay_time = #{set.payTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="where.updateTime == null and set.updateTime != null">
+                update_time = #{set.updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        <where>
+            <if test="where.id != null">
+                and id = #{where.id,jdbcType=INTEGER}
+            </if>
+            <if test="where.userId != null">
+                and user_id = #{where.userId,jdbcType=INTEGER}
+            </if>
+            <if test="where.openId != null">
+                and open_id = #{where.openId,jdbcType=VARCHAR}
+            </if>
+            <if test="where.orderId != null">
+                and order_id = #{where.orderId,jdbcType=INTEGER}
+            </if>
+            <if test="where.userName != null">
+                and user_name = #{where.userName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.orderNo != null">
+                and order_no = #{where.orderNo,jdbcType=VARCHAR}
+            </if>
+            <if test="where.orderType != null">
+                and order_type = #{where.orderType,jdbcType=INTEGER}
+            </if>
+            <if test="where.totalFee != null">
+                and total_fee = #{where.totalFee,jdbcType=INTEGER}
+            </if>
+            <if test="where.tradeState != null">
+                and trade_state = #{where.tradeState,jdbcType=VARCHAR}
+            </if>
+            <if test="where.payTime != null">
+                and pay_time = #{where.payTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="where.updateTime != null">
+                and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </update>
+
+    <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
+    <update id="updateBatch" parameterType="list">
+        update pay_flow
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="user_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userId}
+                 </foreach>
+            </trim>
+            <trim prefix="open_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.openId}
+                 </foreach>
+            </trim>
+            <trim prefix="order_id = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.orderId}
+                 </foreach>
+            </trim>
+            <trim prefix="user_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.userName}
+                 </foreach>
+            </trim>
+            <trim prefix="order_no = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.orderNo}
+                 </foreach>
+            </trim>
+            <trim prefix="order_type = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.orderType}
+                 </foreach>
+            </trim>
+            <trim prefix="total_fee = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.totalFee}
+                 </foreach>
+            </trim>
+            <trim prefix="trade_state = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.tradeState}
+                 </foreach>
+            </trim>
+            <trim prefix="pay_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.payTime}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
+                 </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
+    
+    <!--通过主键删除-->
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from pay_flow where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <!--通过实体非空属性删除-->
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.PayFlow">
+        delete from pay_flow
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="openId != null">
+                and open_id = #{openId,jdbcType=VARCHAR}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo,jdbcType=VARCHAR}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType,jdbcType=INTEGER}
+            </if>
+            <if test="totalFee != null">
+                and total_fee = #{totalFee,jdbcType=INTEGER}
+            </if>
+            <if test="tradeState != null">
+                and trade_state = #{tradeState,jdbcType=VARCHAR}
+            </if>
+            <if test="payTime != null">
+                and pay_time = #{payTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </delete>
+    
+    <!--通过主键列表删除，列表长度不能为0-->
+    <delete id="deleteByIds" parameterType="list">
+        delete from pay_flow where id in
+        <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <select id="countAll" resultType="int">
+        select count(id) from pay_flow
+    </select>
+    
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.PayFlow" resultType="int">
+        select count(id) from pay_flow
+        <where>
+            <if test="id != null">
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="openId != null">
+                and open_id = #{openId,jdbcType=VARCHAR}
+            </if>
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
+            </if>
+            <if test="userName != null">
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo,jdbcType=VARCHAR}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType,jdbcType=INTEGER}
+            </if>
+            <if test="totalFee != null">
+                and total_fee = #{totalFee,jdbcType=INTEGER}
+            </if>
+            <if test="tradeState != null">
+                and trade_state = #{tradeState,jdbcType=VARCHAR}
+            </if>
+            <if test="payTime != null">
+                and pay_time = #{payTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+</mapper>
