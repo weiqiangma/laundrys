@@ -330,7 +330,10 @@ public class WxApiController extends BaseController {
             resXml = sb.toString();
             logger.info("微信小程序支付回调报文：" + resXml);
             map = XmlUtils.xmlStr2Map(resXml);
-            if (map.get("return_code").equals("SUCCESS") && map.get("appid").equals(AppId) && map.get("mch_id").equals(macId)) {
+            String returnCode = map.get("return_code");
+            String appId = map.get("appid");
+            String mchid = map.get("mchid");
+            if (StringUtils.equals(returnCode, Constant.WX_RETURN_SUCCESS) && StringUtils.equals(appId, AppId) && StringUtils.equals(mchid, macId)) {
                 return map;
             }
         } catch (Exception e) {
