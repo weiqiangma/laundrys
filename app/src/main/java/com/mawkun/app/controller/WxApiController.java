@@ -45,6 +45,10 @@ public class WxApiController extends BaseController {
     private String AppId;
     @Value("${wx.macId}")
     private String macId;
+    @Value("${wx.pay.goods.notifyUrl}")
+    private String goodsNotifyUrl;
+    @Value("{wx.pay.invest.notifyUrl}")
+    private String investNotifyUrl;
 
     @Autowired
     private WxApiServiceExt wxApiServiceExt;
@@ -78,7 +82,7 @@ public class WxApiController extends BaseController {
         }
         List<OrderClothes> clothesList = orderClothesServiceExt.getByOrderId(orderId);
         String body = clothesList.stream().map(OrderClothes::getGoodsName).collect(Collectors.joining());
-        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderForm.getOrderSerial(), orderForm.getTotalAmount().toString(), body, body);
+        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderForm.getOrderSerial(), orderForm.getTotalAmount().toString(), body, body, goodsNotifyUrl);
         return sendSuccess(object);
     }
 
@@ -132,7 +136,7 @@ public class WxApiController extends BaseController {
      * @param orderId
      * @return
      */
-    @RequestMapping("/checkOrderPayStatus")
+    @RequestMapping("/api/wxApi/checkOrderPayStatus")
     @ApiOperation(value="检查付款成功的订单状态", notes="检查付款成功的订单状态")
     public JsonResult checkOrderPayStatus(@LoginedAuth UserSession session, Long orderId) {
         /**
@@ -225,10 +229,10 @@ public class WxApiController extends BaseController {
             if(cart == null) {
                 return sendArgsError("未查询到充值卡信息，请重新选择");
             }
-            object = userServiceExt.rechargeMoney(user, cart);
+            object = userServiceExt.rechargeMoney(user, cart, investNotifyUrl);
         }
         if(type == Constant.RECHARGE_WITH_MONEY) {
-            object = userServiceExt.rechargeMoney(user, money);
+            object = userServiceExt.rechargeMoney(user, money, investNotifyUrl);
         }
         return sendSuccess(object);
     }

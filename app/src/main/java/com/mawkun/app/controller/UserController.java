@@ -121,56 +121,56 @@ public class UserController extends BaseController {
         return sendSuccess("ok", mobile);
     }
 
-    @PostMapping("/rechargetMoney")
-    @ApiOperation(value = "充值接口", notes = "充值接口")
-    public JsonResult rechargetMoney(@LoginedAuth UserSession session,Integer type, Long cardId, Long money) {
-        if(type == null) return sendArgsError("请选择充值方式");
-        User user = userServiceExt.getById(session.getId());
-        if(user == null) return sendArgsError("未查询到用户信息,请联系客服人员处理");
-        if(type == Constant.RECHARGE_WITH_CARD) {
-            if(cardId == null) return sendArgsError("请选择充值卡券");
-            MemberCard cart = MemberCardServiceExt.findByIdAndStatus(cardId, Constant.MEMBER_CART_ON);
-            if(cart == null) return sendArgsError("未查询到充值卡信息，请重新选择");
-            userServiceExt.rechargeMoney(user, cart);
-        }
-        if(type == Constant.RECHARGE_WITH_MONEY) {
-            userServiceExt.rechargeMoney(user, money);
-        }
-        return sendSuccess("充值成功");
-    }
+//    @PostMapping("/rechargetMoney")
+//    @ApiOperation(value = "充值接口", notes = "充值接口")
+//    public JsonResult rechargetMoney(@LoginedAuth UserSession session,Integer type, Long cardId, Long money) {
+//        if(type == null) return sendArgsError("请选择充值方式");
+//        User user = userServiceExt.getById(session.getId());
+//        if(user == null) return sendArgsError("未查询到用户信息,请联系客服人员处理");
+//        if(type == Constant.RECHARGE_WITH_CARD) {
+//            if(cardId == null) return sendArgsError("请选择充值卡券");
+//            MemberCard cart = MemberCardServiceExt.findByIdAndStatus(cardId, Constant.MEMBER_CART_ON);
+//            if(cart == null) return sendArgsError("未查询到充值卡信息，请重新选择");
+//            userServiceExt.rechargeMoney(user, cart);
+//        }
+//        if(type == Constant.RECHARGE_WITH_MONEY) {
+//            userServiceExt.rechargeMoney(user, money);
+//        }
+//        return sendSuccess("充值成功");
+//    }
 
-    @PostMapping("/rechargeCallBack")
-    public JsonResult rechargeCallBack(HttpServletRequest request, HttpServletResponse response) {
-        String resXml = "";
-        String result = "";
-        try {
-            InputStream is = request.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            try {
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            resXml = sb.toString();
-            logger.info("微信小程序支付回调报文：" + resXml);
-            Map<String, String> map = XmlUtils.xmlStr2Map(resXml);
-            if (map.get("return_code").equals("SUCCESS") && map.get("appid").equals(AppId) && map.get("mch_id").equals(macId)) {
-                String orderNo = map.get("out_trade_no");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            result = "<xml><return_code>FAIL</return_code><return_msg>接口请求错误</return_msg></xml>";
-        }
-        return sendSuccess("ok", result);
-    }
+//    @PostMapping("/rechargeCallBack")
+//    public JsonResult rechargeCallBack(HttpServletRequest request, HttpServletResponse response) {
+//        String resXml = "";
+//        String result = "";
+//        try {
+//            InputStream is = request.getInputStream();
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+//            StringBuilder sb = new StringBuilder();
+//            String line = null;
+//            try {
+//                while ((line = reader.readLine()) != null) {
+//                    sb.append(line + "\n");
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } finally {
+//                try {
+//                    is.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            resXml = sb.toString();
+//            logger.info("微信小程序支付回调报文：" + resXml);
+//            Map<String, String> map = XmlUtils.xmlStr2Map(resXml);
+//            if (map.get("return_code").equals("SUCCESS") && map.get("appid").equals(AppId) && map.get("mch_id").equals(macId)) {
+//                String orderNo = map.get("out_trade_no");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            result = "<xml><return_code>FAIL</return_code><return_msg>接口请求错误</return_msg></xml>";
+//        }
+//        return sendSuccess("ok", result);
+//    }
 }

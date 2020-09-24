@@ -53,19 +53,22 @@ public class LoginController extends BaseController {
         if (user == null) {
             User addUser = new User();
             addUser.setOpenId(resultData.getOpenId());
-            int userId = userServiceExt.insert(addUser);
+            addUser.setKind(Constant.USER_TYPE_CUSTOMER);
+            userServiceExt.insert(addUser);
             resultData.setKind(Constant.USER_TYPE_CUSTOMER);
-            resultData.setUserId((long) userId);
+            resultData.setUserId(addUser.getId());
         } else {
             resultData.setKind(user.getKind());
             resultData.setUserId(user.getId());
             //如果是配送员，将其关联的店铺存入session
-            if(user.getKind() == Constant.USER_TYPE_DISTRIBUTOR) {
-                ShopUser shopUser = new ShopUser();
-                shopUser.setUserId(user.getId());
-                List<ShopUser> list = shopUserDaoExt.listByEntity(shopUser);
-                List<Long> shopIdList = list.stream().map(ShopUser::getShopId).collect(Collectors.toList());
-                resultData.setShopIdList(shopIdList);
+            if(user.getKind() != null) {
+                if(user.getKind() == Constant.USER_TYPE_DISTRIBUTOR) {
+                    ShopUser shopUser = new ShopUser();
+                    shopUser.setUserId(user.getId());
+                    List<ShopUser> list = shopUserDaoExt.listByEntity(shopUser);
+                    List<Long> shopIdList = list.stream().map(ShopUser::getShopId).collect(Collectors.toList());
+                    resultData.setShopIdList(shopIdList);
+                }
             }
         }
         //生成token,保存session

@@ -6,6 +6,10 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 /**
  * (Admin)实体类
  *
@@ -13,8 +17,11 @@ import org.springframework.format.annotation.DateTimeFormat;
  * @date 2020-09-02 20:31:19
  */
 @Data
+@Entity
 public class Admin {
 
+    @Id
+    @GeneratedValue
     private Long id;
 
     private Long shopId;

@@ -89,8 +89,7 @@ public class UserCacheService extends BaseService {
         String key = String.format(CacheKeyConstants.USER_OPEN_ID_KEY, token);
         //logger.info("保存缓存信息: " + key + "\r\n" + JsonUtils.toStringNoEx(userSession));
         cacheService.put(key, userSession, USER_TOKEN_CACHE_TIME, TimeUnit.SECONDS);
-        //再保存一份根据用户ID获取当前session
-        cacheService.put(String.format("TUD_%d", userSession.getId()), userSession, USER_TOKEN_CACHE_TIME, TimeUnit.SECONDS);
+
     }
 
 

@@ -9,7 +9,7 @@
         <result property="realName" column="real_name" jdbcType="VARCHAR"/>
         <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
         <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
-        <result property="gender" column="gender" jdbcType="INTEGER"/>
+        <result property="gender" column="gender" jdbcType="OTHER"/>
         <result property="address" column="address" jdbcType="VARCHAR"/>
         <result property="kind" column="kind" jdbcType="INTEGER"/>
         <result property="sumOfMoney" column="sum_of_money" jdbcType="INTEGER"/>
@@ -17,7 +17,7 @@
         <result property="country" column="country" jdbcType="VARCHAR"/>
         <result property="province" column="province" jdbcType="VARCHAR"/>
         <result property="city" column="city" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
@@ -60,7 +60,7 @@
                 and mobile = #{mobile,jdbcType=VARCHAR}
             </if>
             <if test="gender != null">
-                and gender = #{gender,jdbcType=INTEGER}
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -84,7 +84,7 @@
                 and city = #{city,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -120,7 +120,7 @@
                 and mobile = #{mobile,jdbcType=VARCHAR}
             </if>
             <if test="gender != null">
-                and gender = #{gender,jdbcType=INTEGER}
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -144,7 +144,7 @@
                 and city = #{city,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -242,7 +242,7 @@
              #{mobile,jdbcType=VARCHAR},
           </if>
           <if test="gender != null">
-             #{gender,jdbcType=INTEGER},
+             #{gender,jdbcType=OTHER},
           </if>
           <if test="address != null">
              #{address,jdbcType=VARCHAR},
@@ -266,7 +266,7 @@
              #{city,jdbcType=VARCHAR},
           </if>
           <if test="status != null">
-             #{status,jdbcType=INTEGER},
+             #{status,jdbcType=OTHER},
           </if>
           <if test="updateTime != null">
              #{updateTime,jdbcType=TIMESTAMP},
@@ -283,7 +283,7 @@
          (id, open_id, user_name, real_name, avatar_url, mobile, gender, address, kind, sum_of_money, integral, country, province, city, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.avatarUrl,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.gender,jdbcType=INTEGER}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=INTEGER}, #{item.sumOfMoney,jdbcType=INTEGER}, #{item.integral,jdbcType=INTEGER}, #{item.country,jdbcType=VARCHAR}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.avatarUrl,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.gender,jdbcType=OTHER}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=INTEGER}, #{item.sumOfMoney,jdbcType=INTEGER}, #{item.integral,jdbcType=INTEGER}, #{item.country,jdbcType=VARCHAR}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -307,7 +307,7 @@
                 mobile = #{mobile,jdbcType=VARCHAR},
             </if>
             <if test="gender != null">
-                gender = #{gender,jdbcType=INTEGER},
+                gender = #{gender,jdbcType=OTHER},
             </if>
             <if test="address != null and address != ''">
                 address = #{address,jdbcType=VARCHAR},
@@ -331,7 +331,7 @@
                 city = #{city,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
-                status = #{status,jdbcType=INTEGER},
+                status = #{status,jdbcType=OTHER},
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -363,7 +363,7 @@
                 mobile = #{set.mobile,jdbcType=VARCHAR},
             </if>
             <if test="where.gender == null and set.gender != null">
-                gender = #{set.gender,jdbcType=INTEGER},
+                gender = #{set.gender,jdbcType=OTHER},
             </if>
             <if test="where.address == null and set.address != null and set.address != ''">
                 address = #{set.address,jdbcType=VARCHAR},
@@ -387,7 +387,7 @@
                 city = #{set.city,jdbcType=VARCHAR},
             </if>
             <if test="where.status == null and set.status != null">
-                status = #{set.status,jdbcType=INTEGER},
+                status = #{set.status,jdbcType=OTHER},
             </if>
             <if test="where.updateTime == null and set.updateTime != null">
                 update_time = #{set.updateTime,jdbcType=TIMESTAMP},
@@ -416,7 +416,7 @@
                 and mobile = #{where.mobile,jdbcType=VARCHAR}
             </if>
             <if test="where.gender != null">
-                and gender = #{where.gender,jdbcType=INTEGER}
+                and gender = #{where.gender,jdbcType=OTHER}
             </if>
             <if test="where.address != null">
                 and address = #{where.address,jdbcType=VARCHAR}
@@ -440,7 +440,7 @@
                 and city = #{where.city,jdbcType=VARCHAR}
             </if>
             <if test="where.status != null">
-                and status = #{where.status,jdbcType=INTEGER}
+                and status = #{where.status,jdbcType=OTHER}
             </if>
             <if test="where.updateTime != null">
                 and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
@@ -567,7 +567,7 @@
                 and mobile = #{mobile,jdbcType=VARCHAR}
             </if>
             <if test="gender != null">
-                and gender = #{gender,jdbcType=INTEGER}
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -591,7 +591,7 @@
                 and city = #{city,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -636,7 +636,7 @@
                 and mobile = #{mobile,jdbcType=VARCHAR}
             </if>
             <if test="gender != null">
-                and gender = #{gender,jdbcType=INTEGER}
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="address != null">
                 and address = #{address,jdbcType=VARCHAR}
@@ -660,7 +660,7 @@
                 and city = #{city,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}

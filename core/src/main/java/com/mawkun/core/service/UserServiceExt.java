@@ -82,7 +82,7 @@ public class UserServiceExt extends UserService {
      * 充值
      */
     @Transactional
-    public JSONObject rechargeMoney(User user, MemberCard card) {
+    public JSONObject rechargeMoney(User user, MemberCard card, String notifyUrl) {
         Long investMoney = card.getModelAmount();
         Long giftMoney = card.getModelGift();
         Long amountMoney = investMoney + giftMoney;
@@ -95,12 +95,12 @@ public class UserServiceExt extends UserService {
         investOrder.setOrderNo(orderNo);
         investOrderServiceExt.update(investOrder);
         //调用微信接口生成支付参数供前端调用
-        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
+        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD, notifyUrl);
         return object;
     }
 
     @Transactional
-    public JSONObject rechargeMoney(User user, Long money) {
+    public JSONObject rechargeMoney(User user, Long money, String notifyUrl) {
         Long investMoney = money;
         long giftMoney = 0;
         Long amountMoney = money;
@@ -112,7 +112,7 @@ public class UserServiceExt extends UserService {
         investLog.setOrderNo(orderNo);
         investOrderServiceExt.update(investLog);
         //调用微信接口生成支付参数供前端调用
-        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD);
+        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD, notifyUrl);
         return object;
     }
 }

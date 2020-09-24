@@ -47,8 +47,6 @@ public class WxApiServiceExt {
     private String macId;
     @Value("${wx.macKey}")
     private String macKey;
-    @Value("${wx.pay.notifyUrl}")
-    private String notifyUrl;
     private final String trade_type = "JSAPI";
 
     @Autowired
@@ -96,11 +94,11 @@ public class WxApiServiceExt {
     /**
      * 统一下单接口(生成预支付ID)
      */
-    public JSONObject unifyOrder(String openId, String orderNo, String totalFee, String body, String detail) {
+    public JSONObject unifyOrder(String openId, String orderNo, String totalFee, String body, String detail, String notifyUrl) {
         String msg = "";
         JSONObject object = new JSONObject();
         String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        String param = createParam(openId, orderNo, "1", body, detail);
+        String param = createParam(openId, orderNo, "1", body, detail, notifyUrl);
         try {
             HttpResult result = HttpUtils.post(url, param, "UTF-8");
             String message = result.getHtml();
@@ -176,7 +174,7 @@ public class WxApiServiceExt {
      * @param detail
      * @return
      */
-    public String createParam(String openId, String orderNo, String totalFee, String body,  String detail) {
+    public String createParam(String openId, String orderNo, String totalFee, String body,  String detail, String notifyUrl) {
         String randomStr = StringUtils.createRandomStr(30);
         String spbillCreateIp = getHostIp();
         SortedMap<String, String> param = new TreeMap<>();
