@@ -1,23 +1,17 @@
 package com.mawkun.app;
 
-import cn.pertech.common.http.HttpUtils;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.mawkun.core.base.entity.OrderForm;
-import com.mawkun.core.service.OrderFormServiceExt;
+import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Date;
-import java.util.Random;
-
 @SpringBootTest
 class AppApplicationTests {
 
     @Autowired
-    private OrderFormServiceExt orderFormServiceExt;
+    private GoodsOrderServiceExt orderFormServiceExt;
     @Autowired
     private WxApiServiceExt wxApiServiceExt;
 

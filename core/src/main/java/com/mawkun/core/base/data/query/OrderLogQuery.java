@@ -1,10 +1,10 @@
 package com.mawkun.core.base.data.query;
 
-import com.mawkun.core.base.entity.OperateOrderLog;
+import com.mawkun.core.base.entity.GoodsOrder;
 import lombok.Data;
 
 @Data
-public class OperateOrderLogQuery extends OperateOrderLog {
+public class OrderLogQuery extends GoodsOrder {
     private Long shopId;
     private String userName;
     private Integer pageNo;

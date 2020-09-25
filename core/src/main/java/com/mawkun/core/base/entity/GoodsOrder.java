@@ -2,37 +2,61 @@ package com.mawkun.core.base.entity;
 
 import java.util.Date;
 import lombok.Data;
-                                                                import com.fasterxml.jackson.annotation.JsonFormat;
+                                                                    import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 /**
- * (OrderForm)实体类
+ * (GoodsOrder)实体类
  *
  * @author mawkun
- * @since 2020-09-24 13:47:46
+ * @since 2020-09-25 14:10:06
  */
 @Data 
-public class OrderForm {
+public class GoodsOrder {
     
     private Long id;
-    
+    /**
+    * 用户id
+    */
     private Long userId;
-    
+    /**
+    * 店铺id
+    */
     private Long shopId;
-    
+    /**
+    * 配送员id
+    */
     private Long distributorId;
-    
+    /**
+    * 地址id
+    */
     private Long addressId;
-    
+    /**
+    * 用户名
+    */
     private String userName;
-    
-    private String orderSerial;
-    
+    /**
+    * 店铺名
+    */
+    private String shopName;
+    /**
+    * 订单号
+    */
+    private String orderNo;
+    /**
+    * 备注
+    */
     private String remark;
-    
+    /**
+    * 状态
+    */
     private Integer status;
-    
+    /**
+    * 实付金额
+    */
     private Long realAmount;
-    
+    /**
+    * 总金额
+    */
     private Long totalAmount;
     /**
     * 用户地址
@@ -50,15 +74,21 @@ public class OrderForm {
     * 支付类型
     */
     private Integer payKind;
-    
+    /**
+    * 支付时间
+    */
         @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 private Date payTime;
-    
+    /**
+    * 更新时间
+    */
         @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 private Date updateTime;
-    
+    /**
+    * 创建时间
+    */
         @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 private Date createTime;

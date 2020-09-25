@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.mawkun.core.dao.OrderFormDaoExt">
+<mapper namespace="com.mawkun.core.dao.GoodsOrderDaoExt">
 
     <!-- 统计门店收入 -->
-    <select id="statsShopIncome" resultType="com.mawkun.core.base.data.vo.OrderFormVo" parameterType="com.mawkun.core.base.data.query.StateQuery">
+    <select id="statsShopIncome" resultType="com.mawkun.core.base.data.vo.GoodsOrderVo" parameterType="com.mawkun.core.base.data.query.StateQuery">
         SELECT
         ifnull( SUM( real_amount ), 0 ) amount,
         DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
@@ -45,9 +45,9 @@
     </select>
 
 
-    <resultMap id="OrderFormDetailResultMap" type="com.mawkun.core.base.data.vo.OrderFormVo">
+    <resultMap id="OrderFormDetailResultMap" type="com.mawkun.core.base.data.vo.GoodsOrderVo">
         <id column="id" property="id"/>
-        <result column="order_serial" property="orderSerial"/>
+        <result column="order_no" property="orderNo"/>
         <result column="remark" property="remark"/>
         <result column="status" property="status"/>
         <result column="real_amount" property="realAmount"/>
@@ -65,7 +65,7 @@
     <select id="selectDetail" parameterType="java.lang.Long" resultMap="OrderFormDetailResultMap">
     SELECT
         ofm.id,
-        ofm.order_serial,
+        ofm.order_no,
         ofm.remark,
         ofm.`status`,
         ofm.real_amount,
@@ -85,13 +85,13 @@
     WHERE ofm.id=#{id}
     </select>
 
-    <resultMap type="com.mawkun.core.base.data.vo.OrderFormVo" id="OrderFormVoResultMap">
+    <resultMap type="com.mawkun.core.base.data.vo.GoodsOrderVo" id="OrderFormVoResultMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="shopId" column="shop_id" jdbcType="INTEGER"/>
         <result property="shopName" column="shop_name"/>
         <result property="distributorId" column="distributor_id" jdbcType="INTEGER"/>
-        <result property="orderSerial" column="order_serial" jdbcType="VARCHAR"/>
+        <result property="orderNo" column="order_no" jdbcType="VARCHAR"/>
         <result property="remark" column="remark" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="realAmount" column="real_amount" jdbcType="NUMERIC"/>
@@ -100,7 +100,7 @@
         <result property="type" column="type"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
-    <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.OrderFormQuery">
+    <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
         select order_form.*, shop.shop_name from order_form left join  shop on order_form.shop_id = shop.id
         <where>
             <if test="id != null and id > 0">
@@ -112,8 +112,8 @@
             <if test="status != null">
                 and order_form.status = #{status}
             </if>
-            <if test="orderSerial != null and orderSerial != ''">
-                and order_form.order_serial like #{orderSerial}
+            <if test="orderNo != null and orderNo != ''">
+                and order_form.order_no like #{orderNo}
             </if>
             <if test="shopName != null and shopName != ''">
                 and order_form.shopName like #{shopName}

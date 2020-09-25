@@ -4,27 +4,25 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
-import com.mawkun.core.base.data.query.OrderFormQuery;
-import com.mawkun.core.base.data.vo.GoodsVo;
-import com.mawkun.core.base.data.vo.OrderFormVo;
+import com.mawkun.core.base.data.query.GoodsOrderQuery;
+import com.mawkun.core.base.data.vo.GoodsOrderVo;
 import com.mawkun.core.base.entity.*;
-import com.mawkun.core.base.service.OrderFormService;
+import com.mawkun.core.base.service.GoodsOrderService;
 import com.mawkun.core.dao.*;
 import com.mawkun.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class OrderFormServiceExt extends OrderFormService {
+public class GoodsOrderServiceExt extends GoodsOrderService {
 
     @Autowired
-    OrderFormDaoExt orderFormDaoExt;
+    GoodsOrderDaoExt orderFormDaoExt;
     @Autowired
     OrderClothesDaoExt orderClothesDaoExt;
     @Autowired
@@ -47,12 +45,16 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param query
      * @return
      */
-    public PageInfo<OrderFormVo> pageByEntity(OrderFormQuery query) {
+    public PageInfo<GoodsOrderVo> pageByEntity(GoodsOrderQuery query) {
         query.init();
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
-        if(StringUtils.isNotEmpty(query.getOrderSerial())) query.setOrderSerial("%" + query.getOrderSerial() + "%");
-        if(StringUtils.isNotEmpty(query.getShopName())) query.setShopName("%" + query.getShopName() + "%");
-        List<OrderFormVo> list = orderFormDaoExt.selectList(query);
+        if(StringUtils.isNotEmpty(query.getOrderNo())) {
+            query.setOrderNo("%" + query.getOrderNo() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getShopName())) {
+            query.setShopName("%" + query.getShopName() + "%");
+        }
+        List<GoodsOrderVo> list = orderFormDaoExt.selectList(query);
         return new PageInfo<>(list);
     }
 
@@ -62,7 +64,7 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param query
      * @return
      */
-    public PageInfo<OrderFormVo> getDistributorOrder(Long userId, OrderFormQuery query) {
+    public PageInfo<GoodsOrderVo> getDistributorOrder(Long userId, GoodsOrderQuery query) {
         query.init();
         ShopUser shopUser = new ShopUser();
         shopUser.setUserId(userId);
@@ -71,7 +73,7 @@ public class OrderFormServiceExt extends OrderFormService {
         query.setShopIdList(shopIdList);
         query.setCreateTime(new Date());
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
-        List<OrderFormVo> list = orderFormDaoExt.selectList(query);
+        List<GoodsOrderVo> list = orderFormDaoExt.selectList(query);
         return new PageInfo<>(list);
     }
 
@@ -80,11 +82,11 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param orderNo
      * @return
      */
-    public OrderForm getByOrderSerialAndStatus(String orderNo, Integer status) {
-        OrderForm orderForm = new OrderForm();
-        orderForm.setOrderSerial(orderNo);
-        orderForm.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
-        return orderFormDaoExt.getByEntity(orderForm);
+    public GoodsOrder getByOrderSerialAndStatus(String orderNo, Integer status) {
+        GoodsOrder goodsOrder = new GoodsOrder();
+        goodsOrder.setOrderNo(orderNo);
+        goodsOrder.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
+        return orderFormDaoExt.getByEntity(goodsOrder);
     }
 
     /**
@@ -92,15 +94,15 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param id
      * @return
      */
-    public OrderFormVo getDetail(Long id) {
-        OrderFormVo vo = orderFormDaoExt.selectDetail(id);
+    public GoodsOrderVo getDetail(Long id) {
+        GoodsOrderVo vo = orderFormDaoExt.selectDetail(id);
         List<OrderClothes> goodsList = orderClothesServiceExt.getByOrderId(id);
         vo.setList(goodsList);
         return vo;
     }
 
-    public OrderForm getByUserIdAndId(Long id, Long userId) {
-        OrderForm order = new OrderForm();
+    public GoodsOrder getByUserIdAndId(Long id, Long userId) {
+        GoodsOrder order = new GoodsOrder();
         order.setId(id);
         order.setUserId(userId);
         return orderFormDaoExt.getByEntity(order);
@@ -114,13 +116,15 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param resultAmount
      */
     @Transactional(rollbackFor = Exception.class)
-    public int generateOrderForm(User user, OrderFormQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
+    public int generateOrderForm(User user, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
         int result = -1;
         //生成订单
-        OrderForm form = new OrderForm();
+        GoodsOrder form = new GoodsOrder();
         form.setUserId(user.getId());
         form.setShopId(query.getShopId());
-        if(address != null)form.setAddressId(address.getId());
+        if(address != null) {
+            form.setAddressId(address.getId());
+        }
         form.setUserName(user.getUserName());
         form.setRemark(query.getRemark());
         form.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
@@ -143,7 +147,7 @@ public class OrderFormServiceExt extends OrderFormService {
         }
         //根据时间+主键生成订单
         String orderSerial = StringUtils.createOrderFormNo(String.valueOf(form.getId()));
-        form.setOrderSerial(orderSerial);
+        form.setOrderNo(orderSerial);
         result = orderFormDaoExt.update(form);
         if(result < 1) {
             throw new Exception("生成订单号失败");
@@ -178,7 +182,7 @@ public class OrderFormServiceExt extends OrderFormService {
      * @param description
      * @return
      */
-    public int orderTaking(UserSession session, OrderForm order, String description) {
+    public int orderTaking(UserSession session, GoodsOrder order, String description) {
         /**
          * 1.更新订单状态
          * 2.生成订单操作记录
@@ -199,10 +203,10 @@ public class OrderFormServiceExt extends OrderFormService {
         shopUser.setUserId(userId);
         List<ShopUser> list = shopUserDaoExt.listByEntity(shopUser);
         List<Long> shopList = list.stream().map(ShopUser::getShopId).collect(Collectors.toList());
-        OrderFormQuery query = new OrderFormQuery();
+        GoodsOrderQuery query = new GoodsOrderQuery();
         query.setShopIdList(shopList);
         query.setId(orderId);
-        List<OrderFormVo> orderList = orderFormDaoExt.selectList(query);
+        List<GoodsOrderVo> orderList = orderFormDaoExt.selectList(query);
         if(orderList != null && orderList.size() > 0) {
             return true;
         }

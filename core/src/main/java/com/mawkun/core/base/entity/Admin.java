@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * (Admin)实体类
@@ -17,11 +18,8 @@ import javax.persistence.Id;
  * @date 2020-09-02 20:31:19
  */
 @Data
-@Entity
 public class Admin {
 
-    @Id
-    @GeneratedValue
     private Long id;
 
     private Long shopId;

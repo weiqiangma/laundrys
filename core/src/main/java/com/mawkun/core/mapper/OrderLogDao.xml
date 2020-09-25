@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mawkun.core.base.dao.OperateOrderLogDao">
+<mapper namespace="com.mawkun.core.base.dao.OrderLogDao">
 
-    <resultMap type="com.mawkun.core.base.entity.OperateOrderLog" id="OperateOrderLogResultMap">
+    <resultMap type="com.mawkun.core.base.entity.OrderLog" id="OrderLogResultMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
-        <result property="orderFormId" column="order_form_id" jdbcType="INTEGER"/>
+        <result property="orderId" column="order_id" jdbcType="INTEGER"/>
         <result property="userKind" column="user_kind" jdbcType="INTEGER"/>
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="operate" column="operate" jdbcType="VARCHAR"/>
@@ -15,23 +15,23 @@
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, order_form_id, user_kind, user_name, operate, description, status, create_time      
+      id, user_id, order_id, user_kind, user_name, operate, description, status, create_time      
     </sql>
        
     <!--通过Id查询单个-->
-    <select id="getById" resultMap="OperateOrderLogResultMap" parameterType="java.lang.Long">
+    <select id="getById" resultMap="OrderLogResultMap" parameterType="java.lang.Long">
         select
           <include refid="table_field" />
-        from operate_order_log
+        from order_log
         where id = #{id,jdbcType=INTEGER}
     </select>
 
 
     <!--通过实体不为空的属性作为筛选条件查询列表-->
-    <select id="listByEntity" resultMap="OperateOrderLogResultMap" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
+    <select id="listByEntity" resultMap="OrderLogResultMap" parameterType="com.mawkun.core.base.entity.OrderLog">
         select
           <include refid="table_field" />
-        from operate_order_log
+        from order_log
         <where>
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
@@ -39,8 +39,8 @@
             <if test="userId != null">
                 and user_id = #{userId,jdbcType=INTEGER}
             </if>
-            <if test="orderFormId != null">
-                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
             </if>
             <if test="userKind != null">
                 and user_kind = #{userKind,jdbcType=INTEGER}
@@ -64,10 +64,10 @@
     </select>
 
     <!--通过实体不为空的属性作为筛选条件查询单个-->
-    <select id="getByEntity" resultMap="OperateOrderLogResultMap" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
+    <select id="getByEntity" resultMap="OrderLogResultMap" parameterType="com.mawkun.core.base.entity.OrderLog">
         select
           <include refid="table_field" />
-        from operate_order_log
+        from order_log
         <where>
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
@@ -75,8 +75,8 @@
             <if test="userId != null">
                 and user_id = #{userId,jdbcType=INTEGER}
             </if>
-            <if test="orderFormId != null">
-                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
             </if>
             <if test="userKind != null">
                 and user_kind = #{userKind,jdbcType=INTEGER}
@@ -100,10 +100,10 @@
     </select>
 
     <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
-    <select id="listByIds" resultMap="OperateOrderLogResultMap" parameterType="list">
+    <select id="listByIds" resultMap="OrderLogResultMap" parameterType="list">
         select
           <include refid="table_field" />
-        from operate_order_log
+        from order_log
         where id in
         <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
             #{item}
@@ -111,8 +111,8 @@
     </select>
 
     <!--新增实体属性不为null的列-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
-        insert into operate_order_log
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.OrderLog">
+        insert into order_log
         <trim prefix="(" suffix=")" suffixOverrides=",">
           <if test="id != null">
              id,
@@ -120,8 +120,8 @@
           <if test="userId != null">
              user_id,
           </if>
-          <if test="orderFormId != null">
-             order_form_id,
+          <if test="orderId != null">
+             order_id,
           </if>
           <if test="userKind != null">
              user_kind,
@@ -149,8 +149,8 @@
           <if test="userId != null">
              #{userId,jdbcType=INTEGER},
           </if>
-          <if test="orderFormId != null">
-             #{orderFormId,jdbcType=INTEGER},
+          <if test="orderId != null">
+             #{orderId,jdbcType=INTEGER},
           </if>
           <if test="userKind != null">
              #{userKind,jdbcType=INTEGER},
@@ -175,23 +175,23 @@
 
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
-        insert into operate_order_log
-         (id, user_id, order_form_id, user_kind, user_name, operate, description, status, create_time)
+        insert into order_log
+         (id, user_id, order_id, user_kind, user_name, operate, description, status, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.orderFormId,jdbcType=INTEGER}, #{item.userKind,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.operate,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.orderId,jdbcType=INTEGER}, #{item.userKind,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.operate,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
     <!--通过主键修改实体属性不为null的列-->
-    <update id="update" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
-        update operate_order_log
+    <update id="update" parameterType="com.mawkun.core.base.entity.OrderLog">
+        update order_log
         <set>
             <if test="userId != null">
                 user_id = #{userId,jdbcType=INTEGER},
             </if>
-            <if test="orderFormId != null">
-                order_form_id = #{orderFormId,jdbcType=INTEGER},
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=INTEGER},
             </if>
             <if test="userKind != null">
                 user_kind = #{userKind,jdbcType=INTEGER},
@@ -217,13 +217,13 @@
 
     <!--通过表字段修改实体属性不为null的列-->
     <update id="updateByField">
-        update operate_order_log
+        update order_log
         <set>
             <if test="where.userId == null and set.userId != null">
                 user_id = #{set.userId,jdbcType=INTEGER},
             </if>
-            <if test="where.orderFormId == null and set.orderFormId != null">
-                order_form_id = #{set.orderFormId,jdbcType=INTEGER},
+            <if test="where.orderId == null and set.orderId != null">
+                order_id = #{set.orderId,jdbcType=INTEGER},
             </if>
             <if test="where.userKind == null and set.userKind != null">
                 user_kind = #{set.userKind,jdbcType=INTEGER},
@@ -251,8 +251,8 @@
             <if test="where.userId != null">
                 and user_id = #{where.userId,jdbcType=INTEGER}
             </if>
-            <if test="where.orderFormId != null">
-                and order_form_id = #{where.orderFormId,jdbcType=INTEGER}
+            <if test="where.orderId != null">
+                and order_id = #{where.orderId,jdbcType=INTEGER}
             </if>
             <if test="where.userKind != null">
                 and user_kind = #{where.userKind,jdbcType=INTEGER}
@@ -277,16 +277,16 @@
 
     <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
     <update id="updateBatch" parameterType="list">
-        update operate_order_log
+        update order_log
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="user_id = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.userId}
                  </foreach>
             </trim>
-            <trim prefix="order_form_id = case" suffix="end,">
+            <trim prefix="order_id = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
-                  when id = #{item.id} then #{item.orderFormId}
+                  when id = #{item.id} then #{item.orderId}
                  </foreach>
             </trim>
             <trim prefix="user_kind = case" suffix="end,">
@@ -328,18 +328,18 @@
     
     <!--通过主键删除-->
     <delete id="deleteById" parameterType="java.lang.Long">
-        delete from operate_order_log where id = #{id,jdbcType=INTEGER}
+        delete from order_log where id = #{id,jdbcType=INTEGER}
     </delete>
 
     <!--通过实体非空属性删除-->
-    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.OperateOrderLog">
-        delete from operate_order_log
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.OrderLog">
+        delete from order_log
         <where>
             <if test="userId != null">
                 and user_id = #{userId,jdbcType=INTEGER}
             </if>
-            <if test="orderFormId != null">
-                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
             </if>
             <if test="userKind != null">
                 and user_kind = #{userKind,jdbcType=INTEGER}
@@ -364,18 +364,18 @@
     
     <!--通过主键列表删除，列表长度不能为0-->
     <delete id="deleteByIds" parameterType="list">
-        delete from operate_order_log where id in
+        delete from order_log where id in
         <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
             #{item}
         </foreach>
     </delete>
     
     <select id="countAll" resultType="int">
-        select count(id) from operate_order_log
+        select count(id) from order_log
     </select>
     
-    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.OperateOrderLog" resultType="int">
-        select count(id) from operate_order_log
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.OrderLog" resultType="int">
+        select count(id) from order_log
         <where>
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
@@ -383,8 +383,8 @@
             <if test="userId != null">
                 and user_id = #{userId,jdbcType=INTEGER}
             </if>
-            <if test="orderFormId != null">
-                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
             </if>
             <if test="userKind != null">
                 and user_kind = #{userKind,jdbcType=INTEGER}

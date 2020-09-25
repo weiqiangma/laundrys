@@ -4,10 +4,10 @@ import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
-import com.mawkun.core.base.data.query.OrderFormQuery;
-import com.mawkun.core.base.data.vo.OrderFormVo;
-import com.mawkun.core.base.entity.OrderForm;
-import com.mawkun.core.service.OrderFormServiceExt;
+import com.mawkun.core.base.data.query.GoodsOrderQuery;
+import com.mawkun.core.base.data.vo.GoodsOrderVo;
+import com.mawkun.core.base.entity.GoodsOrder;
+import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
@@ -29,57 +29,57 @@ import java.util.List;
 @RestController
 @RequestMapping("/adm/orderForm")
 @Api(tags={"订单操作接口"})
-public class OrderFormController extends BaseController {
+public class GoodsOrderController extends BaseController {
     
     @Autowired
-    private OrderFormServiceExt orderFormServiceExt;
+    private GoodsOrderServiceExt GoodsOrderServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="根据id获取订单", notes="根据id获取订单")
     public JsonResult getById(Long id) {
-        OrderFormVo orderFormVo = orderFormServiceExt.getDetail(id);
-        return sendSuccess(orderFormVo);
+        GoodsOrderVo GoodsOrderVo = GoodsOrderServiceExt.getDetail(id);
+        return sendSuccess(GoodsOrderVo);
     }
 
     @GetMapping("/getByEntity")
     @ApiOperation(value="根据entity获取订单", notes="根据entity获取订单")
-    public JsonResult getByEntity(OrderForm orderForm) {
-        OrderForm resultForm = orderFormServiceExt.getByEntity(orderForm);
+    public JsonResult getByEntity(GoodsOrder GoodsOrder) {
+        GoodsOrder resultForm = GoodsOrderServiceExt.getByEntity(GoodsOrder);
         return sendSuccess(resultForm);
     }
 
     @GetMapping("/list")
     @ApiOperation(value="获取订单列表", notes="获取订单列表")
-    public JsonResult list(OrderForm orderForm) {
-        List<OrderForm> orderFormList = orderFormServiceExt.listByEntity(orderForm);
-        return sendSuccess(orderFormList);
+    public JsonResult list(GoodsOrder GoodsOrder) {
+        List<GoodsOrder> GoodsOrderList = GoodsOrderServiceExt.listByEntity(GoodsOrder);
+        return sendSuccess(GoodsOrderList);
     }
 
     @GetMapping("/pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
-    public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, OrderFormQuery query) {
+    public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, GoodsOrderQuery query) {
         if(session.getShopId() > 0) query.setShopId(session.getShopId());
-        PageInfo page = orderFormServiceExt.pageByEntity(query);
+        PageInfo page = GoodsOrderServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }
 
     @PostMapping("/insert")
     @ApiOperation(value="添加订单", notes="添加订单")
-    public JsonResult insert(OrderForm orderForm){
-        orderFormServiceExt.insert(orderForm);
-        return sendSuccess(orderForm);
+    public JsonResult insert(GoodsOrder GoodsOrder){
+        GoodsOrderServiceExt.insert(GoodsOrder);
+        return sendSuccess(GoodsOrder);
     }
 
     @PutMapping("/update")
     @ApiOperation(value="编辑订单", notes="编辑订单")
-    public JsonResult update(@LoginedAuth UserSession session, OrderForm orderForm){
-        return orderFormServiceExt.update(session, orderForm);
+    public JsonResult update(@LoginedAuth UserSession session, GoodsOrder GoodsOrder){
+        return GoodsOrderServiceExt.update(session, GoodsOrder);
     }
 
     @DeleteMapping("/delete")
     @ApiOperation(value="删除订单", notes="删除订单")
     public JsonResult deleteOne(Long id){
-        int result = orderFormServiceExt.deleteById(id);
+        int result = GoodsOrderServiceExt.deleteById(id);
         return sendSuccess(result);
     }
 
@@ -95,7 +95,7 @@ public class OrderFormController extends BaseController {
                 return Convert.toInt(o, 0);
             }
         });
-        if (idList.size()>0) result = orderFormServiceExt.deleteByIds(idList);
+        if (idList.size()>0) result = GoodsOrderServiceExt.deleteByIds(idList);
         return sendSuccess(result);
     }
 }

@@ -7,12 +7,15 @@
         <result property="kindName" column="kind_name" jdbcType="VARCHAR"/>
         <result property="iconName" column="icon_name" jdbcType="VARCHAR"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
-        <result property="showStatus" column="show_status" jdbcType="OTHER"/>
-        <result property="navStatus" column="nav_status" jdbcType="OTHER"/>
+        <result property="showStatus" column="show_status" jdbcType="INTEGER"/>
+        <result property="navStatus" column="nav_status" jdbcType="INTEGER"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, kind_name, icon_name, description, show_status, nav_status      
+      id, kind_name, icon_name, description, show_status, nav_status, sort, update_time, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -43,10 +46,19 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="showStatus != null">
-                and show_status = #{showStatus,jdbcType=OTHER}
+                and show_status = #{showStatus,jdbcType=INTEGER}
             </if>
             <if test="navStatus != null">
-                and nav_status = #{navStatus,jdbcType=OTHER}
+                and nav_status = #{navStatus,jdbcType=INTEGER}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>
@@ -70,10 +82,19 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="showStatus != null">
-                and show_status = #{showStatus,jdbcType=OTHER}
+                and show_status = #{showStatus,jdbcType=INTEGER}
             </if>
             <if test="navStatus != null">
-                and nav_status = #{navStatus,jdbcType=OTHER}
+                and nav_status = #{navStatus,jdbcType=INTEGER}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>
@@ -111,6 +132,15 @@
           <if test="navStatus != null">
              nav_status,
           </if>
+          <if test="sort != null">
+             sort,
+          </if>
+          <if test="updateTime != null">
+             update_time,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
           <if test="id != null">
@@ -126,10 +156,19 @@
              #{description,jdbcType=VARCHAR},
           </if>
           <if test="showStatus != null">
-             #{showStatus,jdbcType=OTHER},
+             #{showStatus,jdbcType=INTEGER},
           </if>
           <if test="navStatus != null">
-             #{navStatus,jdbcType=OTHER},
+             #{navStatus,jdbcType=INTEGER},
+          </if>
+          <if test="sort != null">
+             #{sort,jdbcType=INTEGER},
+          </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
           </if>
         </trim>
     </insert>
@@ -137,10 +176,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into kind
-         (id, kind_name, icon_name, description, show_status, nav_status)
+         (id, kind_name, icon_name, description, show_status, nav_status, sort, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.kindName,jdbcType=VARCHAR}, #{item.iconName,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.showStatus,jdbcType=OTHER}, #{item.navStatus,jdbcType=OTHER})
+         (#{item.id,jdbcType=INTEGER}, #{item.kindName,jdbcType=VARCHAR}, #{item.iconName,jdbcType=VARCHAR}, #{item.description,jdbcType=VARCHAR}, #{item.showStatus,jdbcType=INTEGER}, #{item.navStatus,jdbcType=INTEGER}, #{item.sort,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -158,10 +197,19 @@
                 description = #{description,jdbcType=VARCHAR},
             </if>
             <if test="showStatus != null">
-                show_status = #{showStatus,jdbcType=OTHER},
+                show_status = #{showStatus,jdbcType=INTEGER},
             </if>
             <if test="navStatus != null">
-                nav_status = #{navStatus,jdbcType=OTHER},
+                nav_status = #{navStatus,jdbcType=INTEGER},
+            </if>
+            <if test="sort != null">
+                sort = #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -181,10 +229,19 @@
                 description = #{set.description,jdbcType=VARCHAR},
             </if>
             <if test="where.showStatus == null and set.showStatus != null">
-                show_status = #{set.showStatus,jdbcType=OTHER},
+                show_status = #{set.showStatus,jdbcType=INTEGER},
             </if>
             <if test="where.navStatus == null and set.navStatus != null">
-                nav_status = #{set.navStatus,jdbcType=OTHER},
+                nav_status = #{set.navStatus,jdbcType=INTEGER},
+            </if>
+            <if test="where.sort == null and set.sort != null">
+                sort = #{set.sort,jdbcType=INTEGER},
+            </if>
+            <if test="where.updateTime == null and set.updateTime != null">
+                update_time = #{set.updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         <where>
@@ -201,10 +258,19 @@
                 and description = #{where.description,jdbcType=VARCHAR}
             </if>
             <if test="where.showStatus != null">
-                and show_status = #{where.showStatus,jdbcType=OTHER}
+                and show_status = #{where.showStatus,jdbcType=INTEGER}
             </if>
             <if test="where.navStatus != null">
-                and nav_status = #{where.navStatus,jdbcType=OTHER}
+                and nav_status = #{where.navStatus,jdbcType=INTEGER}
+            </if>
+            <if test="where.sort != null">
+                and sort = #{where.sort,jdbcType=INTEGER}
+            </if>
+            <if test="where.updateTime != null">
+                and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </update>
@@ -238,6 +304,21 @@
                   when id = #{item.id} then #{item.navStatus}
                  </foreach>
             </trim>
+            <trim prefix="sort = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.sort}
+                 </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
         </trim>
         where id in
         <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
@@ -264,10 +345,19 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="showStatus != null">
-                and show_status = #{showStatus,jdbcType=OTHER}
+                and show_status = #{showStatus,jdbcType=INTEGER}
             </if>
             <if test="navStatus != null">
-                and nav_status = #{navStatus,jdbcType=OTHER}
+                and nav_status = #{navStatus,jdbcType=INTEGER}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </delete>
@@ -300,10 +390,19 @@
                 and description = #{description,jdbcType=VARCHAR}
             </if>
             <if test="showStatus != null">
-                and show_status = #{showStatus,jdbcType=OTHER}
+                and show_status = #{showStatus,jdbcType=INTEGER}
             </if>
             <if test="navStatus != null">
-                and nav_status = #{navStatus,jdbcType=OTHER}
+                and nav_status = #{navStatus,jdbcType=INTEGER}
+            </if>
+            <if test="sort != null">
+                and sort = #{sort,jdbcType=INTEGER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>

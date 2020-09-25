@@ -1,13 +1,13 @@
 package com.mawkun.core.base.data.vo;
 
+import com.mawkun.core.base.entity.GoodsOrder;
 import com.mawkun.core.base.entity.OrderClothes;
-import com.mawkun.core.base.entity.OrderForm;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class OrderFormVo extends OrderForm {
+public class GoodsOrderVo extends GoodsOrder {
 
     private String customerName;        //客户姓名
     private String distributorName;     //配送员姓名

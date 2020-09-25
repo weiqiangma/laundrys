@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.mawkun.core.base.dao.OrderFormDao">
+<mapper namespace="com.mawkun.core.base.dao.GoodsOrderDao">
 
-    <resultMap type="com.mawkun.core.base.entity.OrderForm" id="OrderFormResultMap">
+    <resultMap type="com.mawkun.core.base.entity.GoodsOrder" id="GoodsOrderResultMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
         <result property="userId" column="user_id" jdbcType="INTEGER"/>
         <result property="shopId" column="shop_id" jdbcType="INTEGER"/>
         <result property="distributorId" column="distributor_id" jdbcType="INTEGER"/>
         <result property="addressId" column="address_id" jdbcType="INTEGER"/>
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
-        <result property="orderSerial" column="order_serial" jdbcType="VARCHAR"/>
+        <result property="shopName" column="shop_name" jdbcType="VARCHAR"/>
+        <result property="orderNo" column="order_no" jdbcType="VARCHAR"/>
         <result property="remark" column="remark" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="realAmount" column="real_amount" jdbcType="INTEGER"/>
@@ -24,23 +25,23 @@
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, shop_id, distributor_id, address_id, user_name, order_serial, remark, status, real_amount, total_amount, user_address, transport_fee, transport_way, pay_kind, pay_time, update_time, create_time      
+      id, user_id, shop_id, distributor_id, address_id, user_name, shop_name, order_no, remark, status, real_amount, total_amount, user_address, transport_fee, transport_way, pay_kind, pay_time, update_time, create_time      
     </sql>
        
     <!--通过Id查询单个-->
-    <select id="getById" resultMap="OrderFormResultMap" parameterType="java.lang.Long">
+    <select id="getById" resultMap="GoodsOrderResultMap" parameterType="java.lang.Long">
         select
           <include refid="table_field" />
-        from order_form
+        from goods_order
         where id = #{id,jdbcType=INTEGER}
     </select>
 
 
     <!--通过实体不为空的属性作为筛选条件查询列表-->
-    <select id="listByEntity" resultMap="OrderFormResultMap" parameterType="com.mawkun.core.base.entity.OrderForm">
+    <select id="listByEntity" resultMap="GoodsOrderResultMap" parameterType="com.mawkun.core.base.entity.GoodsOrder">
         select
           <include refid="table_field" />
-        from order_form
+        from goods_order
         <where>
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
@@ -60,8 +61,11 @@
             <if test="userName != null">
                 and user_name = #{userName,jdbcType=VARCHAR}
             </if>
-            <if test="orderSerial != null">
-                and order_serial = #{orderSerial,jdbcType=VARCHAR}
+            <if test="shopName != null">
+                and shop_name = #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo,jdbcType=VARCHAR}
             </if>
             <if test="remark != null">
                 and remark = #{remark,jdbcType=VARCHAR}
@@ -100,10 +104,10 @@
     </select>
 
     <!--通过实体不为空的属性作为筛选条件查询单个-->
-    <select id="getByEntity" resultMap="OrderFormResultMap" parameterType="com.mawkun.core.base.entity.OrderForm">
+    <select id="getByEntity" resultMap="GoodsOrderResultMap" parameterType="com.mawkun.core.base.entity.GoodsOrder">
         select
           <include refid="table_field" />
-        from order_form
+        from goods_order
         <where>
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
@@ -123,8 +127,11 @@
             <if test="userName != null">
                 and user_name = #{userName,jdbcType=VARCHAR}
             </if>
-            <if test="orderSerial != null">
-                and order_serial = #{orderSerial,jdbcType=VARCHAR}
+            <if test="shopName != null">
+                and shop_name = #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo,jdbcType=VARCHAR}
             </if>
             <if test="remark != null">
                 and remark = #{remark,jdbcType=VARCHAR}
@@ -163,10 +170,10 @@
     </select>
 
     <!--通过Id列表作为筛选条件查询列表，列表长度不为0-->
-    <select id="listByIds" resultMap="OrderFormResultMap" parameterType="list">
+    <select id="listByIds" resultMap="GoodsOrderResultMap" parameterType="list">
         select
           <include refid="table_field" />
-        from order_form
+        from goods_order
         where id in
         <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
             #{item}
@@ -174,8 +181,8 @@
     </select>
 
     <!--新增实体属性不为null的列-->
-    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.OrderForm">
-        insert into order_form
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true" parameterType="com.mawkun.core.base.entity.GoodsOrder">
+        insert into goods_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
           <if test="id != null">
              id,
@@ -195,8 +202,11 @@
           <if test="userName != null">
              user_name,
           </if>
-          <if test="orderSerial != null">
-             order_serial,
+          <if test="shopName != null">
+             shop_name,
+          </if>
+          <if test="orderNo != null">
+             order_no,
           </if>
           <if test="remark != null">
              remark,
@@ -251,8 +261,11 @@
           <if test="userName != null">
              #{userName,jdbcType=VARCHAR},
           </if>
-          <if test="orderSerial != null">
-             #{orderSerial,jdbcType=VARCHAR},
+          <if test="shopName != null">
+             #{shopName,jdbcType=VARCHAR},
+          </if>
+          <if test="orderNo != null">
+             #{orderNo,jdbcType=VARCHAR},
           </if>
           <if test="remark != null">
              #{remark,jdbcType=VARCHAR},
@@ -292,17 +305,17 @@
 
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
-        insert into order_form
-         (id, user_id, shop_id, distributor_id, address_id, user_name, order_serial, remark, status, real_amount, total_amount, user_address, transport_fee, transport_way, pay_kind, pay_time, update_time, create_time)
+        insert into goods_order
+         (id, user_id, shop_id, distributor_id, address_id, user_name, shop_name, order_no, remark, status, real_amount, total_amount, user_address, transport_fee, transport_way, pay_kind, pay_time, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.distributorId,jdbcType=INTEGER}, #{item.addressId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.orderSerial,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.realAmount,jdbcType=INTEGER}, #{item.totalAmount,jdbcType=INTEGER}, #{item.userAddress,jdbcType=VARCHAR}, #{item.transportFee,jdbcType=INTEGER}, #{item.transportWay,jdbcType=INTEGER}, #{item.payKind,jdbcType=INTEGER}, #{item.payTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.distributorId,jdbcType=INTEGER}, #{item.addressId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.shopName,jdbcType=VARCHAR}, #{item.orderNo,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.realAmount,jdbcType=INTEGER}, #{item.totalAmount,jdbcType=INTEGER}, #{item.userAddress,jdbcType=VARCHAR}, #{item.transportFee,jdbcType=INTEGER}, #{item.transportWay,jdbcType=INTEGER}, #{item.payKind,jdbcType=INTEGER}, #{item.payTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
     <!--通过主键修改实体属性不为null的列-->
-    <update id="update" parameterType="com.mawkun.core.base.entity.OrderForm">
-        update order_form
+    <update id="update" parameterType="com.mawkun.core.base.entity.GoodsOrder">
+        update goods_order
         <set>
             <if test="userId != null">
                 user_id = #{userId,jdbcType=INTEGER},
@@ -319,8 +332,11 @@
             <if test="userName != null and userName != ''">
                 user_name = #{userName,jdbcType=VARCHAR},
             </if>
-            <if test="orderSerial != null and orderSerial != ''">
-                order_serial = #{orderSerial,jdbcType=VARCHAR},
+            <if test="shopName != null and shopName != ''">
+                shop_name = #{shopName,jdbcType=VARCHAR},
+            </if>
+            <if test="orderNo != null and orderNo != ''">
+                order_no = #{orderNo,jdbcType=VARCHAR},
             </if>
             <if test="remark != null and remark != ''">
                 remark = #{remark,jdbcType=VARCHAR},
@@ -361,7 +377,7 @@
 
     <!--通过表字段修改实体属性不为null的列-->
     <update id="updateByField">
-        update order_form
+        update goods_order
         <set>
             <if test="where.userId == null and set.userId != null">
                 user_id = #{set.userId,jdbcType=INTEGER},
@@ -378,8 +394,11 @@
             <if test="where.userName == null and set.userName != null and set.userName != ''">
                 user_name = #{set.userName,jdbcType=VARCHAR},
             </if>
-            <if test="where.orderSerial == null and set.orderSerial != null and set.orderSerial != ''">
-                order_serial = #{set.orderSerial,jdbcType=VARCHAR},
+            <if test="where.shopName == null and set.shopName != null and set.shopName != ''">
+                shop_name = #{set.shopName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.orderNo == null and set.orderNo != null and set.orderNo != ''">
+                order_no = #{set.orderNo,jdbcType=VARCHAR},
             </if>
             <if test="where.remark == null and set.remark != null and set.remark != ''">
                 remark = #{set.remark,jdbcType=VARCHAR},
@@ -434,8 +453,11 @@
             <if test="where.userName != null">
                 and user_name = #{where.userName,jdbcType=VARCHAR}
             </if>
-            <if test="where.orderSerial != null">
-                and order_serial = #{where.orderSerial,jdbcType=VARCHAR}
+            <if test="where.shopName != null">
+                and shop_name = #{where.shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.orderNo != null">
+                and order_no = #{where.orderNo,jdbcType=VARCHAR}
             </if>
             <if test="where.remark != null">
                 and remark = #{where.remark,jdbcType=VARCHAR}
@@ -475,7 +497,7 @@
 
     <!--通过主键修改实体列表，列表长度不能为0，注意：当实体属性为null时，对应的列也会别更新为null-->
     <update id="updateBatch" parameterType="list">
-        update order_form
+        update goods_order
         <trim prefix="set" suffixOverrides=",">
             <trim prefix="user_id = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
@@ -502,9 +524,14 @@
                   when id = #{item.id} then #{item.userName}
                  </foreach>
             </trim>
-            <trim prefix="order_serial = case" suffix="end,">
+            <trim prefix="shop_name = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
-                  when id = #{item.id} then #{item.orderSerial}
+                  when id = #{item.id} then #{item.shopName}
+                 </foreach>
+            </trim>
+            <trim prefix="order_no = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.orderNo}
                  </foreach>
             </trim>
             <trim prefix="remark = case" suffix="end,">
@@ -571,12 +598,12 @@
     
     <!--通过主键删除-->
     <delete id="deleteById" parameterType="java.lang.Long">
-        delete from order_form where id = #{id,jdbcType=INTEGER}
+        delete from goods_order where id = #{id,jdbcType=INTEGER}
     </delete>
 
     <!--通过实体非空属性删除-->
-    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.OrderForm">
-        delete from order_form
+    <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.GoodsOrder">
+        delete from goods_order
         <where>
             <if test="userId != null">
                 and user_id = #{userId,jdbcType=INTEGER}
@@ -593,8 +620,11 @@
             <if test="userName != null">
                 and user_name = #{userName,jdbcType=VARCHAR}
             </if>
-            <if test="orderSerial != null">
-                and order_serial = #{orderSerial,jdbcType=VARCHAR}
+            <if test="shopName != null">
+                and shop_name = #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo,jdbcType=VARCHAR}
             </if>
             <if test="remark != null">
                 and remark = #{remark,jdbcType=VARCHAR}
@@ -634,18 +664,18 @@
     
     <!--通过主键列表删除，列表长度不能为0-->
     <delete id="deleteByIds" parameterType="list">
-        delete from order_form where id in
+        delete from goods_order where id in
         <foreach item="item" collection="list" separator="," open="(" close=")" index="index">
             #{item}
         </foreach>
     </delete>
     
     <select id="countAll" resultType="int">
-        select count(id) from order_form
+        select count(id) from goods_order
     </select>
     
-    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.OrderForm" resultType="int">
-        select count(id) from order_form
+    <select id="countByEntity" parameterType="com.mawkun.core.base.entity.GoodsOrder" resultType="int">
+        select count(id) from goods_order
         <where>
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
@@ -665,8 +695,11 @@
             <if test="userName != null">
                 and user_name = #{userName,jdbcType=VARCHAR}
             </if>
-            <if test="orderSerial != null">
-                and order_serial = #{orderSerial,jdbcType=VARCHAR}
+            <if test="shopName != null">
+                and shop_name = #{shopName,jdbcType=VARCHAR}
+            </if>
+            <if test="orderNo != null">
+                and order_no = #{orderNo,jdbcType=VARCHAR}
             </if>
             <if test="remark != null">
                 and remark = #{remark,jdbcType=VARCHAR}

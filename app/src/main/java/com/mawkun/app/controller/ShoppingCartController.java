@@ -6,28 +6,17 @@ import cn.pertech.common.utils.NumberUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
-import com.mawkun.core.base.data.query.OrderFormQuery;
-import com.mawkun.core.base.data.query.ShoppingCartQuery;
-import com.mawkun.core.base.data.vo.ShopVo;
+import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.entity.*;
-import com.mawkun.core.base.service.ShoppingCartService;
 import com.mawkun.core.dao.SysParamDaoExt;
 import com.mawkun.core.service.*;
 import com.mawkun.core.spring.annotation.LoginedAuth;
-import com.mawkun.core.utils.StringUtils;
-import com.xiaoleilu.hutool.convert.Convert;
-import com.xiaoleilu.hutool.util.ArrayUtil;
-import com.xiaoleilu.hutool.util.NumberUtil;
 import io.jsonwebtoken.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.sf.cglib.core.CollectionUtils;
-import net.sf.cglib.core.Transformer;
-import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Validation;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,7 +40,7 @@ public class ShoppingCartController extends BaseController {
     @Autowired
     private OrderClothesServiceExt orderClothesServiceExt;
     @Autowired
-    private OrderFormServiceExt orderFormServiceExt;
+    private GoodsOrderServiceExt goodsOrderServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="门店详情", notes="门店详情")
@@ -142,7 +131,7 @@ public class ShoppingCartController extends BaseController {
     }
 
     @PostMapping("/countOrderForm")
-    public JsonResult countOrderForm(@LoginedAuth UserSession session, OrderFormQuery query) {
+    public JsonResult countGoodsOrder(@LoginedAuth UserSession session, GoodsOrderQuery query) {
         /**
          * 1.查询用户是否存在
          * 2.查询用户购物车商品总金额与前端传入是否相同
@@ -179,7 +168,7 @@ public class ShoppingCartController extends BaseController {
         try {
             //顾客送至门店
             if (query.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
-                data = orderFormServiceExt.generateOrderForm(user, query, null, resultAmount, cartList);
+                data = goodsOrderServiceExt.generateOrderForm(user, query, null, resultAmount, cartList);
             }
             //配送员上门取货
             if (query.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
@@ -189,7 +178,7 @@ public class ShoppingCartController extends BaseController {
                 if (!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
                 //商品总价+运费
                 resultAmount = resultAmount + transportFee;
-                data = orderFormServiceExt.generateOrderForm(user, query, address, resultAmount, cartList);
+                data = goodsOrderServiceExt.generateOrderForm(user, query, address, resultAmount, cartList);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,8 +3,8 @@ package com.mawkun.core.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.query.PayFlowQuery;
+import com.mawkun.core.base.entity.GoodsOrder;
 import com.mawkun.core.base.entity.InvestOrder;
-import com.mawkun.core.base.entity.OrderForm;
 import com.mawkun.core.base.entity.PayFlow;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.PayFlowService;
@@ -24,12 +24,12 @@ public class PayFlowServiceExt extends PayFlowService {
     @Autowired
     private PayFlowDaoExt payFlowDaoExt;
 
-    public int createPayFlow(User user, OrderForm order, Integer orderType) {
+    public int createPayFlow(User user, GoodsOrder order, Integer orderType) {
         PayFlow payFlow = new PayFlow();
         payFlow.setUserId(user.getId());
         payFlow.setUserName(user.getUserName());
         payFlow.setOrderId(order.getId());
-        payFlow.setOrderNo(order.getOrderSerial());
+        payFlow.setOrderNo(order.getOrderNo());
         payFlow.setOrderType(orderType);
         payFlow.setTotalFee(order.getTotalAmount());
         payFlow.setPayTime(order.getPayTime());

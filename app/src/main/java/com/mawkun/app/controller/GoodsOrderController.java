@@ -10,16 +10,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
-import com.mawkun.core.base.data.query.OrderFormQuery;
-import com.mawkun.core.base.data.vo.OrderFormVo;
-import com.mawkun.core.base.data.vo.ShopVo;
-import com.mawkun.core.base.entity.OperateOrderLog;
-import com.mawkun.core.base.entity.OrderForm;
+import com.mawkun.core.base.data.query.GoodsOrderQuery;
+import com.mawkun.core.base.data.vo.GoodsOrderVo;
+import com.mawkun.core.base.entity.GoodsOrder;
+import com.mawkun.core.base.entity.OrderLog;
 import com.mawkun.core.base.entity.User;
-import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.service.OperateOrderLogServiceExt;
-import com.mawkun.core.service.OrderFormServiceExt;
+import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
@@ -30,7 +28,6 @@ import net.sf.cglib.core.CollectionUtils;
 import net.sf.cglib.core.Transformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,10 +39,10 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/orderForm")
 @Api(tags={"订单操作接口"})
-public class OrderFormController extends BaseController {
+public class GoodsOrderController extends BaseController {
     
     @Autowired
-    private OrderFormServiceExt orderFormServiceExt;
+    private GoodsOrderServiceExt GoodsOrderServiceExt;
     @Autowired
     private WxApiServiceExt wxApiServiceExt;
     @Autowired
@@ -58,34 +55,34 @@ public class OrderFormController extends BaseController {
     @GetMapping("/get")
     @ApiOperation(value="根据id获取订单", notes="根据id获取订单")
     public JsonResult getById(Long id) {
-        OrderFormVo orderFormVo = orderFormServiceExt.getDetail(id);
-        return sendSuccess(orderFormVo);
+        GoodsOrderVo GoodsOrderVo = GoodsOrderServiceExt.getDetail(id);
+        return sendSuccess(GoodsOrderVo);
     }
 
     @GetMapping("/getByEntity")
     @ApiOperation(value="根据entity获取订单", notes="根据entity获取订单")
-    public JsonResult getByEntity(OrderForm orderForm) {
-        OrderForm resultForm = orderFormServiceExt.getByEntity(orderForm);
+    public JsonResult getByEntity(GoodsOrder GoodsOrder) {
+        GoodsOrder resultForm = GoodsOrderServiceExt.getByEntity(GoodsOrder);
         return sendSuccess(resultForm);
     }
 
     @GetMapping("/list")
     @ApiOperation(value="获取订单列表", notes="获取订单列表")
-    public JsonResult list(@LoginedAuth UserSession session, OrderForm orderForm) {
+    public JsonResult list(@LoginedAuth UserSession session, GoodsOrder GoodsOrder) {
         if(session.getId() > 0) {
-            orderForm.setUserId(session.getId());
+            GoodsOrder.setUserId(session.getId());
         }
-        List<OrderForm> orderFormList = orderFormServiceExt.listByEntity(orderForm);
-        return sendSuccess(orderFormList);
+        List<GoodsOrder> GoodsOrderList = GoodsOrderServiceExt.listByEntity(GoodsOrder);
+        return sendSuccess(GoodsOrderList);
     }
 
     @GetMapping("/pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
-    public JsonResult pageList(@LoginedAuth UserSession session, OrderFormQuery query) {
+    public JsonResult pageList(@LoginedAuth UserSession session, GoodsOrderQuery query) {
         if(session.getId() > 0) {
             query.setUserId(session.getId());
         }
-        PageInfo page = orderFormServiceExt.pageByEntity(query);
+        PageInfo page = GoodsOrderServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }
 
@@ -107,11 +104,11 @@ public class OrderFormController extends BaseController {
         if(user == null) {
             return sendArgsError("未查询到该用户");
         }
-        OrderForm orderForm = orderFormServiceExt.getById(orderId);
-        if(!orderForm.getUserId().equals(session.getId())) {
+        GoodsOrder GoodsOrder = GoodsOrderServiceExt.getById(orderId);
+        if(!GoodsOrder.getUserId().equals(session.getId())) {
             return sendArgsError("非下单用户无权编辑");
         }
-        JSONObject object = wxApiServiceExt.getOrderStatus(orderForm.getOrderSerial());
+        JSONObject object = wxApiServiceExt.getOrderStatus(GoodsOrder.getOrderNo());
         String resultCode = object.getString("result_code");
         if(StringUtils.equals(Constant.WX_RETURN_SUCCESS, resultCode)) {
             String tradeState = object.getString("trade_state");
@@ -127,38 +124,38 @@ public class OrderFormController extends BaseController {
             //用户已经支付成功，订单状态却未及时更新
             if(StringUtils.equals(Constant.PAY_STATU_SUCCESS, tradeState) && StringUtils.equals(user.getOpenId(), openId)) {
                 //如果是余额支付,用户余额减去支付费用并更新
-                if(orderForm.getPayKind() == Constant.PAY_WITH_REMAINDER) {
+                if(GoodsOrder.getPayKind() == Constant.PAY_WITH_REMAINDER) {
                     user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
                     userServiceExt.update(user, null);
                 }
                 //如果订单状态还是待支付
-                if(orderForm.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                if(GoodsOrder.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
                     //更新订单
-                    orderForm.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
-                    orderForm.setPayTime(payTime);
-                    orderForm.setUpdateTime(new Date());
-                    orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
-                    orderFormServiceExt.update(null, orderForm);
+                    GoodsOrder.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
+                    GoodsOrder.setPayTime(payTime);
+                    GoodsOrder.setUpdateTime(new Date());
+                    GoodsOrder.setRealAmount(NumberUtils.str2Long(totalFee));
+                    GoodsOrderServiceExt.update(null, GoodsOrder);
                 }
             }
         } else {
             return sendArgsError("调用微信接口查询订单异常");
         }
-        OrderForm resultOrder = orderFormServiceExt.getById(orderId);
+        GoodsOrder resultOrder = GoodsOrderServiceExt.getById(orderId);
         return sendSuccess(resultOrder);
     }
 
     @PostMapping("/insert")
     @ApiOperation(value="添加订单", notes="添加订单")
-    public JsonResult insert(OrderForm orderForm){
-        orderFormServiceExt.insert(orderForm);
-        return sendSuccess(orderForm);
+    public JsonResult insert(GoodsOrder GoodsOrder){
+        GoodsOrderServiceExt.insert(GoodsOrder);
+        return sendSuccess(GoodsOrder);
     }
 
     @PutMapping("/update")
     @ApiOperation(value="编辑订单", notes="编辑订单")
-    public JsonResult update(@LoginedAuth UserSession session, OrderForm orderForm){
-        return orderFormServiceExt.update(session, orderForm);
+    public JsonResult update(@LoginedAuth UserSession session, GoodsOrder GoodsOrder){
+        return GoodsOrderServiceExt.update(session, GoodsOrder);
     }
 
     @PostMapping("/cancel")
@@ -167,20 +164,20 @@ public class OrderFormController extends BaseController {
         if(orderId == null) {
             return sendArgsError("请选择一个订单");
         }
-        OrderForm order = new OrderForm();
+        GoodsOrder order = new GoodsOrder();
         order.setId(orderId);
         order.setUserId(session.getId());
         order.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
-        OrderForm resultOrder = orderFormServiceExt.getByEntity(order);
+        GoodsOrder resultOrder = GoodsOrderServiceExt.getByEntity(order);
         if(resultOrder == null) return sendArgsError("数据库中未查询到该订单");;
-        orderFormServiceExt.cancel(session, resultOrder);
+        GoodsOrderServiceExt.cancel(session, resultOrder);
         return sendSuccess("ok", "取消成功");
     }
 
     @PostMapping("/delete")
     @ApiOperation(value="删除订单", notes="删除订单")
     public JsonResult deleteOne(Long orderId){
-        int result = orderFormServiceExt.deleteById(orderId);
+        int result = GoodsOrderServiceExt.deleteById(orderId);
         return sendSuccess(result);
     }
 
@@ -197,7 +194,7 @@ public class OrderFormController extends BaseController {
             }
         });
         if (idList.size()>0) {
-            result = orderFormServiceExt.deleteByIds(idList);
+            result = GoodsOrderServiceExt.deleteByIds(idList);
         }
         return sendSuccess(result);
     }
@@ -206,11 +203,11 @@ public class OrderFormController extends BaseController {
     @ApiOperation(value="获取订单操作日志", notes="获取订单操作日志")
     public JsonResult getOrderLog(Long orderId) {
         JSONArray array = new JSONArray();
-        OperateOrderLog orderLog = new OperateOrderLog();
-        orderLog.setOrderFormId(orderId);
-        List<OperateOrderLog> list = operateOrderLogServiceExt.listByEntity(orderLog);
-        List<OperateOrderLog> sortList = list.stream().sorted(Comparator.comparingInt(OperateOrderLog::getStatus)).collect(Collectors.toList());
-        for(OperateOrderLog log : sortList) {
+        OrderLog orderLog = new OrderLog();
+        orderLog.setOrderId(orderId);
+        List<OrderLog> list = operateOrderLogServiceExt.listByEntity(orderLog);
+        List<OrderLog> sortList = list.stream().sorted(Comparator.comparingInt(OrderLog::getStatus)).collect(Collectors.toList());
+        for(OrderLog log : sortList) {
             JSONObject object = new JSONObject();
             String createTime = DateUtils.format("yyyy-MM-dd HH:mm:ss", log.getCreateTime());
             object.put("status", log.getStatus());
@@ -222,11 +219,11 @@ public class OrderFormController extends BaseController {
 
     @GetMapping("/getDistributorOrder")
     @ApiOperation(value="配送员订单列表分页", notes="配送员订单列表分页")
-    public JsonResult getDistributorOrder(@LoginedAuth UserSession session, OrderFormQuery query) {
+    public JsonResult getDistributorOrder(@LoginedAuth UserSession session, GoodsOrderQuery query) {
         if(!session.isDistributor()) {
             return sendArgsError("非配送员无权查看");
         }
-        PageInfo page = orderFormServiceExt.getDistributorOrder(session.getId(), query);
+        PageInfo page = GoodsOrderServiceExt.getDistributorOrder(session.getId(), query);
         return sendSuccess(page);
     }
 
@@ -236,15 +233,15 @@ public class OrderFormController extends BaseController {
         if(!session.isDistributor()) {
             return sendArgsError("非配送员无权操作");
         }
-        OrderForm orderForm = orderFormServiceExt.getById(orderId);
-        if(orderForm == null) {
+        GoodsOrder GoodsOrder = GoodsOrderServiceExt.getById(orderId);
+        if(GoodsOrder == null) {
             return sendArgsError("未查询到该订单");
         }
-        boolean flag = orderFormServiceExt.checkOrderIsDistributor(session.getId(), orderId);
+        boolean flag = GoodsOrderServiceExt.checkOrderIsDistributor(session.getId(), orderId);
         if(!flag) {
             return sendArgsError("订单不属于配送员关联门店,无权操作");
         }
-        int result = orderFormServiceExt.orderTaking(session, orderForm, description);
+        int result = GoodsOrderServiceExt.orderTaking(session, GoodsOrder, description);
         return sendSuccess(result);
     }
 }

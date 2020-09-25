@@ -1,31 +1,20 @@
 package com.mawkun.core.service;
 
-import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.NumberUtils;
 import com.mawkun.core.base.common.constant.Constant;
-import com.mawkun.core.base.dao.ShoppingCartDao;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsQuery;
-import com.mawkun.core.base.data.query.OrderFormQuery;
 import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.ShoppingCartService;
-import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.dao.GoodsDaoExt;
 import com.mawkun.core.dao.ShopDaoExt;
 import com.mawkun.core.dao.ShoppingCartDaoExt;
 import com.mawkun.core.dao.SysParamDaoExt;
-import com.xiaoleilu.hutool.convert.Convert;
-import com.xiaoleilu.hutool.lang.Validator;
-import com.xiaoleilu.hutool.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.cglib.core.CollectionUtils;
-import net.sf.cglib.core.Transformer;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Validation;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,7 +38,7 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
     @Autowired
     private UserAddressServiceExt userAddressServiceExt;
     @Autowired
-    private OrderFormServiceExt orderFormServiceExt;
+    private GoodsOrderServiceExt goodsOrderServiceExt;
     @Autowired
     private GaoDeApiServiceExt gaoDeApiServiceExt;
 

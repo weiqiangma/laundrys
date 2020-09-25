@@ -2,11 +2,10 @@ package com.mawkun.core.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.mawkun.core.base.common.constant.Constant;
-import com.mawkun.core.base.data.query.OperateOrderLogQuery;
-import com.mawkun.core.base.entity.OperateOrderLog;
-import com.mawkun.core.base.service.OperateOrderLogService;
-import com.mawkun.core.dao.OperateOrderLogDaoExt;
+import com.mawkun.core.base.data.query.OrderLogQuery;
+import com.mawkun.core.base.entity.OrderLog;
+import com.mawkun.core.base.service.OrderLogService;
+import com.mawkun.core.dao.OrderLogDaoExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,30 +13,30 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class OperateOrderLogServiceExt extends OperateOrderLogService {
+public class OperateOrderLogServiceExt extends OrderLogService {
     @Autowired
-    private OperateOrderLogDaoExt operateOrderLogDaoExt;
+    private OrderLogDaoExt orderLogDaoExt;
 
-    public PageInfo<OperateOrderLog> pageList(OperateOrderLogQuery query) {
+    public PageInfo<OrderLog> pageList(OrderLogQuery query) {
         query.init();
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
-        List<OperateOrderLog> list = operateOrderLogDaoExt.selectList(query);
-        return new PageInfo<OperateOrderLog>(list);
+        List<OrderLog> list = orderLogDaoExt.selectList(query);
+        return new PageInfo<OrderLog>(list);
     }
 
     /**
      * 创建生成订单的操作记录
      */
     public int createWaitingPayOrder(Long userId, String userName, Long orderId, Integer userKind, Integer status, String operate, String description) {
-        OperateOrderLog log = new OperateOrderLog();
+        OrderLog log = new OrderLog();
         log.setUserId(userId);
-        log.setOrderFormId(orderId);
+        log.setOrderId(orderId);
         log.setUserName(userName);
         log.setStatus(status);
         log.setUserKind(userKind);
         log.setOperate(operate);
         log.setDescription(description);
         log.setCreateTime(new Date());
-        return operateOrderLogDaoExt.insert(log);
+        return orderLogDaoExt.insert(log);
     }
 }

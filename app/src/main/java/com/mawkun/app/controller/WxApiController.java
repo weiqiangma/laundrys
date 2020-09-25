@@ -59,7 +59,7 @@ public class WxApiController extends BaseController {
     @Autowired
     private InvestOrderServiceExt investOrderServiceExt;
     @Autowired
-    private OrderFormServiceExt orderFormServiceExt;
+    private GoodsOrderServiceExt goodsOrderServiceExt;
     @Autowired
     private MemberCardServiceExt memberCardServiceExt;
     @Autowired
@@ -73,7 +73,7 @@ public class WxApiController extends BaseController {
         if(user == null) {
             return sendArgsError("未查询到该用户");
         }
-        OrderForm orderForm = orderFormServiceExt.getByUserIdAndId(orderId, user.getId());
+        GoodsOrder orderForm = goodsOrderServiceExt.getByUserIdAndId(orderId, user.getId());
         if(orderForm == null) {
             return sendArgsError("未查询到该订单");
         }
@@ -82,7 +82,7 @@ public class WxApiController extends BaseController {
         }
         List<OrderClothes> clothesList = orderClothesServiceExt.getByOrderId(orderId);
         String body = clothesList.stream().map(OrderClothes::getGoodsName).collect(Collectors.joining());
-        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderForm.getOrderSerial(), orderForm.getTotalAmount().toString(), body, body, goodsNotifyUrl);
+        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderForm.getOrderNo(), orderForm.getTotalAmount().toString(), body, body, goodsNotifyUrl);
         return sendSuccess(object);
     }
 
@@ -107,7 +107,7 @@ public class WxApiController extends BaseController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            OrderForm orderForm = orderFormServiceExt.getByOrderSerialAndStatus(orderNo, Constant.ORDER_STATUS_WAITING_PAY);
+            GoodsOrder orderForm = goodsOrderServiceExt.getByOrderSerialAndStatus(orderNo, Constant.ORDER_STATUS_WAITING_PAY);
             User user = userServiceExt.getById(orderForm.getUserId());
             //如果是余额支付,减去支付费用并更新
             if(orderForm.getPayKind() == Constant.PAY_WITH_REMAINDER) {
@@ -119,7 +119,7 @@ public class WxApiController extends BaseController {
             orderForm.setPayTime(payTime);
             orderForm.setUpdateTime(new Date());
             orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
-            orderFormServiceExt.update(null, orderForm);
+            goodsOrderServiceExt.update(null, orderForm);
             //生成支付流水
             payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
             //发送通知
@@ -148,11 +148,11 @@ public class WxApiController extends BaseController {
         if(user == null) {
             return sendArgsError("未查询到该用户");
         }
-        OrderForm orderForm = orderFormServiceExt.getById(orderId);
+        GoodsOrder orderForm = goodsOrderServiceExt.getById(orderId);
         if(!orderForm.getUserId().equals(session.getId())) {
             return sendArgsError("非下单用户无权编辑");
         }
-        JSONObject object = wxApiServiceExt.getOrderStatus(orderForm.getOrderSerial());
+        JSONObject object = wxApiServiceExt.getOrderStatus(orderForm.getOrderNo());
         String resultCode = object.getString("result_code");
         if(StringUtils.equals(Constant.WX_RETURN_SUCCESS, resultCode)) {
             String tradeState = object.getString("trade_state");
@@ -179,7 +179,7 @@ public class WxApiController extends BaseController {
                     orderForm.setPayTime(payTime);
                     orderForm.setUpdateTime(new Date());
                     orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
-                    orderFormServiceExt.update(null, orderForm);
+                    goodsOrderServiceExt.update(null, orderForm);
                     //生成支付流水
                     payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
                     //发送通知
@@ -189,7 +189,7 @@ public class WxApiController extends BaseController {
         } else {
             return sendArgsError("调用微信接口查询订单异常");
         }
-        OrderForm resultOrder = orderFormServiceExt.getById(orderId);
+        GoodsOrder resultOrder = goodsOrderServiceExt.getById(orderId);
         return sendSuccess(resultOrder);
     }
 

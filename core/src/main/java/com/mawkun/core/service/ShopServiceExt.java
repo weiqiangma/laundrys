@@ -7,24 +7,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.ShopOrderData;
-import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
-import com.mawkun.core.base.data.vo.OrderFormVo;
+import com.mawkun.core.base.data.vo.GoodsOrderVo;
 import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.Shop;
 import com.mawkun.core.base.entity.UserAddress;
 import com.mawkun.core.base.service.ShopService;
-import com.mawkun.core.base.service.UserAddressService;
-import com.mawkun.core.dao.OrderFormDaoExt;
+import com.mawkun.core.dao.GoodsOrderDaoExt;
 import com.mawkun.core.dao.ShopDaoExt;
 import com.mawkun.core.utils.ImageUtils;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.TimeUtils;
-import com.xiaoleilu.hutool.lang.Validator;
 import com.xiaoleilu.hutool.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +37,7 @@ public class ShopServiceExt extends ShopService {
     @Autowired
     private UserAddressServiceExt userAddressServiceExt;
     @Autowired
-    private OrderFormDaoExt orderFormDaoExt;
+    private GoodsOrderDaoExt orderFormDaoExt;
     @Autowired
     private GaoDeApiServiceExt gaoDeApiServiceExt;
 
@@ -94,9 +90,9 @@ public class ShopServiceExt extends ShopService {
      */
     public JSONArray statsShopIncome(StateQuery query) {
         fillQueryData(query);
-        List<OrderFormVo> list = orderFormDaoExt.statsShopIncome(query);
+        List<GoodsOrderVo> list = orderFormDaoExt.statsShopIncome(query);
         //根据type进行分组
-        Map<String, OrderFormVo> dataMap = list.stream().collect(Collectors.toMap(OrderFormVo::getType, m->m));
+        Map<String, GoodsOrderVo> dataMap = list.stream().collect(Collectors.toMap(GoodsOrderVo::getType, m->m));
         Date sTime = query.getStartTime();
         Calendar ca = Calendar.getInstance();
         ca.setTime(sTime);
@@ -112,7 +108,7 @@ public class ShopServiceExt extends ShopService {
             }else{
                 continue;
             }
-            OrderFormVo form = dataMap.get(key);
+            GoodsOrderVo form = dataMap.get(key);
             JSONObject object = new JSONObject();
             String shopName = (form == null) ? "" : form.getShopName();
             if(query.getShopId() == null) shopName = "";

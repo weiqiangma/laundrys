@@ -1,6 +1,6 @@
 package com.mawkun.core.base.data.query;
 
-import com.mawkun.core.base.entity.OrderForm;
+import com.mawkun.core.base.entity.GoodsOrder;
 import lombok.Data;
 
 import java.util.Date;
@@ -10,7 +10,7 @@ import java.util.List;
  * @author mawkun
  */
 @Data
-public class OrderFormQuery extends OrderForm {
+public class GoodsOrderQuery extends GoodsOrder {
     private Integer pageNo;
     private Integer pageSize;
     private String shopName;

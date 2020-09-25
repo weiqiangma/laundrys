@@ -4,8 +4,8 @@ import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
-import com.mawkun.core.base.data.query.OperateOrderLogQuery;
-import com.mawkun.core.base.entity.OperateOrderLog;
+import com.mawkun.core.base.data.query.OrderLogQuery;
+import com.mawkun.core.base.entity.OrderLog;
 import com.mawkun.core.service.OperateOrderLogServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
@@ -28,7 +28,7 @@ import java.util.List;
 @RestController
 @Api(tags={"订单操作日志接口"})
 @RequestMapping("/adm/operateOrderLog")
-public class OperateOrderLogController extends BaseController {
+public class OrderLogController extends BaseController {
     
     @Autowired
     private OperateOrderLogServiceExt operateOrderLogServiceExt;
@@ -36,40 +36,42 @@ public class OperateOrderLogController extends BaseController {
     @GetMapping("/get")
     @ApiOperation(value="订单日志详情", notes="订单日志详情")
     public JsonResult getById(Long id) {
-        OperateOrderLog operateOrderLog = operateOrderLogServiceExt.getById(id);
+        OrderLog operateOrderLog = operateOrderLogServiceExt.getById(id);
         return sendSuccess(operateOrderLog);
     }
 
     @GetMapping("/getByEntity")
     @ApiOperation(value="订单日志详情", notes="订单日志详情")
-    public JsonResult getByEntity(OperateOrderLog operateOrderLog) {
-        OperateOrderLog resultLog = operateOrderLogServiceExt.getByEntity(operateOrderLog);
+    public JsonResult getByEntity(OrderLog operateOrderLog) {
+        OrderLog resultLog = operateOrderLogServiceExt.getByEntity(operateOrderLog);
         return sendSuccess(resultLog);
     }
 
     @GetMapping("/list")
     @ApiOperation(value="订单日志列表", notes="订单日志列表")
-    public JsonResult list(OperateOrderLog operateOrderLog) {
-        List<OperateOrderLog> operateOrderLogList = operateOrderLogServiceExt.listByEntity(operateOrderLog);
+    public JsonResult list(OrderLog operateOrderLog) {
+        List<OrderLog> operateOrderLogList = operateOrderLogServiceExt.listByEntity(operateOrderLog);
         return sendSuccess(operateOrderLogList);
     }
 
     @GetMapping("/pageList")
     @ApiOperation(value="订单日志列表分页", notes="订单日志列表分页")
-    public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, OperateOrderLogQuery query) {
-        if(session.getShopId() > 0) query.setShopId(session.getShopId());
-        PageInfo<OperateOrderLog> page = operateOrderLogServiceExt.pageList(query);
+    public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, OrderLogQuery query) {
+        if(session.getShopId() > 0) {
+            query.setShopId(session.getShopId());
+        }
+        PageInfo<OrderLog> page = operateOrderLogServiceExt.pageList(query);
         return sendSuccess(page);
     }
 
     @PostMapping("/insert")
-    public JsonResult insert(@RequestBody OperateOrderLog operateOrderLog){
+    public JsonResult insert(OrderLog operateOrderLog){
         operateOrderLogServiceExt.insert(operateOrderLog);
         return sendSuccess(operateOrderLog);
     }
 
     @PutMapping("/update")
-    public JsonResult update(@RequestBody OperateOrderLog operateOrderLog){
+    public JsonResult update(OrderLog operateOrderLog){
         int result = operateOrderLogServiceExt.update(operateOrderLog);
         return sendSuccess(result);
     }
