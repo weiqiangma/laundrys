@@ -12,8 +12,11 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author js
+ */
 @Service
-public class OperateOrderLogServiceExt extends OrderLogService {
+public class OrderLogServiceExt extends OrderLogService {
     @Autowired
     private OrderLogDaoExt orderLogDaoExt;
 

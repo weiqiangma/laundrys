@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,55 +32,57 @@ import java.util.List;
 @Api(tags={"订单操作接口"})
 public class GoodsOrderController extends BaseController {
     
-    @Autowired
-    private GoodsOrderServiceExt GoodsOrderServiceExt;
+    @Resource
+    private GoodsOrderServiceExt goodsOrderServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="根据id获取订单", notes="根据id获取订单")
     public JsonResult getById(Long id) {
-        GoodsOrderVo GoodsOrderVo = GoodsOrderServiceExt.getDetail(id);
-        return sendSuccess(GoodsOrderVo);
+        GoodsOrderVo goodsOrderVo = goodsOrderServiceExt.getDetail(id);
+        return sendSuccess(goodsOrderVo);
     }
 
     @GetMapping("/getByEntity")
     @ApiOperation(value="根据entity获取订单", notes="根据entity获取订单")
-    public JsonResult getByEntity(GoodsOrder GoodsOrder) {
-        GoodsOrder resultForm = GoodsOrderServiceExt.getByEntity(GoodsOrder);
+    public JsonResult getByEntity(GoodsOrder goodsOrderVo) {
+        GoodsOrder resultForm = goodsOrderServiceExt.getByEntity(goodsOrderVo);
         return sendSuccess(resultForm);
     }
 
     @GetMapping("/list")
     @ApiOperation(value="获取订单列表", notes="获取订单列表")
-    public JsonResult list(GoodsOrder GoodsOrder) {
-        List<GoodsOrder> GoodsOrderList = GoodsOrderServiceExt.listByEntity(GoodsOrder);
-        return sendSuccess(GoodsOrderList);
+    public JsonResult list(GoodsOrder goodsOrderVo) {
+        List<GoodsOrder> goodsOrderList = goodsOrderServiceExt.listByEntity(goodsOrderVo);
+        return sendSuccess(goodsOrderList);
     }
 
     @GetMapping("/pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
     public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, GoodsOrderQuery query) {
-        if(session.getShopId() > 0) query.setShopId(session.getShopId());
-        PageInfo page = GoodsOrderServiceExt.pageByEntity(query);
+        if(session.getShopId() > 0) {
+            query.setShopId(session.getShopId());
+        }
+        PageInfo page = goodsOrderServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }
 
     @PostMapping("/insert")
     @ApiOperation(value="添加订单", notes="添加订单")
-    public JsonResult insert(GoodsOrder GoodsOrder){
-        GoodsOrderServiceExt.insert(GoodsOrder);
-        return sendSuccess(GoodsOrder);
+    public JsonResult insert(GoodsOrder goodsOrder){
+        goodsOrderServiceExt.insert(goodsOrder);
+        return sendSuccess(goodsOrder);
     }
 
     @PutMapping("/update")
     @ApiOperation(value="编辑订单", notes="编辑订单")
-    public JsonResult update(@LoginedAuth UserSession session, GoodsOrder GoodsOrder){
-        return GoodsOrderServiceExt.update(session, GoodsOrder);
+    public JsonResult update(@LoginedAuth UserSession session, GoodsOrder goodsOrder){
+        return goodsOrderServiceExt.update(session, goodsOrder);
     }
 
     @DeleteMapping("/delete")
     @ApiOperation(value="删除订单", notes="删除订单")
     public JsonResult deleteOne(Long id){
-        int result = GoodsOrderServiceExt.deleteById(id);
+        int result = goodsOrderServiceExt.deleteById(id);
         return sendSuccess(result);
     }
 
@@ -95,7 +98,7 @@ public class GoodsOrderController extends BaseController {
                 return Convert.toInt(o, 0);
             }
         });
-        if (idList.size()>0) result = GoodsOrderServiceExt.deleteByIds(idList);
+        if (idList.size()>0) result = goodsOrderServiceExt.deleteByIds(idList);
         return sendSuccess(result);
     }
 }

@@ -9,7 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+/**
+ * @author js
+ */
+@Repository("goodsOrderDaoExt")
 public interface GoodsOrderDaoExt extends GoodsOrderDao {
 
     /**

@@ -38,8 +38,6 @@ public class ShoppingCartController extends BaseController {
     @Autowired
     private ShopServiceExt shopServiceExt;
     @Autowired
-    private OrderClothesServiceExt orderClothesServiceExt;
-    @Autowired
     private GoodsOrderServiceExt goodsOrderServiceExt;
 
     @GetMapping("/get")

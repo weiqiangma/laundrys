@@ -150,7 +150,6 @@ public class UserController extends BaseController {
         }
     }
 
-    //查询统计对象(首页统计)
     private StateQuery createQueryStateVo(){
         int type = getIntPar("type",1);
         HttpServletRequest request = getRequest();

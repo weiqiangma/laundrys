@@ -34,28 +34,28 @@ public class MemberCardController extends BaseController {
     }
 
     @GetMapping("/getByEntity")
-    public JsonResult getByEntity(@LoginedAuth UserSession session, MemberCard MemberCard) {
-        MemberCard resultCart = memberCardService.getByEntity(MemberCard);
+    public JsonResult getByEntity(@LoginedAuth UserSession session, MemberCard memberCard) {
+        MemberCard resultCart = memberCardService.getByEntity(memberCard);
         return sendSuccess(resultCart);
     }
 
     @GetMapping("/list")
-    public JsonResult list(@LoginedAuth UserSession session, MemberCard MemberCard) {
-        List<MemberCard> MemberCardList = memberCardService.listByEntity(MemberCard);
-        return sendSuccess(MemberCardList);
+    public JsonResult list(@LoginedAuth UserSession session, MemberCard memberCard) {
+        List<MemberCard> memberCardList = memberCardService.listByEntity(memberCard);
+        return sendSuccess(memberCardList);
     }
 
     @PostMapping("/insert")
-    public JsonResult insert(@LoginedAuth UserSession session, MemberCard MemberCard){
+    public JsonResult insert(@LoginedAuth UserSession session, MemberCard memberCard){
         if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
-        memberCardService.insert(MemberCard);
-        return sendSuccess(MemberCard);
+        memberCardService.insert(memberCard);
+        return sendSuccess(memberCard);
     }
 
     @PutMapping("/update")
-    public JsonResult update(@LoginedAuth UserSession session, MemberCard MemberCard){
+    public JsonResult update(@LoginedAuth UserSession session, MemberCard memberCard){
         if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
-        int result = memberCardService.update(MemberCard);
+        int result = memberCardService.update(memberCard);
         return sendSuccess(result);
     }
 

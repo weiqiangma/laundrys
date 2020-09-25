@@ -27,7 +27,7 @@ public class WebLogAspect {
         this.logger.info("<WebLogAspect> AOP init....");
     }
 
-    @Pointcut("execution(* com.mawkun.admin.controller..*.*(..))")
+    @Pointcut("execution(* com.mawkun.app.controller..*.*(..))")
     public void webLog() {}
 
     @Before("webLog()")

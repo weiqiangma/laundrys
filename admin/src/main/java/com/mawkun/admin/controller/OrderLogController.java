@@ -6,7 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.OrderLogQuery;
 import com.mawkun.core.base.entity.OrderLog;
-import com.mawkun.core.service.OperateOrderLogServiceExt;
+import com.mawkun.core.service.OrderLogServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
@@ -27,30 +27,30 @@ import java.util.List;
  */
 @RestController
 @Api(tags={"订单操作日志接口"})
-@RequestMapping("/adm/operateOrderLog")
+@RequestMapping("/adm/orderLog")
 public class OrderLogController extends BaseController {
     
     @Autowired
-    private OperateOrderLogServiceExt operateOrderLogServiceExt;
+    private OrderLogServiceExt orderLogServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="订单日志详情", notes="订单日志详情")
     public JsonResult getById(Long id) {
-        OrderLog operateOrderLog = operateOrderLogServiceExt.getById(id);
+        OrderLog operateOrderLog = orderLogServiceExt.getById(id);
         return sendSuccess(operateOrderLog);
     }
 
     @GetMapping("/getByEntity")
     @ApiOperation(value="订单日志详情", notes="订单日志详情")
     public JsonResult getByEntity(OrderLog operateOrderLog) {
-        OrderLog resultLog = operateOrderLogServiceExt.getByEntity(operateOrderLog);
+        OrderLog resultLog = orderLogServiceExt.getByEntity(operateOrderLog);
         return sendSuccess(resultLog);
     }
 
     @GetMapping("/list")
     @ApiOperation(value="订单日志列表", notes="订单日志列表")
     public JsonResult list(OrderLog operateOrderLog) {
-        List<OrderLog> operateOrderLogList = operateOrderLogServiceExt.listByEntity(operateOrderLog);
+        List<OrderLog> operateOrderLogList = orderLogServiceExt.listByEntity(operateOrderLog);
         return sendSuccess(operateOrderLogList);
     }
 
@@ -60,25 +60,25 @@ public class OrderLogController extends BaseController {
         if(session.getShopId() > 0) {
             query.setShopId(session.getShopId());
         }
-        PageInfo<OrderLog> page = operateOrderLogServiceExt.pageList(query);
+        PageInfo<OrderLog> page = orderLogServiceExt.pageList(query);
         return sendSuccess(page);
     }
 
     @PostMapping("/insert")
     public JsonResult insert(OrderLog operateOrderLog){
-        operateOrderLogServiceExt.insert(operateOrderLog);
+        orderLogServiceExt.insert(operateOrderLog);
         return sendSuccess(operateOrderLog);
     }
 
     @PutMapping("/update")
     public JsonResult update(OrderLog operateOrderLog){
-        int result = operateOrderLogServiceExt.update(operateOrderLog);
+        int result = orderLogServiceExt.update(operateOrderLog);
         return sendSuccess(result);
     }
 
     @DeleteMapping("/delete")
     public JsonResult deleteOne(Long id){
-        int result = operateOrderLogServiceExt.deleteById(id);
+        int result = orderLogServiceExt.deleteById(id);
         return sendSuccess(result);
     }
 
@@ -93,7 +93,7 @@ public class OrderLogController extends BaseController {
                 return Convert.toInt(o, 0);
             }
         });
-        if (idList.size()>0) result = operateOrderLogServiceExt.deleteByIds(idList);
+        if (idList.size()>0) result = orderLogServiceExt.deleteByIds(idList);
         return sendSuccess(result);
     }
 

@@ -40,8 +40,8 @@ public class MemberCardController extends BaseController {
     @GetMapping("/list")
     @ApiOperation(value="会员卡列表", notes="会员卡列表")
     public JsonResult list(MemberCard memberCard) {
-        List<MemberCard> MemberCardList = memberCardService.listByEntity(memberCard);
-        return sendSuccess(MemberCardList);
+        List<MemberCard> memberCardList = memberCardService.listByEntity(memberCard);
+        return sendSuccess(memberCardList);
     }
 
     @PutMapping("/update")

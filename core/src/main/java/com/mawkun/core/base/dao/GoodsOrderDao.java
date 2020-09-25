@@ -12,22 +12,22 @@ import java.util.List;
  * @author mawkun
  * @date 2020-08-19 20:42:20
  */
-@Repository
+@Repository("goodsOrderDao")
 public interface GoodsOrderDao {
 
     GoodsOrder getById(@NotNull Long id);
 
-    List<GoodsOrder> listByEntity(GoodsOrder GoodsOrder);
+    List<GoodsOrder> listByEntity(GoodsOrder goodsOrder);
 
-    GoodsOrder getByEntity(GoodsOrder GoodsOrder);
+    GoodsOrder getByEntity(GoodsOrder goodsOrder);
 
     List<GoodsOrder> listByIds(@NotEmpty List<Long> list);
 
-    int insert(GoodsOrder GoodsOrder);
+    int insert(GoodsOrder goodsOrder);
 
     int insertBatch(@NotEmpty List<GoodsOrder> list);
 
-    int update(@NotNull GoodsOrder GoodsOrder);
+    int update(@NotNull GoodsOrder goodsOrder);
 
     int updateByField(@NotNull @Param("where") GoodsOrder where, @NotNull @Param("set") GoodsOrder set);
 

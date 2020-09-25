@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 @Service
 public class GoodsServiceExt extends GoodsService {
 
-    @Autowired
+    @Resource
     private GoodsDaoExt goodsDaoExt;
 
     public PageInfo pageByEntity(GoodsQuery query) {
@@ -55,17 +56,4 @@ public class GoodsServiceExt extends GoodsService {
     public List<Goods> getByName(String name) {
         return goodsDaoExt.selectByName(name);
     }
-
-    public Goods convertUnit(Goods goods) {
-        goods.setPrice(goods.getPrice());
-        return goods;
-    }
-
-    public List<Goods> convertUnit(List<Goods> list) {
-        for(Goods goods : list) {
-            goods.setPrice(goods.getPrice()/1000);
-        }
-        return list;
-    }
-
 }
