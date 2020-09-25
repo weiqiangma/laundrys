@@ -15,6 +15,7 @@ import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,21 +26,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class ShoppingCartServiceExt extends ShoppingCartService {
-    @Autowired
+    @Resource
     private ShoppingCartDaoExt shoppingCartDaoExt;
-    @Autowired
+    @Resource
     private SysParamDaoExt sysParamDaoExt;
-    @Autowired
-    private ShopDaoExt shopDaoExt;
-    @Autowired
+    @Resource
     private GoodsDaoExt goodsDaoExt;
-    @Autowired
-    private UserServiceExt userServiceExt;
-    @Autowired
-    private UserAddressServiceExt userAddressServiceExt;
-    @Autowired
-    private GoodsOrderServiceExt goodsOrderServiceExt;
-    @Autowired
+    @Resource
     private GaoDeApiServiceExt gaoDeApiServiceExt;
 
     /**

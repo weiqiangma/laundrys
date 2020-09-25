@@ -10,12 +10,13 @@ import com.mawkun.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
 public class AdminServiceExt extends AdminService {
 
-    @Autowired
+    @Resource
     AdminDaoExt adminDaoExt;
 
     public PageInfo pageByEntity(AdminQuery query) {

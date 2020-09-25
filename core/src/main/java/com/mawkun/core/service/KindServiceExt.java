@@ -11,12 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
 public class KindServiceExt extends KindService {
 
-    @Autowired
+    @Resource
     private KindDaoExt kindDaoExt;
 
     /**

@@ -12,6 +12,7 @@ import com.mawkun.core.dao.PayFlowDaoExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import java.util.List;
  */
 @Service
 public class PayFlowServiceExt extends PayFlowService {
-    @Autowired
+    @Resource
     private PayFlowDaoExt payFlowDaoExt;
 
     public int createPayFlow(User user, GoodsOrder order, Integer orderType) {

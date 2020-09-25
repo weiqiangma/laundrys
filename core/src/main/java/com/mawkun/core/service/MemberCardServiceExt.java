@@ -6,6 +6,8 @@ import com.mawkun.core.dao.MemberCardDaoExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * @author mawkun
  * @date 2020-09-17 22:42:31
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MemberCardServiceExt extends MemberCardService {
 
-    @Autowired
+    @Resource
     private MemberCardDaoExt memberCardDaoExt;
 
     public MemberCard findByIdAndStatus(Long cartId, Integer status) {

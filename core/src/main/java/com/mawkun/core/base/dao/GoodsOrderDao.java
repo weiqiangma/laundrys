@@ -12,7 +12,7 @@ import java.util.List;
  * @author mawkun
  * @date 2020-08-19 20:42:20
  */
-@Repository("goodsOrderDao")
+@Repository
 public interface GoodsOrderDao {
 
     GoodsOrder getById(@NotNull Long id);

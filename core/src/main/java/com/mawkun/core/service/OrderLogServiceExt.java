@@ -9,6 +9,7 @@ import com.mawkun.core.dao.OrderLogDaoExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
  */
 @Service
 public class OrderLogServiceExt extends OrderLogService {
-    @Autowired
+    @Resource
     private OrderLogDaoExt orderLogDaoExt;
 
     public PageInfo<OrderLog> pageList(OrderLogQuery query) {

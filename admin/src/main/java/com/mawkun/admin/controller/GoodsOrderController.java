@@ -28,12 +28,12 @@ import java.util.List;
  * @date 2020-08-19 21:43:45
  */
 @RestController
-@RequestMapping("/adm/orderForm")
+@RequestMapping("/adm/goodsOrder")
 @Api(tags={"订单操作接口"})
 public class GoodsOrderController extends BaseController {
     
     @Resource
-    private GoodsOrderServiceExt goodsOrderServiceExt;
+    GoodsOrderServiceExt goodsOrderServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="根据id获取订单", notes="根据id获取订单")

@@ -9,14 +9,15 @@ import com.mawkun.core.dao.OrderClothesDaoExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class OrderClothesServiceExt extends OrderClothesService {
-    @Autowired
+    @Resource
     private GoodsDaoExt goodsDaoExt;
-    @Autowired
+    @Resource
     private OrderClothesDaoExt orderClothesDaoExt;
 
     public int addByShoppingCarts(List<ShoppingCart> list, Long orderId) {

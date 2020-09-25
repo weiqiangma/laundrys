@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author js
  */
-@Repository("goodsOrderDaoExt")
+@Repository
 public interface GoodsOrderDaoExt extends GoodsOrderDao {
 
     /**
