@@ -1,6 +1,7 @@
 package com.mawkun.core.base.data.query;
 
 import com.mawkun.core.base.entity.GoodsOrder;
+import com.mawkun.core.base.entity.OrderClothes;
 import lombok.Data;
 
 import java.util.Date;

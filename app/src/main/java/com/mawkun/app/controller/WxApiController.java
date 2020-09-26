@@ -13,6 +13,7 @@ import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.entity.*;
 import com.mawkun.core.service.*;
 import com.mawkun.core.spring.annotation.LoginedAuth;
+import com.mawkun.core.utils.TimeUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +25,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +46,7 @@ public class WxApiController extends BaseController {
     private String macId;
     @Value("${wx.pay.goods.notifyUrl}")
     private String goodsNotifyUrl;
-    @Value("{wx.pay.invest.notifyUrl}")
+    @Value("${wx.pay.invest.notifyUrl}")
     private String investNotifyUrl;
 
     @Autowired
@@ -86,47 +85,54 @@ public class WxApiController extends BaseController {
         return sendSuccess(object);
     }
 
+
     @PostMapping("/wxPayCallBack")
-    @ApiOperation(value="小程序下单支付回调", notes="小程序下单支付回调")
-    public String wxPayCallBack(HttpServletRequest request) {
+    @ApiOperation(value = "小程序下单支付回调", notes = "小程序下单支付回调")
+    public void wxPayCallBack(HttpServletRequest request, HttpServletResponse response) {
+        String result = "<xml><return_code>FAIL</return_code><return_msg>接口请求错误/return_msg></xml>";
         Map<String, String> map = getResultFromWx(request);
         String returnCode = map.get("return_code");
         String appId = map.get("appid");
-        String mchid = map.get("mchid");
-        if (StringUtils.equals(returnCode, Constant.WX_RETURN_SUCCESS) && StringUtils.equals(appId,AppId) && StringUtils.equals(mchid, macId)) {
-            /**
-             * 1.判断支付方式，如果是余额支付，减去用户对应余额并更新
-             * 如果直接微信支付，直接更新用户状态
-             */
-            String orderNo = map.get("out_trade_no");
-            String timeEnd = map.get("time_end");
-            String totalFee = map.get("total_fee");
-            Date payTime = new Date();
-            try {
-                payTime = DateUtils.parse("yyyy-MM-dd HH:mm:ss", timeEnd);
-            } catch (Exception e) {
-                e.printStackTrace();
+        String mchid = map.get("mch_id");
+        try {
+            OutputStream outputStream = response.getOutputStream();
+            if (StringUtils.equals(returnCode, Constant.WX_RETURN_SUCCESS) && StringUtils.equals(appId, AppId) && StringUtils.equals(mchid, macId)) {
+                /**
+                 * 1.判断支付方式，如果是余额支付，减去用户对应余额并更新
+                 * 如果直接微信支付，直接更新用户状态
+                 */
+                String orderNo = map.get("out_trade_no");
+                String timeEnd = map.get("time_end");
+                String totalFee = map.get("total_fee");
+                Date payTime = TimeUtils.convertWeiXinTime(timeEnd);
+                GoodsOrder orderForm = goodsOrderServiceExt.getByOrderNo(orderNo);
+                //如果订单状态还是待支付，更新订单状态
+                if (orderForm.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                    User user = userServiceExt.getById(orderForm.getUserId());
+                    //如果是余额支付,减去支付费用并更新
+                    if (orderForm.getPayKind() == Constant.PAY_WITH_REMAINDER) {
+                        user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
+                        userServiceExt.update(user, null);
+                    }
+                    //更新订单
+                    orderForm.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
+                    orderForm.setPayTime(payTime);
+                    orderForm.setUpdateTime(new Date());
+                    orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
+                    UserSession session = new UserSession(user);
+                    goodsOrderServiceExt.update(session, orderForm);
+                    //生成支付流水
+                    payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
+                    //发送通知
+                    String accessToken = wxApiServiceExt.getAccessToken();
+                }
+                result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
+            } else {
+                result = "<xml><return_code>FAIL</return_code><return_msg>接口请求错误/return_msg></xml>";
             }
-            GoodsOrder orderForm = goodsOrderServiceExt.getByOrderSerialAndStatus(orderNo, Constant.ORDER_STATUS_WAITING_PAY);
-            User user = userServiceExt.getById(orderForm.getUserId());
-            //如果是余额支付,减去支付费用并更新
-            if(orderForm.getPayKind() == Constant.PAY_WITH_REMAINDER) {
-                user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
-                userServiceExt.update(user, null);
-            }
-            //更新订单
-            orderForm.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
-            orderForm.setPayTime(payTime);
-            orderForm.setUpdateTime(new Date());
-            orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
-            goodsOrderServiceExt.update(null, orderForm);
-            //生成支付流水
-            payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
-            //发送通知
-            String accessToken = wxApiServiceExt.getAccessToken();
-            return "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
-        } else {
-            return "<xml><return_code>FAIL</return_code><return_msg>接口请求错误/return_msg></xml>";
+            outputStream.write(result.getBytes("UTF-8"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -161,7 +167,7 @@ public class WxApiController extends BaseController {
             String totalFee = object.getString("total_fee");
             Date payTime = new Date();
             try {
-                payTime = DateUtils.parse("yyyy-MM-dd HH:mm:ss", timeEnd);
+                payTime = TimeUtils.convertWeiXinTime(timeEnd);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -210,10 +216,10 @@ public class WxApiController extends BaseController {
     }
 
     @ResponseBody
-    @PostMapping("/api/wxApi/rechargetMoney")
+    @PostMapping("/api/wxApi/rechargeMoney")
     @ApiOperation(value = "小程序充值接口", notes = "小程序充值接口")
-    public JsonResult rechargetMoney(@LoginedAuth UserSession session,Integer type, Long cardId, Long money) {
-        JSONObject object = new JSONObject();
+    public JsonResult rechargeMoney(@LoginedAuth UserSession session,Integer type, Long cardId, Long money) {
+         JSONObject object = new JSONObject();
         if(type == null) {
             return sendArgsError("请选择充值方式");
         }
@@ -239,30 +245,54 @@ public class WxApiController extends BaseController {
 
     @PostMapping("/rechargeCallBack")
     @ApiOperation(value = "小程序充值回调", notes = "小程序充值回调")
-    public String rechargeCallBack(HttpServletRequest request, HttpServletResponse response) {
+    public void rechargeCallBack(HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> map = getResultFromWx(request);
+        String result = "<xml><return_code>FAIL</return_code><return_msg>接口请求错误/return_msg></xml>";
         String returnCode = map.get("return_code");
         String appId = map.get("appid");
-        String mchid = map.get("mchid");
-        if (StringUtils.equals(returnCode, Constant.WX_RETURN_SUCCESS) && StringUtils.equals(appId, AppId) && StringUtils.equals(mchid, macId)) {
-            //更新用户充值订单状态
-            String orderNo = map.get("out_trade_no");
-            InvestOrder investOrder = investOrderServiceExt.getByOrderNo(orderNo);
-            investOrder.setStatus(Constant.ORDER_STATUS_SURE_TAKE);
-            investOrderServiceExt.update(investOrder);
-            //更新用户余额
-            User user = userServiceExt.getById(investOrder.getUserId());
-            Long sumOfMoney = user.getSumOfMoney() +investOrder.getAmountMoney();
-            user.setSumOfMoney(sumOfMoney);
-            userServiceExt.update(user, null);
-            //生成支付流水
-            payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_GOODS);
-            return "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
-        } else {
-            return "<xml><return_code>FAIL</return_code><return_msg>接口请求错误/return_msg></xml>";
+        String mchid = map.get("mch_id");
+        String timeEnd = map.get("time_end");
+        String openId = map.get("openid");
+        try {
+            OutputStream outputStream = response.getOutputStream();
+            Date payTime = TimeUtils.convertWeiXinTime(timeEnd);
+            if (StringUtils.equals(returnCode, Constant.WX_RETURN_SUCCESS) && StringUtils.equals(appId, AppId) && StringUtils.equals(mchid, macId)) {
+                String orderNo = map.get("out_trade_no");
+                InvestOrder order = investOrderServiceExt.getByOrderNo(orderNo);
+                //如果订单还是待支付状态就更新订单状态
+                if(order.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                    //更新用户充值订单状态
+                    InvestOrder investOrder = investOrderServiceExt.getByOrderNo(orderNo);
+                    investOrder.setStatus(Constant.ORDER_STATUS_SURE_TAKE);
+                    investOrder.setPayTime(payTime);
+                    investOrderServiceExt.update(investOrder);
+                    //更新用户余额
+                    User user = userServiceExt.getById(investOrder.getUserId());
+                    Long sumOfMoney = user.getSumOfMoney() + investOrder.getAmountMoney();
+                    user.setSumOfMoney(sumOfMoney);
+                    userServiceExt.update(user, null);
+                    //生成支付流水
+                    payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_GOODS);
+                    //发送通知
+                    JSONObject object = new JSONObject();
+                    object.put("name1",user.getUserName());
+                    object.put("time2",payTime);
+                    object.put("amount3", investOrder.getAmountMoney());
+                    object.put("amount4", investOrder.getInvestMoney());
+                    object.put("amount5", investOrder.getResiduemoney());
+                    wxApiServiceExt.sendPaySuccessMsg(user.getOpenId(), object.toJSONString());
+                    result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
+                } else {
+                    result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
+                }
+            }
+            outputStream.write(result.getBytes("UTF-8"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
+    @ResponseBody
     @PostMapping("/api/wxApi/checkRechargeOrderStatus")
     @ApiOperation(value = "检查充值订单状态", notes = "检查充值订单状态")
     public JsonResult checkRechargeOrderStatus(@LoginedAuth UserSession session, String orderNo) {
@@ -272,9 +302,9 @@ public class WxApiController extends BaseController {
         }
         InvestOrder investOrder = investOrderServiceExt.getByOrderNoAndStatus(orderNo, Constant.ORDER_STATUS_WAITING_PAY);
         if(investOrder == null) {
-            return sendArgsError("未查询到该充值订单");
+            return sendSuccess(investOrder);
         }
-        if(user.getId().equals(investOrder.getUserId())) {
+        if(!user.getId().equals(investOrder.getUserId())) {
             return sendArgsError("非下单用户无权编辑");
         }
         JSONObject object = wxApiServiceExt.getOrderStatus(investOrder.getOrderNo());
@@ -286,7 +316,7 @@ public class WxApiController extends BaseController {
             String totalFee = object.getString("total_fee");
             Date payTime = new Date();
             try {
-                payTime = DateUtils.parse("yyyy-MM-dd HH:mm:ss", timeEnd);
+                payTime = TimeUtils.convertWeiXinTime(timeEnd);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -96,6 +96,9 @@ public class UserServiceExt extends UserService {
         investOrderServiceExt.update(investOrder);
         //调用微信接口生成支付参数供前端调用
         JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD, notifyUrl);
+        if(object != null) {
+            object.put("orderNo", orderNo);
+        }
         return object;
     }
 
@@ -113,6 +116,9 @@ public class UserServiceExt extends UserService {
         investOrderServiceExt.update(investLog);
         //调用微信接口生成支付参数供前端调用
         JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD, notifyUrl);
+        if(object != null) {
+            object.put("orderNo", orderNo);
+        }
         return object;
     }
 }

@@ -8,7 +8,7 @@
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
         <result property="realName" column="real_name" jdbcType="VARCHAR"/>
         <result property="password" column="password" jdbcType="VARCHAR"/>
-        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
         <result property="level" column="level" jdbcType="OTHER"/>
         <result property="status" column="status" jdbcType="OTHER"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
@@ -16,7 +16,7 @@
     </resultMap>
 
     <sql id="table_field">
-      id, shop_id, user_name, real_name, password, phone, level, status, update_time, create_time      
+      id, shop_id, user_name, real_name, password, mobile, level, status, update_time, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -41,16 +41,16 @@
                 and shop_id = #{shopId,jdbcType=INTEGER}
             </if>
             <if test="userName != null">
-                and user_name like #{userName,jdbcType=VARCHAR}
+                and user_name = #{userName,jdbcType=VARCHAR}
             </if>
             <if test="realName != null">
-                and real_name like #{realName,jdbcType=VARCHAR}
+                and real_name = #{realName,jdbcType=VARCHAR}
             </if>
             <if test="password != null">
                 and password = #{password,jdbcType=VARCHAR}
             </if>
-            <if test="phone != null">
-                and phone like #{phone,jdbcType=VARCHAR}
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
             </if>
             <if test="level != null">
                 and level = #{level,jdbcType=OTHER}
@@ -88,8 +88,8 @@
             <if test="password != null">
                 and password = #{password,jdbcType=VARCHAR}
             </if>
-            <if test="phone != null">
-                and phone = #{phone,jdbcType=VARCHAR}
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
             </if>
             <if test="level != null">
                 and level = #{level,jdbcType=OTHER}
@@ -136,8 +136,8 @@
           <if test="password != null">
              password,
           </if>
-          <if test="phone != null">
-             phone,
+          <if test="mobile != null">
+             mobile,
           </if>
           <if test="level != null">
              level,
@@ -168,8 +168,8 @@
           <if test="password != null">
              #{password,jdbcType=VARCHAR},
           </if>
-          <if test="phone != null">
-             #{phone,jdbcType=VARCHAR},
+          <if test="mobile != null">
+             #{mobile,jdbcType=VARCHAR},
           </if>
           <if test="level != null">
              #{level,jdbcType=OTHER},
@@ -189,10 +189,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into admin
-         (id, shop_id, user_name, real_name, password, phone, level, status, update_time, create_time)
+         (id, shop_id, user_name, real_name, password, mobile, level, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR}, #{item.phone,jdbcType=VARCHAR}, #{item.level,jdbcType=OTHER}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.password,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.level,jdbcType=OTHER}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -212,8 +212,8 @@
             <if test="password != null and password != ''">
                 password = #{password,jdbcType=VARCHAR},
             </if>
-            <if test="phone != null and phone != ''">
-                phone = #{phone,jdbcType=VARCHAR},
+            <if test="mobile != null and mobile != ''">
+                mobile = #{mobile,jdbcType=VARCHAR},
             </if>
             <if test="level != null">
                 level = #{level,jdbcType=OTHER},
@@ -247,8 +247,8 @@
             <if test="where.password == null and set.password != null and set.password != ''">
                 password = #{set.password,jdbcType=VARCHAR},
             </if>
-            <if test="where.phone == null and set.phone != null and set.phone != ''">
-                phone = #{set.phone,jdbcType=VARCHAR},
+            <if test="where.mobile == null and set.mobile != null and set.mobile != ''">
+                mobile = #{set.mobile,jdbcType=VARCHAR},
             </if>
             <if test="where.level == null and set.level != null">
                 level = #{set.level,jdbcType=OTHER},
@@ -279,8 +279,8 @@
             <if test="where.password != null">
                 and password = #{where.password,jdbcType=VARCHAR}
             </if>
-            <if test="where.phone != null">
-                and phone = #{where.phone,jdbcType=VARCHAR}
+            <if test="where.mobile != null">
+                and mobile = #{where.mobile,jdbcType=VARCHAR}
             </if>
             <if test="where.level != null">
                 and level = #{where.level,jdbcType=OTHER}
@@ -321,9 +321,9 @@
                   when id = #{item.id} then #{item.password}
                  </foreach>
             </trim>
-            <trim prefix="phone = case" suffix="end,">
+            <trim prefix="mobile = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
-                  when id = #{item.id} then #{item.phone}
+                  when id = #{item.id} then #{item.mobile}
                  </foreach>
             </trim>
             <trim prefix="level = case" suffix="end,">
@@ -374,8 +374,8 @@
             <if test="password != null">
                 and password = #{password,jdbcType=VARCHAR}
             </if>
-            <if test="phone != null">
-                and phone = #{phone,jdbcType=VARCHAR}
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
             </if>
             <if test="level != null">
                 and level = #{level,jdbcType=OTHER}
@@ -422,8 +422,8 @@
             <if test="password != null">
                 and password = #{password,jdbcType=VARCHAR}
             </if>
-            <if test="phone != null">
-                and phone = #{phone,jdbcType=VARCHAR}
+            <if test="mobile != null">
+                and mobile = #{mobile,jdbcType=VARCHAR}
             </if>
             <if test="level != null">
                 and level = #{level,jdbcType=OTHER}

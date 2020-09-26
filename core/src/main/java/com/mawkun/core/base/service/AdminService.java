@@ -81,4 +81,9 @@ public class AdminService {
         return adminDao.countByEntity(admin);
     }
 
+    public static void main(String[] args) {
+        String password = CryptUtils.md5Safe("123456");
+        System.out.println(password);
+    }
+
 }

@@ -8,7 +8,7 @@
         ifnull( SUM( real_amount ), 0 ) amount,
         DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
         FROM
-        order_form ofm
+        goods_order ofm
         LEFT JOIN shop ON ofm.shop_id = shop.id
         <where>
             <if test="startTime != null and endTime != null">
@@ -31,7 +31,7 @@
             ,shop.shop_name shopName
         </if>
         FROM
-        order_form ofm
+        goods_order ofm
         LEFT JOIN shop ON ofm.shop_id = shop.id
         <where>
             <if test="startTime != null and endTime != null">
@@ -56,6 +56,7 @@
         <result column="transport_fee" property="transportFee"/>
         <result column="shop_name" property="shopName"/>
         <result column="user_address" property="userAddress"/>
+        <result column="mobile" property="mobile"/>
         <result column="customerName" property="customerName"/>
         <result column="distributorName" property="distributorName"/>
         <result column="create_time" property="createTime"/>
@@ -76,9 +77,10 @@
         ifnull(ofm.transport_fee,0) transport_fee,
         shop.shop_name,
         cus.real_name customerName,
+        cus.mobile,
         dis.real_name distributorName
     FROM
-        order_form ofm
+        goods_order ofm
         left JOIN `user` cus on ofm.user_id =cus.id
         LEFT JOIN `user` dis on ofm.distributor_id=dis.id
         left join shop on ofm.shop_id = shop.id
@@ -97,40 +99,44 @@
         <result property="realAmount" column="real_amount" jdbcType="NUMERIC"/>
         <result property="totalAmount" column="total_amount" jdbcType="NUMERIC"/>
         <result property="transportWay" column="transport_way" jdbcType="INTEGER"/>
+        <result property="userAddress" column="user_address"/>
+        <result property="userName" column="user_name"/>
+        <result property="mobile" column="mobile"/>
+        <result property="transportFee" column="transport_fee"/>
         <result property="type" column="type"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
     <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
-        select order_form.*, shop.shop_name from order_form left join  shop on order_form.shop_id = shop.id
+        select goods_order.*, user.mobile from goods_order left join user on goods_order.user_id = user.id
         <where>
             <if test="id != null and id > 0">
-                and order_form.id = #{id}
+                and goods_order.id = #{id}
             </if>
             <if test="transportWay != null">
-                and order_form.transport_way = #{transportWay}
+                and goods_order.transport_way = #{transportWay}
             </if>
             <if test="status != null">
-                and order_form.status = #{status}
+                and goods_order.status = #{status}
             </if>
             <if test="orderNo != null and orderNo != ''">
-                and order_form.order_no like #{orderNo}
+                and goods_order.order_no like #{orderNo}
             </if>
             <if test="shopName != null and shopName != ''">
-                and order_form.shopName like #{shopName}
+                and goods_order.shopName like #{shopName}
             </if>
             <if test="userId != null and userId > 0">
-                and order_form.user_id = #{userId}
+                and goods_order.user_id = #{userId}
             </if>
             <if test="shopIdList != null">
-                and order_form.shop_id in
+                and goods_order.shop_id in
                 <foreach item="item" index="index" collection="shopIdList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="createTime != null">
-                and DATE_FORMAT( order_form.create_time, '%Y-%m-%d' ) = DATE_FORMAT( #{createTime}, '%Y-%m-%d' )
+                and DATE_FORMAT( goods_order.create_time, '%Y-%m-%d' ) = DATE_FORMAT( #{createTime}, '%Y-%m-%d' )
             </if>
         </where>
-        order by order_form.create_time desc
+        order by goods_order.create_time desc
     </select>
 </mapper>

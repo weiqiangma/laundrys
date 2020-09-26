@@ -10,6 +10,7 @@ import java.util.List;
 public class GoodsOrderVo extends GoodsOrder {
 
     private String customerName;        //客户姓名
+    private String mobile;
     private String distributorName;     //配送员姓名
     private String shopName;
     private Double amount;

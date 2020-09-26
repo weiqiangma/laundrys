@@ -26,7 +26,7 @@ public class OrderClothesServiceExt extends OrderClothesService {
         for(ShoppingCart cart : list) {
             Goods goods = goodsDaoExt.getById(cart.getGoodsId());
             OrderClothes orderClothes = new OrderClothes();
-            orderClothes.setOrderFormId(orderId);
+            orderClothes.setOrderId(orderId);
             orderClothes.setGoodsId(goods.getId());
             orderClothes.setGoodsName(goods.getGoodsName());
             orderClothes.setGoodsNum(cart.getGoodsNum());
@@ -39,7 +39,7 @@ public class OrderClothesServiceExt extends OrderClothesService {
 
     public List<OrderClothes> getByOrderId(Long orderId) {
         OrderClothes clothes = new OrderClothes();
-        clothes.setOrderFormId(orderId);
+        clothes.setOrderId(orderId);
         return orderClothesDaoExt.listByEntity(clothes);
     }
 

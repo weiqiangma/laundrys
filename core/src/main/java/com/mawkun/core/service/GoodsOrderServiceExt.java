@@ -3,6 +3,7 @@ package com.mawkun.core.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.dao.GoodsOrderDao;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
@@ -30,6 +31,8 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
     @Resource
     GoodsOrderDaoExt goodsOrderDaoExt;
     @Resource
+    GoodsOrderDao goodsOrderDao;
+    @Resource
     UserDaoExt userDaoExt;
     @Resource
     ShopUserDaoExt shopUserDaoExt;
@@ -55,6 +58,10 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
             query.setShopName("%" + query.getShopName() + "%");
         }
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
+        for(GoodsOrderVo orderVo : list) {
+            List<OrderClothes> orderClothes = orderClothesServiceExt.getByOrderId(orderVo.getId());
+            orderVo.setList(orderClothes);
+        }
         return new PageInfo<>(list);
     }
 
@@ -74,6 +81,10 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         query.setCreateTime(new Date());
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
+        for(GoodsOrderVo orderVo : list) {
+            List<OrderClothes> orderClothes  = orderClothesServiceExt.getByOrderId(orderVo.getId());
+            orderVo.setList(orderClothes);
+        }
         return new PageInfo<>(list);
     }
 
@@ -85,8 +96,14 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
     public GoodsOrder getByOrderSerialAndStatus(String orderNo, Integer status) {
         GoodsOrder goodsOrder = new GoodsOrder();
         goodsOrder.setOrderNo(orderNo);
-        goodsOrder.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
-        return goodsOrderDaoExt.getByEntity(goodsOrder);
+        goodsOrder.setStatus(status);
+        return goodsOrderDao.getByEntity(goodsOrder);
+    }
+
+    public GoodsOrder getByOrderNo(String orderNo) {
+        GoodsOrder goodsOrder = new GoodsOrder();
+        goodsOrder.setOrderNo(orderNo);
+        return goodsOrderDao.getByEntity(goodsOrder);
     }
 
     /**
@@ -105,7 +122,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         GoodsOrder order = new GoodsOrder();
         order.setId(id);
         order.setUserId(userId);
-        return goodsOrderDaoExt.getByEntity(order);
+        return goodsOrderDao.getByEntity(order);
     }
 
     /**
@@ -116,12 +133,13 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
      * @param resultAmount
      */
     @Transactional(rollbackFor = Exception.class)
-    public int generateOrderForm(User user, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
+    public int generateOrderForm(User user, Shop shop, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
         int result = -1;
         //生成订单
         GoodsOrder form = new GoodsOrder();
         form.setUserId(user.getId());
-        form.setShopId(query.getShopId());
+        form.setShopName(shop.getShopName());
+        form.setShopId(shop.getId());
         if(address != null) {
             form.setAddressId(address.getId());
         }
@@ -141,14 +159,14 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         form.setPayKind(Constant.PAY_WITH_WEIXIN);
         form.setUpdateTime(new Date());
         form.setCreateTime(new Date());
-        int orderKey = goodsOrderDaoExt.insert(form);
+        int orderKey = goodsOrderDao.insert(form);
         if(orderKey < 1) {
             throw new Exception("订单插入失败");
         }
         //根据时间+主键生成订单
         String orderSerial = StringUtils.createOrderFormNo(String.valueOf(form.getId()));
         form.setOrderNo(orderSerial);
-        result = goodsOrderDaoExt.update(form);
+        result = goodsOrderDao.update(form);
         if(result < 1) {
             throw new Exception("生成订单号失败");
         }
@@ -188,7 +206,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
          * 2.生成订单操作记录
          */
         order.setStatus(Constant.ORDER_STATUS_SURE_REAP);
-        goodsOrderDaoExt.update(order);
+        goodsOrderDao.update(order);
         return orderLogServiceExt.createWaitingPayOrder(session.getId(), session.getUserName(), order.getId(), Constant.USER_TYPE_DISTRIBUTOR, Constant.ORDER_STATUS_SURE_REAP, "确认收货", description);
     }
 

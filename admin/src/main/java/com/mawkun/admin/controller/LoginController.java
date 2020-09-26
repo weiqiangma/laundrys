@@ -56,7 +56,7 @@ public class LoginController extends BaseController {
         JSONObject item = new JSONObject();
         item.put("id", admin.getId());
         item.put("shopId", admin.getShopId());
-        item.put("mobile", admin.getPhone());
+        item.put("mobile", admin.getMobile());
         item.put("realName", admin.getRealName());
         item.put("token", token);
         UserSession session = new UserSession(token, admin);

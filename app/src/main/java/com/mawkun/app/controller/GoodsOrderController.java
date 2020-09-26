@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * @date 2020-08-19 21:43:45
  */
 @RestController
-@RequestMapping("/api/orderForm")
+@RequestMapping("/api/goodsOrder")
 @Api(tags={"订单操作接口"})
 public class GoodsOrderController extends BaseController {
     
@@ -226,7 +226,7 @@ public class GoodsOrderController extends BaseController {
         return sendSuccess(page);
     }
 
-    @GetMapping("/orderTaking")
+    @PostMapping("/orderTaking")
     @ApiOperation(value="配送员确认订单", notes="配送员确认订单")
     public JsonResult orderTaking(@LoginedAuth UserSession session, Long orderId, String description) {
         if(!session.isDistributor()) {

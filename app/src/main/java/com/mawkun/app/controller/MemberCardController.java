@@ -2,6 +2,7 @@ package com.mawkun.app.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.service.MemberCardService;
 import io.swagger.annotations.Api;
@@ -40,6 +41,7 @@ public class MemberCardController extends BaseController {
     @GetMapping("/list")
     @ApiOperation(value="会员卡列表", notes="会员卡列表")
     public JsonResult list(MemberCard memberCard) {
+        memberCard.setStatus(Constant.MEMBER_CART_ON);
         List<MemberCard> memberCardList = memberCardService.listByEntity(memberCard);
         return sendSuccess(memberCardList);
     }

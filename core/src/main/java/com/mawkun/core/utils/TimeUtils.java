@@ -4,6 +4,7 @@ import cn.pertech.common.utils.DateUtils;
 import cn.pertech.common.utils.NumberUtils;
 
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -269,4 +270,32 @@ public class TimeUtils {
         if(minute == 0) mite = "00";
         return  hour + ":" + mite;
     }
+
+    public static Date convertWeiXinTime(String wxTime) throws ParseException {
+        String year = wxTime.substring(0,4);
+        String month = wxTime.substring(4, 6);
+        String day = wxTime.substring(6, 8);
+        String hour = wxTime.substring(8, 10);
+        String minute = wxTime.substring(10, 12);
+        String second = wxTime.substring(12, 14);
+        String time = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+        Date resultTime = DateUtils.parse("yyyy-MM-dd HH:mm:ss", time);
+        return resultTime;
+    }
+
+    public static void main(String[] args) throws ParseException {
+        String sTime ="20200926125506";
+        String year = sTime.substring(0,4);
+        String month = sTime.substring(4, 6);
+        String day = sTime.substring(6, 8);
+        String hour = sTime.substring(8, 10);
+        String minute = sTime.substring(10, 12);
+        String second = sTime.substring(12, 14);
+        StringBuilder builder = new StringBuilder();
+        builder.append(year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second);
+        String time = builder.toString();
+        Date lTime = DateUtils.parse("yyyy-MM-dd HH:mm:ss", time);
+        System.out.println(lTime);
+    }
+
 }

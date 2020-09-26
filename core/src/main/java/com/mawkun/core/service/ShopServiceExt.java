@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,13 +33,13 @@ import java.util.stream.Collectors;
 @Service
 public class ShopServiceExt extends ShopService {
 
-    @Autowired
+    @Resource
     private ShopDaoExt shopDaoExt;
-    @Autowired
+    @Resource
     private UserAddressServiceExt userAddressServiceExt;
-    @Autowired
-    private GoodsOrderDaoExt orderFormDaoExt;
-    @Autowired
+    @Resource
+    private GoodsOrderDaoExt goodsOrderDaoExt;
+    @Resource
     private GaoDeApiServiceExt gaoDeApiServiceExt;
 
     /**
@@ -49,7 +50,9 @@ public class ShopServiceExt extends ShopService {
      */
     public int insertWithPic(Shop shop, MultipartFile[] files) {
         String image = ImageUtils.uploadImages(files);
+        String location = shop.getLongitude() + "," + shop.getLatitude();
         shop.setPicture(image);
+        shop.setLocation(location);
         shop.setCreateTime(new Date());
         shop.setUpdateTime(new Date());
         return shopDaoExt.insert(shop);
@@ -80,6 +83,10 @@ public class ShopServiceExt extends ShopService {
             }
             shop.setPicture(images);
         }
+        if(StringUtils.isNotEmpty(shop.getLongitude())) {
+            String location = shop.getLongitude() + "," + shop.getLatitude();
+            shop.setLocation(location);
+        }
         return shopDaoExt.update(shop);
     }
 
@@ -90,7 +97,8 @@ public class ShopServiceExt extends ShopService {
      */
     public JSONArray statsShopIncome(StateQuery query) {
         fillQueryData(query);
-        List<GoodsOrderVo> list = orderFormDaoExt.statsShopIncome(query);
+        //List<GoodsOrderVo> list = orderFormDaoExt.statsShopIncome(query);
+        List<GoodsOrderVo> list = new ArrayList<>();
         //根据type进行分组
         Map<String, GoodsOrderVo> dataMap = list.stream().collect(Collectors.toMap(GoodsOrderVo::getType, m->m));
         Date sTime = query.getStartTime();
@@ -129,7 +137,7 @@ public class ShopServiceExt extends ShopService {
      */
     public JSONArray statsShopOrder(StateQuery query) {
         fillQueryData(query);
-        List<ShopOrderData> list = orderFormDaoExt.statsShopOrder(query);
+        List<ShopOrderData> list = goodsOrderDaoExt.statsShopOrder(query);
         //根据type进行分组
         Map<String, ShopOrderData> dataMap = list.stream().collect(Collectors.toMap(ShopOrderData::getType, m->m));
         Date sTime = query.getStartTime();

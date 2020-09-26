@@ -4,7 +4,7 @@
 
     <resultMap type="com.mawkun.core.base.entity.OrderClothes" id="OrderClothesResultMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="orderFormId" column="order_form_id" jdbcType="INTEGER"/>
+        <result property="orderId" column="order_id" jdbcType="INTEGER"/>
         <result property="goodsId" column="goods_id" jdbcType="INTEGER"/>
         <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
         <result property="goodsPicture" column="goods_picture" jdbcType="VARCHAR"/>
@@ -14,7 +14,7 @@
     </resultMap>
 
     <sql id="table_field">
-      id, order_form_id, goods_id, goods_name, goods_picture, goods_num, goods_price, create_time      
+      id, order_id, goods_id, goods_name, goods_picture, goods_num, goods_price, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -35,8 +35,8 @@
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
             </if>
-            <if test="orderFormId != null">
-                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
             </if>
             <if test="goodsId != null">
                 and goods_id = #{goodsId,jdbcType=INTEGER}
@@ -68,8 +68,8 @@
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
             </if>
-            <if test="orderFormId != null">
-                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
             </if>
             <if test="goodsId != null">
                 and goods_id = #{goodsId,jdbcType=INTEGER}
@@ -110,8 +110,8 @@
           <if test="id != null">
              id,
           </if>
-          <if test="orderFormId != null">
-             order_form_id,
+          <if test="orderId != null">
+             order_id,
           </if>
           <if test="goodsId != null">
              goods_id,
@@ -136,8 +136,8 @@
           <if test="id != null">
              #{id,jdbcType=INTEGER},
           </if>
-          <if test="orderFormId != null">
-             #{orderFormId,jdbcType=INTEGER},
+          <if test="orderId != null">
+             #{orderId,jdbcType=INTEGER},
           </if>
           <if test="goodsId != null">
              #{goodsId,jdbcType=INTEGER},
@@ -163,10 +163,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into order_clothes
-         (id, order_form_id, goods_id, goods_name, goods_picture, goods_num, goods_price, create_time)
+         (id, order_id, goods_id, goods_name, goods_picture, goods_num, goods_price, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.orderFormId,jdbcType=INTEGER}, #{item.goodsId,jdbcType=INTEGER}, #{item.goodsName,jdbcType=VARCHAR}, #{item.goodsPicture,jdbcType=VARCHAR}, #{item.goodsNum,jdbcType=INTEGER}, #{item.goodsPrice,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.orderId,jdbcType=INTEGER}, #{item.goodsId,jdbcType=INTEGER}, #{item.goodsName,jdbcType=VARCHAR}, #{item.goodsPicture,jdbcType=VARCHAR}, #{item.goodsNum,jdbcType=INTEGER}, #{item.goodsPrice,jdbcType=INTEGER}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -174,8 +174,8 @@
     <update id="update" parameterType="com.mawkun.core.base.entity.OrderClothes">
         update order_clothes
         <set>
-            <if test="orderFormId != null">
-                order_form_id = #{orderFormId,jdbcType=INTEGER},
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=INTEGER},
             </if>
             <if test="goodsId != null">
                 goods_id = #{goodsId,jdbcType=INTEGER},
@@ -203,8 +203,8 @@
     <update id="updateByField">
         update order_clothes
         <set>
-            <if test="where.orderFormId == null and set.orderFormId != null">
-                order_form_id = #{set.orderFormId,jdbcType=INTEGER},
+            <if test="where.orderId == null and set.orderId != null">
+                order_id = #{set.orderId,jdbcType=INTEGER},
             </if>
             <if test="where.goodsId == null and set.goodsId != null">
                 goods_id = #{set.goodsId,jdbcType=INTEGER},
@@ -229,8 +229,8 @@
             <if test="where.id != null">
                 and id = #{where.id,jdbcType=INTEGER}
             </if>
-            <if test="where.orderFormId != null">
-                and order_form_id = #{where.orderFormId,jdbcType=INTEGER}
+            <if test="where.orderId != null">
+                and order_id = #{where.orderId,jdbcType=INTEGER}
             </if>
             <if test="where.goodsId != null">
                 and goods_id = #{where.goodsId,jdbcType=INTEGER}
@@ -257,9 +257,9 @@
     <update id="updateBatch" parameterType="list">
         update order_clothes
         <trim prefix="set" suffixOverrides=",">
-            <trim prefix="order_form_id = case" suffix="end,">
+            <trim prefix="order_id = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
-                  when id = #{item.id} then #{item.orderFormId}
+                  when id = #{item.id} then #{item.orderId}
                  </foreach>
             </trim>
             <trim prefix="goods_id = case" suffix="end,">
@@ -308,8 +308,8 @@
     <delete id="deleteByEntity" parameterType="com.mawkun.core.base.entity.OrderClothes">
         delete from order_clothes
         <where>
-            <if test="orderFormId != null">
-                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
             </if>
             <if test="goodsId != null">
                 and goods_id = #{goodsId,jdbcType=INTEGER}
@@ -350,8 +350,8 @@
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
             </if>
-            <if test="orderFormId != null">
-                and order_form_id = #{orderFormId,jdbcType=INTEGER}
+            <if test="orderId != null">
+                and order_id = #{orderId,jdbcType=INTEGER}
             </if>
             <if test="goodsId != null">
                 and goods_id = #{goodsId,jdbcType=INTEGER}

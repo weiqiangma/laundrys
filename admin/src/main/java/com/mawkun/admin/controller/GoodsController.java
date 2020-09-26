@@ -68,9 +68,9 @@ public class GoodsController extends BaseController {
     @ApiOperation(value="添加商品", notes="添加商品")
     public JsonResult insert(@LoginedAuth @ApiIgnore UserSession session, Goods goods, MultipartFile file){
         if(session.getShopId() > 0) return sendArgsError("子管理员无权添加商品");
-        if(file.isEmpty() || goods.getGoodsName() == null) return sendError("缺少参数");
+        if(file == null || goods.getGoodsName() == null) return sendArgsError("缺少参数");
         List<Goods> goodsList = goodsServiceExt.getByName(goods.getGoodsName());
-        if(!goodsList.isEmpty()) return sendError("该商品名称已存在，请勿重复添加");
+        if(!goodsList.isEmpty()) return sendArgsError("该商品名称已存在，请勿重复添加");
         goodsServiceExt.insertWithPic(goods, file);
         return sendSuccess(goods);
     }

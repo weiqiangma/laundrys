@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -43,6 +44,7 @@ public class KindServiceExt extends KindService {
         MultipartFile[] files = {file};
         String images = ImageUtils.uploadImages(files);
         kind.setIconName(images);
+        kind.setCreateTime(new Date());
         return kindDaoExt.insert(kind);
     }
 
@@ -58,6 +60,7 @@ public class KindServiceExt extends KindService {
             String images = ImageUtils.uploadImages(files);
             kind.setIconName(images);
         }
+        kind.setUpdateTime(new Date());
         return kindDaoExt.update(kind);
     }
 

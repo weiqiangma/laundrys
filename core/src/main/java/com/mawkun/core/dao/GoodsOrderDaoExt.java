@@ -1,20 +1,15 @@
 package com.mawkun.core.dao;
 
-import com.mawkun.core.base.dao.GoodsOrderDao;
 import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-/**
- * @author js
- */
-@Repository
-public interface GoodsOrderDaoExt extends GoodsOrderDao {
-
+@Mapper
+public interface GoodsOrderDaoExt {
     /**
      * 订单详情
      * @param id
@@ -41,5 +36,4 @@ public interface GoodsOrderDaoExt extends GoodsOrderDao {
      * @return
      */
     List<GoodsOrderVo> selectList(GoodsOrderQuery query);
-
 }

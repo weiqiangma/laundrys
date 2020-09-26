@@ -8,6 +8,7 @@ import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.InvestOrderService;
 import com.mawkun.core.dao.InvestOrderDaoExt;
+import com.mawkun.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,12 @@ public class InvestOrderServiceExt extends InvestOrderService {
     public PageInfo pageList(InvestOrderQuery query) {
         query.init();
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
+        if(StringUtils.isNotEmpty(query.getUserName())) {
+            query.setUserName("%" + query.getUserName() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getOrderNo())) {
+            query.setOrderNo("%" + query.getOrderNo() + "%");
+        }
         List<InvestOrder> list = investOrderDaoExt.selectListByTerms(query);
         return new PageInfo<>(list);
     }
@@ -44,7 +51,7 @@ public class InvestOrderServiceExt extends InvestOrderService {
         return investOrderDaoExt.getByEntity(investLog);
     }
 
-    public int save(User user, MemberCard cart, Integer status, Long investMoney, Long giftMoney, Long amoutMoney, Long residueMoney) {
+    public Long save(User user, MemberCard cart, Integer status, Long investMoney, Long giftMoney, Long amoutMoney, Long residueMoney) {
         InvestOrder investOrder = new InvestOrder();
         investOrder.setUserId(user.getId());
         investOrder.setUserName(user.getUserName());
@@ -54,9 +61,10 @@ public class InvestOrderServiceExt extends InvestOrderService {
         investOrder.setInvestMoney(investMoney);
         investOrder.setGiftMoney(giftMoney);
         investOrder.setAmountMoney(amoutMoney);
-        investOrder.setResidueMoney(residueMoney);
+        investOrder.setResiduemoney(residueMoney);
         investOrder.setCreateTime(new Date());
-        return investOrderDaoExt.insert(investOrder);
+        investOrderDaoExt.insert(investOrder);
+        return investOrder.getId();
     }
 
 }

@@ -24,7 +24,7 @@ public class AdminServiceExt extends AdminService {
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         if(StringUtils.isNotEmpty(query.getUserName())) query.setUserName("%" + query.getUserName() + "%");
         if(StringUtils.isNotEmpty(query.getRealName())) query.setRealName("%" + query.getRealName() + "%");
-        if(StringUtils.isNotEmpty(query.getPhone())) query.setPhone("%" + query.getPhone() + "%");
+        if(StringUtils.isNotEmpty(query.getMobile())) query.setMobile("%" + query.getMobile() + "%");
         List<Admin> list = adminDaoExt.listByEntity(query);
         return new PageInfo(list);
     }

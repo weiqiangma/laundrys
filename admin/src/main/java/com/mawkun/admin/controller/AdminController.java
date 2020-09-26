@@ -20,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -69,6 +70,7 @@ public class AdminController extends BaseController {
     @ApiOperation(value="添加admin", notes="添加admin")
     public JsonResult insert(@LoginedAuth @ApiIgnore UserSession session, Admin admin){
         if(session.getShopId() > 0) return sendSuccess("子管理员无权添加管理员，请联系主管理员添加");
+        admin.setCreateTime(new Date());
         adminServiceExt.insert(admin);
         return sendSuccess(admin);
     }

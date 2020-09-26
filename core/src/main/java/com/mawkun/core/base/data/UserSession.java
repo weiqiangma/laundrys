@@ -55,7 +55,7 @@ public class UserSession {
         this.kind = Constant.USER_TYPE_ADMIN;
     }
 
-    public UserSession(String token, User user) {
+    public UserSession(User user) {
         this.userName = user.getUserName();
         this.realName = user.getRealName();
         this.mobile = user.getMobile();

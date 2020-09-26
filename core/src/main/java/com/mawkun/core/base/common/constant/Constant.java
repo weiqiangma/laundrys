@@ -21,7 +21,7 @@ public interface Constant {
     int ORDER_DELIVERY_SEND = 0;    //客户送至门店
     int ORDER_DELIVERY_GET = 1;     //配送员上门取货
 
-    //=============================订单状态=============================//
+    //=============================配送订单状态=============================//
     int ORDER_STATUS_WAITING_PAY = 1;   //待支付
     int ORDER_STATUS_WAITING_REAP = 2;  //待收货
     int ORDER_STATUS_SURE_REAP = 3;     //确认收货
@@ -29,6 +29,24 @@ public interface Constant {
     int ORDER_STATUS_WAITING_TAKE = 5;  //待取货
     int ORDER_STATUS_SURE_TAKE = 6;     //已完成
     int ORDER_STATUS_CANCEL = 7;        //订单取消
+
+    int DELIVERY_ORDER_WAITING_PAY = 1;
+    int DELIVERY_ORDER_WAITING_REAP = 2;
+    int DELIVERY_ORDER_SURE_REAP = 3;
+    int DELIVERY_ORDER_CLEANING = 4;
+    int DELIVERY_ORDER_WAITING_TAKE = 5;
+    int DELIVERY_ORDER_SURE_TAKE = 6;
+    int DELIVERY_ORDER_CANCEL = 7;
+
+    //=============================自提订单状态=============================//
+    int ORDER_WAITING_PAY = 1;   //待支付
+
+    //=============================收货员订单状态=============================//
+    int DISTRIBUTOR_ORDER_WAITING_TAKING = 1;   //待接单
+    int DISTRIBUTOR_ORDER_SURE_TAKE = 2;        //已接单
+    int DISTRIBUTOR_ORDER_TAKED = 3;            //已确认收货
+    int DISTRIBUTOR_ORDER_SERVICE = 4;          //确认送达
+
     //=============================订单类型=============================//
     int ORDER_TYPE_GOODS = 1;   //充值订单
     int ORDER_TYPE_INVEST = 2;  //商品订单

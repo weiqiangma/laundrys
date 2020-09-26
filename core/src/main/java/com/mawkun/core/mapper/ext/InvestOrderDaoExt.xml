@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mawkun.core.dao.InvestOrderDaoExt">
-        <select id="selectListByTerms" resultMap="com.mawkun.core.base.dao.InvestOrderDao.InvestLogResultMap" parameterType="com.mawkun.core.base.data.query.InvestOrderQuery">
-            select * from invest_log
+
+    <resultMap type="com.mawkun.core.base.data.InvestOrderData" id="InvestOrderDataResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="cartId" column="cart_id" jdbcType="INTEGER"/>
+        <result property="orderNo" column="order_no" jdbcType="VARCHAR"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="cartName" column="cart_name" jdbcType="VARCHAR"/>
+        <result property="investMoney" column="invest_money" jdbcType="INTEGER"/>
+        <result property="giftMoney" column="gift_money" jdbcType="INTEGER"/>
+        <result property="amountMoney" column="amount_money" jdbcType="INTEGER"/>
+        <result property="residuemoney" column="residueMoney" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="payTime" column="pay_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="description" column="description"/>
+    </resultMap>
+        <select id="selectListByTerms" resultMap="InvestOrderDataResultMap" parameterType="com.mawkun.core.base.data.query.InvestOrderQuery">
+            select invest_order.*, member_card.description from invest_order left join member_card on invest_order.cart_id = member_card.id
             <where>
                 <if test="userId != null">and user_id = #{userId}</if>
+                <if test="orderNo != null">and order_no like #{orderNo}</if>
                 <if test="userName != null and userName != ''">and user_name like #{userName}</if>
                 <if test="startTime != null and endTime != null">and create_time between #{startTime} and #{endTime}</if>
             </where>

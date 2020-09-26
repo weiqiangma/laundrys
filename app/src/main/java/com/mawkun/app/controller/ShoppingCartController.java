@@ -166,7 +166,7 @@ public class ShoppingCartController extends BaseController {
         try {
             //顾客送至门店
             if (query.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
-                data = goodsOrderServiceExt.generateOrderForm(user, query, null, resultAmount, cartList);
+                data = goodsOrderServiceExt.generateOrderForm(user, shop, query, null, resultAmount, cartList);
             }
             //配送员上门取货
             if (query.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
@@ -176,7 +176,7 @@ public class ShoppingCartController extends BaseController {
                 if (!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
                 //商品总价+运费
                 resultAmount = resultAmount + transportFee;
-                data = goodsOrderServiceExt.generateOrderForm(user, query, address, resultAmount, cartList);
+                data = goodsOrderServiceExt.generateOrderForm(user, shop, query, address, resultAmount, cartList);
             }
         } catch (Exception e) {
             e.printStackTrace();

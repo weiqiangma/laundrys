@@ -42,6 +42,7 @@ public class PayFlowServiceExt extends PayFlowService {
     public int createPayFlow(User user, InvestOrder order, Integer orderType) {
         PayFlow payFlow = new PayFlow();
         payFlow.setUserId(user.getId());
+        payFlow.setOpenId(user.getOpenId());
         payFlow.setUserName(user.getUserName());
         payFlow.setOrderId(order.getId());
         payFlow.setOrderNo(order.getOrderNo());

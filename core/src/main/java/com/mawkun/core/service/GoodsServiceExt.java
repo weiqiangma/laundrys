@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ public class GoodsServiceExt extends GoodsService {
         MultipartFile[] files = {file};
         String image = ImageUtils.uploadImages(files);
         goods.setPicture(image);
+        goods.setCreateTime(new Date());
         return goodsDaoExt.insert(goods);
     }
 
@@ -50,6 +52,7 @@ public class GoodsServiceExt extends GoodsService {
             String image = ImageUtils.uploadImages(files);
             goods.setPicture(image);
         }
+        goods.setUpdateTime(new Date());
         return goodsDaoExt.update(goods);
     }
 
