@@ -26,48 +26,48 @@ import java.util.List;
 public class GoodsOrderService {
 
     @Resource(type = GoodsOrderDao.class)
-    private GoodsOrderDao GoodsOrderDao;
+    private GoodsOrderDao goodsOrderDao;
     @Autowired
     private OrderLogDao orderLogDao;
 
     public GoodsOrderDao getGoodsOrderDao() {
-        return GoodsOrderDao;
+        return goodsOrderDao;
     }
 
     public GoodsOrder getById(Long id) {
-        return GoodsOrderDao.getById(id);
+        return goodsOrderDao.getById(id);
     }
 
     public GoodsOrder getByEntity(GoodsOrder GoodsOrder) {
-        return GoodsOrderDao.getByEntity(GoodsOrder);
+        return goodsOrderDao.getByEntity(GoodsOrder);
     }
 
     public List<GoodsOrder> listByEntity(GoodsOrder GoodsOrder) {
         if(StringUtils.isNotEmpty(GoodsOrder.getOrderNo())) {
             GoodsOrder.setOrderNo("%" + GoodsOrder.getOrderNo() + "%");
         }
-        return GoodsOrderDao.listByEntity(GoodsOrder);
+        return goodsOrderDao.listByEntity(GoodsOrder);
     }
 
     public List<GoodsOrder> listByIds(List<Long> ids) {
-        return GoodsOrderDao.listByIds(ids);
+        return goodsOrderDao.listByIds(ids);
     }
 
     public int insert(GoodsOrder GoodsOrder) {
         Date date = new Date();
         GoodsOrder.setCreateTime(date);
         GoodsOrder.setUpdateTime(date);
-        return GoodsOrderDao.insert(GoodsOrder);
+        return goodsOrderDao.insert(GoodsOrder);
     }
 
     public int insertBatch(List<GoodsOrder> list) {
-        return GoodsOrderDao.insertBatch(list);
+        return goodsOrderDao.insertBatch(list);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void cancel(UserSession session, GoodsOrder order) {
         order.setStatus(Constant.ORDER_STATUS_CANCEL);
-        GoodsOrderDao.update(order);
+        goodsOrderDao.update(order);
         OrderLog log = new OrderLog();
         log.setUserId(session.getId());
         log.setOrderId(order.getId());
@@ -86,6 +86,10 @@ public class GoodsOrderService {
         orderLogDao.insert(log);
     }
 
+    public int update(GoodsOrder order) {
+        return goodsOrderDao.update(order);
+    }
+
     public JsonResult update(UserSession session, GoodsOrder GoodsOrder) {
         /**
          * 1.判断status不为空
@@ -93,15 +97,23 @@ public class GoodsOrderService {
          */
         Integer status = GoodsOrder.getStatus();
         if(status != null) {
-            GoodsOrder dbForm = GoodsOrderDao.getById(GoodsOrder.getId());
+            GoodsOrder dbForm = goodsOrderDao.getById(GoodsOrder.getId());
             if(!NumberUtils.equals(dbForm.getStatus() + 1, status)){
                 return new JsonResult().success("请按顺序执行订单流程");
             }
             String operate = "";
+            //客户送至门店
+            if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
+
+            }
+            //配送员上门取货
+            if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
+
+            }
             OrderLog log = new OrderLog();
             if(status == Constant.ORDER_STATUS_WAITING_REAP) {
                 operate = "待收货";
-            } else if(status == Constant.ORDER_STATUS_SURE_REAP) {
+            } else if(status == Constant.ORDER_STATUS_CANCEL) {
                 operate = "确认收货";
             } else if(status == Constant.ORDER_STATUS_CLEANING) {
                 operate = "洗涤中";
@@ -132,32 +144,32 @@ public class GoodsOrderService {
             orderLogDao.insert(log);
         }
         GoodsOrder.setUpdateTime(new Date());
-        int result = GoodsOrderDao.update(GoodsOrder);
+        int result = goodsOrderDao.update(GoodsOrder);
         return new JsonResult().success(Convert.toString(result));
     }
 
     public int updateBatch(List<GoodsOrder> list) {
-        return GoodsOrderDao.updateBatch(list);
+        return goodsOrderDao.updateBatch(list);
     }
 
     public int deleteById(Long id) {
-        return GoodsOrderDao.deleteById(id);
+        return goodsOrderDao.deleteById(id);
     }
 
     public int deleteByEntity(GoodsOrder GoodsOrder) {
-        return GoodsOrderDao.deleteByEntity(GoodsOrder);
+        return goodsOrderDao.deleteByEntity(GoodsOrder);
     }
   
     public int deleteByIds(List<Long> list) {
-        return GoodsOrderDao.deleteByIds(list);
+        return goodsOrderDao.deleteByIds(list);
     }
 
     public int countAll() {
-        return GoodsOrderDao.countAll();
+        return goodsOrderDao.countAll();
     }
     
     public int countByEntity(GoodsOrder GoodsOrder) {
-        return GoodsOrderDao.countByEntity(GoodsOrder);
+        return goodsOrderDao.countByEntity(GoodsOrder);
     }
 
 }

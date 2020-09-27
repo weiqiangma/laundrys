@@ -136,7 +136,7 @@ public class ShoppingCartController extends BaseController {
          * 3.判断用户是否使用积分抵消消费金额，如果使用减去相应积分
          * 4.判断用户运费生成最终金额
          */
-        int data = -1;
+        long data = -1;
         User user = userServiceExt.getById(session.getId());
         if (user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
         List<ShoppingCart> cartList = shoppingCartServiceExt.findByUserId(user.getId());
@@ -152,21 +152,28 @@ public class ShoppingCartController extends BaseController {
         if(resultAmount != query.getAmount()) return sendArgsError("购物车内所选商品和实际商品价格不符,请重新添加");
         Shop shop = shopServiceExt.getById(query.getShopId());
         if (shop == null) return sendArgsError("所选店铺不存在,请重新选择");
-        //判断用户是否使用余额支付，如果是减去对应余额
-        if (query.getIntegral() != null && query.getIntegral() > 0) {
-            Integer integral = user.getIntegral();
-            Long sumOfMoney = user.getSumOfMoney();
-            if (sumOfMoney >= resultAmount) {
-                sumOfMoney = sumOfMoney - resultAmount;
-                user.setSumOfMoney(sumOfMoney);
-            } else {
-                return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
-            }
-        }
         try {
             //顾客送至门店
             if (query.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
-                data = goodsOrderServiceExt.generateOrderForm(user, shop, query, null, resultAmount, cartList);
+                //判断是不是余额支付，如果是更新用户余额
+                if (query.getSumOfMoney() != null && query.getSumOfMoney() > 0) {
+                    Long sumOfMoney = user.getSumOfMoney();
+                    if (sumOfMoney >= resultAmount) {
+                        sumOfMoney = sumOfMoney - resultAmount;
+                        user.setSumOfMoney(sumOfMoney);
+                        //生成待支付订单
+                        data = goodsOrderServiceExt.generateOrderForm(user, shop, query, null, resultAmount, cartList);
+                        //更新订单状态
+                        GoodsOrder order = goodsOrderServiceExt.getById(data);
+                        order.setStatus(Constant.SELF_ORDER_WAITING_SEND);
+                        goodsOrderServiceExt.update(order);
+                    } else {
+                        return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
+                    }
+                } else {
+                    //微信支付先生成订单
+                    data = goodsOrderServiceExt.generateOrderForm(user, shop, query, null, resultAmount, cartList);
+                }
             }
             //配送员上门取货
             if (query.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
@@ -176,7 +183,24 @@ public class ShoppingCartController extends BaseController {
                 if (!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
                 //商品总价+运费
                 resultAmount = resultAmount + transportFee;
-                data = goodsOrderServiceExt.generateOrderForm(user, shop, query, address, resultAmount, cartList);
+                //判断是不是余额支付，如果是更新用户余额
+                if (query.getSumOfMoney() != null && query.getSumOfMoney() > 0) {
+                    Long sumOfMoney = user.getSumOfMoney();
+                    if (!user.getSumOfMoney().equals(sumOfMoney)) return sendArgsError("用户余额不一致");
+                    if (sumOfMoney >= resultAmount) {
+                        sumOfMoney = sumOfMoney - resultAmount;
+                        user.setSumOfMoney(sumOfMoney);
+                        //生成待支付订单
+                        data = goodsOrderServiceExt.generateOrderForm(user, shop, query, null, resultAmount, cartList);
+                        GoodsOrder order = goodsOrderServiceExt.getById(data);
+                        order.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
+                        goodsOrderServiceExt.update(order);
+                    } else {
+                        return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
+                    }
+                } else {
+                    data = goodsOrderServiceExt.generateOrderForm(user, shop, query, address, resultAmount, cartList);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,5 +208,4 @@ public class ShoppingCartController extends BaseController {
         if(data > 0) return sendSuccess("下单成功");
         return sendArgsError("下单失败");
     }
-
 }

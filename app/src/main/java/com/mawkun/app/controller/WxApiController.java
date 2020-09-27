@@ -114,8 +114,16 @@ public class WxApiController extends BaseController {
                         user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
                         userServiceExt.update(user, null);
                     }
+                    //判断订单配送方式
+                    //如果配送员配送下一状态 待收货
+                    if(orderForm.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
+                        orderForm.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
+                    }
+                    //如果客户送至门店下一状态 待送达门店
+                    if(orderForm.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
+                        orderForm.setStatus(Constant.SELF_ORDER_WAITING_SEND);
+                    }
                     //更新订单
-                    orderForm.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
                     orderForm.setPayTime(payTime);
                     orderForm.setUpdateTime(new Date());
                     orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
@@ -180,8 +188,16 @@ public class WxApiController extends BaseController {
                         user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
                         userServiceExt.update(user, null);
                     }
+                    //判断订单配送方式
+                    //如果配送员配送下一状态 待收货
+                    if(orderForm.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
+                        orderForm.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
+                    }
+                    //如果客户送至门店下一状态 待送达门店
+                    if(orderForm.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
+                        orderForm.setStatus(Constant.SELF_ORDER_WAITING_SEND);
+                    }
                     //更新订单
-                    orderForm.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
                     orderForm.setPayTime(payTime);
                     orderForm.setUpdateTime(new Date());
                     orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
@@ -260,10 +276,10 @@ public class WxApiController extends BaseController {
                 String orderNo = map.get("out_trade_no");
                 InvestOrder order = investOrderServiceExt.getByOrderNo(orderNo);
                 //如果订单还是待支付状态就更新订单状态
-                if(order.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                if(order.getStatus() == Constant.INVEST_ORDER_WAITING_WAY) {
                     //更新用户充值订单状态
                     InvestOrder investOrder = investOrderServiceExt.getByOrderNo(orderNo);
-                    investOrder.setStatus(Constant.ORDER_STATUS_SURE_TAKE);
+                    investOrder.setStatus(Constant.INVEST_ORDER_FINISH);
                     investOrder.setPayTime(payTime);
                     investOrderServiceExt.update(investOrder);
                     //更新用户余额
@@ -272,7 +288,7 @@ public class WxApiController extends BaseController {
                     user.setSumOfMoney(sumOfMoney);
                     userServiceExt.update(user, null);
                     //生成支付流水
-                    payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_GOODS);
+                    payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_INVEST);
                     //发送通知
                     JSONObject object = new JSONObject();
                     object.put("name1",user.getUserName());
@@ -323,14 +339,14 @@ public class WxApiController extends BaseController {
             //微信返回已经支付成功，数据库订单状态却未及时更新（还是待支付状态）
             if(StringUtils.equals(Constant.PAY_STATU_SUCCESS, tradeState) && StringUtils.equals(user.getOpenId(), openId)) {
                 //如果数据库订单状态还是待支付更新状态
-                if(investOrder.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                if(investOrder.getStatus() == Constant.INVEST_ORDER_WAITING_WAY) {
                     investOrder.setInvestMoney(NumberUtils.str2Long(totalFee));
                     investOrder.setPayTime(payTime);
                     investOrder.setUpdateTime(new Date());
-                    investOrder.setStatus(Constant.ORDER_STATUS_SURE_TAKE);
+                    investOrder.setStatus(Constant.INVEST_ORDER_FINISH);
                     investOrderServiceExt.update(investOrder);
                     //生成支付流水
-                    payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_GOODS);
+                    payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_INVEST);
                 }
             }
         } else {

@@ -21,23 +21,31 @@ public interface Constant {
     int ORDER_DELIVERY_SEND = 0;    //客户送至门店
     int ORDER_DELIVERY_GET = 1;     //配送员上门取货
 
+    //=============================充值订单状态=============================//
+    int INVEST_ORDER_WAITING_WAY = 1;   //待支付
+    int INVEST_ORDER_FINISH = 2 ;       //已完成
+
     //=============================配送订单状态=============================//
     int ORDER_STATUS_WAITING_PAY = 1;   //待支付
+
     int ORDER_STATUS_WAITING_REAP = 2;  //待收货
-    int ORDER_STATUS_SURE_REAP = 3;     //确认收货
-    int ORDER_STATUS_CLEANING = 4;      //清洗中
-    int ORDER_STATUS_WAITING_TAKE = 5;  //待取货
-    int ORDER_STATUS_SURE_TAKE = 6;     //已完成
+    int ORDER_STATUS_CLEANING = 3;      //清洗中
+    int ORDER_STATUS_WAITING_TAKE = 4;  //待取货
+    int ORDER_STATUS_SURE_TAKE = 5;     //已完成
+
+
+    int DELIVERY_ORDER_WAITING_REAP = 2;    //待收货
+    int DELIVERY_ORDER_CLEANING = 3;        //洗涤中
+    int DELIVERY_ORDER_WAITING_TAKE = 4;    //待送达
+    int DELIVERY_ORDER_SURE_TAKE = 5;       //已完成
+
+
+    int SELF_ORDER_WAITING_SEND = 2;    //待送达门店
+    int SELF_ORDER_CLEANING = 4;        //洗涤中
+    int SELF_ORDER_WAITING_TAKE = 5;    //待取货
+    int SELF_ORDER_SURE_TAKE = 6;       //已完成
+
     int ORDER_STATUS_CANCEL = 7;        //订单取消
-
-    int DELIVERY_ORDER_WAITING_PAY = 1;
-    int DELIVERY_ORDER_WAITING_REAP = 2;
-    int DELIVERY_ORDER_SURE_REAP = 3;
-    int DELIVERY_ORDER_CLEANING = 4;
-    int DELIVERY_ORDER_WAITING_TAKE = 5;
-    int DELIVERY_ORDER_SURE_TAKE = 6;
-    int DELIVERY_ORDER_CANCEL = 7;
-
     //=============================自提订单状态=============================//
     int ORDER_WAITING_PAY = 1;   //待支付
 
@@ -48,8 +56,8 @@ public interface Constant {
     int DISTRIBUTOR_ORDER_SERVICE = 4;          //确认送达
 
     //=============================订单类型=============================//
-    int ORDER_TYPE_GOODS = 1;   //充值订单
-    int ORDER_TYPE_INVEST = 2;  //商品订单
+    int ORDER_TYPE_GOODS = 1;   //商品订单
+    int ORDER_TYPE_INVEST = 2;  //充值订单
 
     //=============================系统参数状态=============================//
     int SYS_PARAM_OPEN = 1;     //开启

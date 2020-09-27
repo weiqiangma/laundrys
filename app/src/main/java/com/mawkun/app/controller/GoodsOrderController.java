@@ -26,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.sf.cglib.core.CollectionUtils;
 import net.sf.cglib.core.Transformer;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,11 +104,11 @@ public class GoodsOrderController extends BaseController {
         if(user == null) {
             return sendArgsError("未查询到该用户");
         }
-        GoodsOrder GoodsOrder = goodsOrderServiceExt.getById(orderId);
-        if(!GoodsOrder.getUserId().equals(session.getId())) {
+        GoodsOrder goodsOrder = goodsOrderServiceExt.getById(orderId);
+        if(!goodsOrder.getUserId().equals(session.getId())) {
             return sendArgsError("非下单用户无权编辑");
         }
-        JSONObject object = wxApiServiceExt.getOrderStatus(GoodsOrder.getOrderNo());
+        JSONObject object = wxApiServiceExt.getOrderStatus(goodsOrder.getOrderNo());
         String resultCode = object.getString("result_code");
         if(StringUtils.equals(Constant.WX_RETURN_SUCCESS, resultCode)) {
             String tradeState = object.getString("trade_state");
@@ -123,18 +124,26 @@ public class GoodsOrderController extends BaseController {
             //用户已经支付成功，订单状态却未及时更新
             if(StringUtils.equals(Constant.PAY_STATU_SUCCESS, tradeState) && StringUtils.equals(user.getOpenId(), openId)) {
                 //如果是余额支付,用户余额减去支付费用并更新
-                if(GoodsOrder.getPayKind() == Constant.PAY_WITH_REMAINDER) {
+                if(goodsOrder.getPayKind() == Constant.PAY_WITH_REMAINDER) {
                     user.setSumOfMoney(user.getSumOfMoney() - NumberUtils.str2Long(totalFee));
                     userServiceExt.update(user, null);
                 }
                 //如果订单状态还是待支付
-                if(GoodsOrder.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                if(goodsOrder.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
+                    //判断订单配送方式，不同订单流程不同
+                    //配送员配送下一流程 待收货
+                    if(goodsOrder.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
+                        goodsOrder.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
+                    }
+                    //客户自行送至门店下一流程 待送至门店
+                    if(goodsOrder.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
+                        goodsOrder.setStatus(Constant.SELF_ORDER_WAITING_SEND);
+                    }
                     //更新订单
-                    GoodsOrder.setStatus(Constant.ORDER_STATUS_WAITING_REAP);
-                    GoodsOrder.setPayTime(payTime);
-                    GoodsOrder.setUpdateTime(new Date());
-                    GoodsOrder.setRealAmount(NumberUtils.str2Long(totalFee));
-                    goodsOrderServiceExt.update(null, GoodsOrder);
+                    goodsOrder.setPayTime(payTime);
+                    goodsOrder.setUpdateTime(new Date());
+                    goodsOrder.setRealAmount(NumberUtils.str2Long(totalFee));
+                    goodsOrderServiceExt.update(null, goodsOrder);
                 }
             }
         } else {

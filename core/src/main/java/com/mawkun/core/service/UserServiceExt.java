@@ -89,7 +89,7 @@ public class UserServiceExt extends UserService {
         long sumOfMoney = (user.getSumOfMoney() == null) ? 0 : user.getSumOfMoney();
         Long residueMoeny = sumOfMoney + amountMoney;
         //生成待支付订单
-        long primaryKey = investOrderServiceExt.save(user, card, Constant.ORDER_STATUS_WAITING_PAY, investMoney, giftMoney, amountMoney, residueMoeny);
+        long primaryKey = investOrderServiceExt.save(user, card, Constant.INVEST_ORDER_WAITING_WAY, investMoney, giftMoney, amountMoney, residueMoeny);
         String orderNo = StringUtils.createOrderFormNo(String.valueOf(primaryKey));
         InvestOrder investOrder = investOrderServiceExt.getById(primaryKey);
         investOrder.setOrderNo(orderNo);
@@ -109,7 +109,7 @@ public class UserServiceExt extends UserService {
         Long amountMoney = money;
         Long residueMoeny = user.getSumOfMoney() + money;
         //生成待支付订单
-        long primaryKey = investOrderServiceExt.save(user, null, Constant.ORDER_STATUS_WAITING_PAY, investMoney, giftMoney, amountMoney, residueMoeny);
+        long primaryKey = investOrderServiceExt.save(user, null, Constant.INVEST_ORDER_WAITING_WAY, investMoney, giftMoney, amountMoney, residueMoeny);
         String orderNo = StringUtils.createOrderFormNo(String.valueOf(primaryKey));
         InvestOrder investLog = investOrderServiceExt.getById(primaryKey);
         investLog.setOrderNo(orderNo);

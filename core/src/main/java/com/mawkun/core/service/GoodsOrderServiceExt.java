@@ -133,8 +133,9 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
      * @param resultAmount
      */
     @Transactional(rollbackFor = Exception.class)
-    public int generateOrderForm(User user, Shop shop, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
-        int result = -1;
+    public long generateOrderForm(User user, Shop shop, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
+        long result = -1;
+        long orderKey = -1;
         //生成订单
         GoodsOrder form = new GoodsOrder();
         form.setUserId(user.getId());
@@ -159,14 +160,15 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         form.setPayKind(Constant.PAY_WITH_WEIXIN);
         form.setUpdateTime(new Date());
         form.setCreateTime(new Date());
-        int orderKey = goodsOrderDao.insert(form);
-        if(orderKey < 1) {
+        result = goodsOrderDao.insert(form);
+        if(result < 1) {
             throw new Exception("订单插入失败");
         }
         //根据时间+主键生成订单
         String orderSerial = StringUtils.createOrderFormNo(String.valueOf(form.getId()));
         form.setOrderNo(orderSerial);
-        result = goodsOrderDao.update(form);
+        goodsOrderDao.update(form);
+        orderKey = form.getId();
         if(result < 1) {
             throw new Exception("生成订单号失败");
         }
@@ -190,7 +192,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         if(result < 1) {
             throw new Exception("用户余额更新失败");
         }
-        return result;
+        return orderKey;
     }
 
     /**
@@ -205,9 +207,10 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
          * 1.更新订单状态
          * 2.生成订单操作记录
          */
-        order.setStatus(Constant.ORDER_STATUS_SURE_REAP);
+        //TODO
+        //order.setStatus(Constant.ORDER_STATUS_SURE_REAP);
         goodsOrderDao.update(order);
-        return orderLogServiceExt.createWaitingPayOrder(session.getId(), session.getUserName(), order.getId(), Constant.USER_TYPE_DISTRIBUTOR, Constant.ORDER_STATUS_SURE_REAP, "确认收货", description);
+        return orderLogServiceExt.createWaitingPayOrder(session.getId(), session.getUserName(), order.getId(), Constant.USER_TYPE_DISTRIBUTOR, Constant.ORDER_STATUS_CANCEL, "确认收货", description);
     }
 
     /**

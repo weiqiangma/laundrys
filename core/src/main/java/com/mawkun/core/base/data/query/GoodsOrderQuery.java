@@ -16,6 +16,7 @@ public class GoodsOrderQuery extends GoodsOrder {
     private Integer pageSize;
     private String shopName;
     private Integer useIntegral;
+    private Integer sumOfMoney;
     private Date createTime;
     private Date createTimeStart;
     private Date createTimeEnd;

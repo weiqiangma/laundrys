@@ -27,5 +27,6 @@
                 <if test="userName != null and userName != ''">and user_name like #{userName}</if>
                 <if test="startTime != null and endTime != null">and create_time between #{startTime} and #{endTime}</if>
             </where>
+            order by invest_order.create_time desc
         </select>
 </mapper>
