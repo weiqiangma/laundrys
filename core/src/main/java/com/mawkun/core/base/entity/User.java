@@ -8,22 +8,22 @@ import org.springframework.format.annotation.DateTimeFormat;
  * (User)实体类
  *
  * @author mawkun
- * @date 2020-09-24 23:12:41
+ * @date 2020-09-28 22:38:47
  */
 @Data 
 public class User {
     
         private Long id;
     /**
-    * 微信用户唯一ID
+    * openId
     */
         private String openId;
     /**
-    * 用户昵称
+    * 用户名
     */
         private String userName;
     /**
-    * 真实姓名
+    * 真名
     */
         private String realName;
     /**
@@ -31,11 +31,11 @@ public class User {
     */
         private String avatarUrl;
     /**
-    * 联系方式
+    * 手机
     */
         private String mobile;
     /**
-    * 性别 0：未知 1：男 2：女
+    * 性别
     */
         private Integer gender;
     /**
@@ -43,7 +43,7 @@ public class User {
     */
         private String address;
     /**
-    * 类型
+    * 种类
     */
         private Integer kind;
     /**

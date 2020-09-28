@@ -67,7 +67,7 @@ public class WxApiController extends BaseController {
     @ResponseBody
     @PostMapping("/api/wxApi/wxPay")
     @ApiOperation(value="小程序下单支付", notes="小程序下单支付")
-    public JsonResult wxPay(@LoginedAuth UserSession session, Long orderId) {
+    public JsonResult wxPay(@LoginedAuth UserSession session, Long orderId, String orderNo) {
         User user = userServiceExt.getByIdAndStatus(session.getId(), Constant.USER_STATUS_ACTIVE);
         if(user == null) {
             return sendArgsError("未查询到该用户");
@@ -150,6 +150,7 @@ public class WxApiController extends BaseController {
      * @param orderId
      * @return
      */
+    @ResponseBody
     @RequestMapping("/api/wxApi/checkOrderPayStatus")
     @ApiOperation(value="检查付款成功的订单状态", notes="检查付款成功的订单状态")
     public JsonResult checkOrderPayStatus(@LoginedAuth UserSession session, Long orderId) {

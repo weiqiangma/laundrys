@@ -25,11 +25,11 @@ public interface Constant {
     int INVEST_ORDER_WAITING_WAY = 1;   //待支付
     int INVEST_ORDER_FINISH = 2 ;       //已完成
 
-    //=============================配送订单状态=============================//
+    //=============================配送订单状态（用户）=============================//
     int ORDER_STATUS_WAITING_PAY = 1;   //待支付
 
     int ORDER_STATUS_WAITING_REAP = 2;  //待收货
-    int ORDER_STATUS_CLEANING = 3;      //清洗中
+    int ORDER_STATUS_CLEANING = 3;      //洗涤中
     int ORDER_STATUS_WAITING_TAKE = 4;  //待取货
     int ORDER_STATUS_SURE_TAKE = 5;     //已完成
 
@@ -46,6 +46,13 @@ public interface Constant {
     int SELF_ORDER_SURE_TAKE = 6;       //已完成
 
     int ORDER_STATUS_CANCEL = 7;        //订单取消
+
+    //=============================配送订单状态（实际）=============================//
+
+
+    //=============================配送订单状态=============================//
+
+
     //=============================自提订单状态=============================//
     int ORDER_WAITING_PAY = 1;   //待支付
 

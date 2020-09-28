@@ -126,6 +126,76 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
     }
 
     /**
+     * 生成待支付订单
+     * @param user
+     * @param query
+     * @param address
+     * @param resultAmount
+     */
+    @Transactional
+    public GoodsOrder generateWaitingPayOrderForm(User user, Shop shop, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
+        long result = -1;
+        long orderKey = -1;
+        //生成订单
+        GoodsOrder form = new GoodsOrder();
+        form.setUserId(user.getId());
+        form.setShopName(shop.getShopName());
+        form.setShopId(shop.getId());
+        if(address != null) {
+            form.setAddressId(address.getId());
+        }
+        form.setUserName(user.getUserName());
+        form.setRemark(query.getRemark());
+        form.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
+        form.setTotalAmount(query.getAmount());
+        form.setRealAmount(resultAmount);
+        if(address != null && StringUtils.isNotEmpty(address.getDetail())) {
+            String exactAddress = address.getExactAddress();
+            form.setUserAddress(exactAddress);
+        }
+        if(query.getTransportFee() != null) {
+            form.setTransportFee(query.getTransportFee());
+        }
+        form.setTransportWay(query.getTransportWay());
+        form.setPayKind(Constant.PAY_WITH_WEIXIN);
+        form.setUpdateTime(new Date());
+        form.setCreateTime(new Date());
+        result = goodsOrderDao.insert(form);
+        if(result < 1) {
+            throw new Exception("订单插入失败");
+        }
+        //根据时间+主键生成订单
+        String orderSerial = StringUtils.createOrderFormNo(String.valueOf(form.getId()));
+        form.setOrderNo(orderSerial);
+        goodsOrderDao.update(form);
+        orderKey = form.getId();
+        if(result < 1) {
+            throw new Exception("生成订单号失败");
+        }
+        //生成订单操作记录
+        result = orderLogServiceExt.createWaitingPayOrder(user.getId(), user.getUserName(), form.getId(), Constant.ORDER_STATUS_WAITING_PAY, Constant.USER_TYPE_CUSTOMER, "用户创建待支付订单", null);
+        if(result < 1) {
+            throw new Exception("生成订单操作记录失败");
+        }
+        //订单中的商品加入订单商品表方便后续查询
+        result = orderClothesServiceExt.addByShoppingCarts(cartList, form.getId());
+        if(result < 1) {
+            throw new Exception("订单商品加入失败");
+        }
+        //清空购物车
+        result = shoppingCartServiceExt.deleteByUserId(user.getId());
+        if(result < 1) {
+            throw new Exception("清空购物车失败");
+        }
+        //更新用户余额
+        result = userDaoExt.update(user);
+        if(result < 1) {
+            throw new Exception("用户余额更新失败");
+        }
+        return form;
+    }
+
+    /**
      * 生成订单
      * @param user
      * @param query
@@ -133,7 +203,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
      * @param resultAmount
      */
     @Transactional(rollbackFor = Exception.class)
-    public long generateOrderForm(User user, Shop shop, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
+    public long generateWaitingTakeOrderForm(User user, Shop shop, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
         long result = -1;
         long orderKey = -1;
         //生成订单

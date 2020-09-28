@@ -104,28 +104,54 @@ public class GoodsOrderService {
             String operate = "";
             //客户送至门店
             if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
-
+                if(status == Constant.SELF_ORDER_WAITING_SEND) {
+                    operate = "待送达门店";
+                }
+                else if(status == Constant.SELF_ORDER_CLEANING) {
+                    operate = "清洗中";
+                }
+                else if(status == Constant.SELF_ORDER_WAITING_TAKE) {
+                    operate = "待取货";
+                }
+                else if(status == Constant.SELF_ORDER_SURE_TAKE) {
+                    operate = "已完成";
+                } else {
+                    return new JsonResult().success("该订单已完成");
+                }
             }
             //配送员上门取货
             if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
-
+                if(status == Constant.DELIVERY_ORDER_WAITING_REAP) {
+                    operate = "待收货";
+                }
+                else if(status == Constant.DELIVERY_ORDER_CLEANING) {
+                    operate = "洗涤中";
+                }
+                else if(status == Constant.DELIVERY_ORDER_WAITING_TAKE) {
+                    operate = "待送达";
+                }
+                else if(status == Constant.DELIVERY_ORDER_SURE_TAKE) {
+                    operate = "已完成";
+                } else {
+                    return new JsonResult().success("该订单已完成");
+                }
             }
             OrderLog log = new OrderLog();
-            if(status == Constant.ORDER_STATUS_WAITING_REAP) {
-                operate = "待收货";
-            } else if(status == Constant.ORDER_STATUS_CANCEL) {
-                operate = "确认收货";
-            } else if(status == Constant.ORDER_STATUS_CLEANING) {
-                operate = "洗涤中";
-            } else if(status == Constant.ORDER_STATUS_WAITING_TAKE) {
-                operate = "待取货";
-            } else if(status == Constant.ORDER_STATUS_SURE_TAKE) {
-                operate = "已完成";
-            } else if(status == Constant.ORDER_STATUS_CANCEL) {
-                operate = "取消订单";
-            } else {
-                return new JsonResult().success("该订单已完成");
-            }
+//            if(status == Constant.ORDER_STATUS_WAITING_REAP) {
+//                operate = "待收货";
+//            } else if(status == Constant.ORDER_STATUS_CANCEL) {
+//                operate = "确认收货";
+//            } else if(status == Constant.ORDER_STATUS_CLEANING) {
+//                operate = "洗涤中";
+//            } else if(status == Constant.ORDER_STATUS_WAITING_TAKE) {
+//                operate = "待取货";
+//            } else if(status == Constant.ORDER_STATUS_SURE_TAKE) {
+//                operate = "已完成";
+//            } else if(status == Constant.ORDER_STATUS_CANCEL) {
+//                operate = "取消订单";
+//            } else {
+//                return new JsonResult().success("该订单已完成");
+//            }
             log.setUserId(session.getId());
             log.setOrderId(GoodsOrder.getId());
             if(session.isAdmin()) {

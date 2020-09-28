@@ -11,7 +11,7 @@
         <result property="mobile" column="mobile" jdbcType="VARCHAR"/>
         <result property="gender" column="gender" jdbcType="OTHER"/>
         <result property="address" column="address" jdbcType="VARCHAR"/>
-        <result property="kind" column="kind" jdbcType="INTEGER"/>
+        <result property="kind" column="kind" jdbcType="OTHER"/>
         <result property="sumOfMoney" column="sum_of_money" jdbcType="INTEGER"/>
         <result property="integral" column="integral" jdbcType="INTEGER"/>
         <result property="country" column="country" jdbcType="VARCHAR"/>
@@ -66,7 +66,7 @@
                 and address = #{address,jdbcType=VARCHAR}
             </if>
             <if test="kind != null">
-                and kind = #{kind,jdbcType=INTEGER}
+                and kind = #{kind,jdbcType=OTHER}
             </if>
             <if test="sumOfMoney != null">
                 and sum_of_money = #{sumOfMoney,jdbcType=INTEGER}
@@ -126,7 +126,7 @@
                 and address = #{address,jdbcType=VARCHAR}
             </if>
             <if test="kind != null">
-                and kind = #{kind,jdbcType=INTEGER}
+                and kind = #{kind,jdbcType=OTHER}
             </if>
             <if test="sumOfMoney != null">
                 and sum_of_money = #{sumOfMoney,jdbcType=INTEGER}
@@ -248,7 +248,7 @@
              #{address,jdbcType=VARCHAR},
           </if>
           <if test="kind != null">
-             #{kind,jdbcType=INTEGER},
+             #{kind,jdbcType=OTHER},
           </if>
           <if test="sumOfMoney != null">
              #{sumOfMoney,jdbcType=INTEGER},
@@ -283,7 +283,7 @@
          (id, open_id, user_name, real_name, avatar_url, mobile, gender, address, kind, sum_of_money, integral, country, province, city, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.avatarUrl,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.gender,jdbcType=OTHER}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=INTEGER}, #{item.sumOfMoney,jdbcType=INTEGER}, #{item.integral,jdbcType=INTEGER}, #{item.country,jdbcType=VARCHAR}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.openId,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.realName,jdbcType=VARCHAR}, #{item.avatarUrl,jdbcType=VARCHAR}, #{item.mobile,jdbcType=VARCHAR}, #{item.gender,jdbcType=OTHER}, #{item.address,jdbcType=VARCHAR}, #{item.kind,jdbcType=OTHER}, #{item.sumOfMoney,jdbcType=INTEGER}, #{item.integral,jdbcType=INTEGER}, #{item.country,jdbcType=VARCHAR}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -313,7 +313,7 @@
                 address = #{address,jdbcType=VARCHAR},
             </if>
             <if test="kind != null">
-                kind = #{kind,jdbcType=INTEGER},
+                kind = #{kind,jdbcType=OTHER},
             </if>
             <if test="sumOfMoney != null">
                 sum_of_money = #{sumOfMoney,jdbcType=INTEGER},
@@ -369,7 +369,7 @@
                 address = #{set.address,jdbcType=VARCHAR},
             </if>
             <if test="where.kind == null and set.kind != null">
-                kind = #{set.kind,jdbcType=INTEGER},
+                kind = #{set.kind,jdbcType=OTHER},
             </if>
             <if test="where.sumOfMoney == null and set.sumOfMoney != null">
                 sum_of_money = #{set.sumOfMoney,jdbcType=INTEGER},
@@ -422,7 +422,7 @@
                 and address = #{where.address,jdbcType=VARCHAR}
             </if>
             <if test="where.kind != null">
-                and kind = #{where.kind,jdbcType=INTEGER}
+                and kind = #{where.kind,jdbcType=OTHER}
             </if>
             <if test="where.sumOfMoney != null">
                 and sum_of_money = #{where.sumOfMoney,jdbcType=INTEGER}
@@ -573,7 +573,7 @@
                 and address = #{address,jdbcType=VARCHAR}
             </if>
             <if test="kind != null">
-                and kind = #{kind,jdbcType=INTEGER}
+                and kind = #{kind,jdbcType=OTHER}
             </if>
             <if test="sumOfMoney != null">
                 and sum_of_money = #{sumOfMoney,jdbcType=INTEGER}
@@ -642,7 +642,7 @@
                 and address = #{address,jdbcType=VARCHAR}
             </if>
             <if test="kind != null">
-                and kind = #{kind,jdbcType=INTEGER}
+                and kind = #{kind,jdbcType=OTHER}
             </if>
             <if test="sumOfMoney != null">
                 and sum_of_money = #{sumOfMoney,jdbcType=INTEGER}

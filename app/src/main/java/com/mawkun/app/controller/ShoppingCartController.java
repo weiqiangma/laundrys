@@ -15,6 +15,11 @@ import io.jsonwebtoken.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -39,6 +44,9 @@ public class ShoppingCartController extends BaseController {
     private ShopServiceExt shopServiceExt;
     @Autowired
     private GoodsOrderServiceExt goodsOrderServiceExt;
+    //添加事务第一步 引入platformTransactionManager对象
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @GetMapping("/get")
     @ApiOperation(value="门店详情", notes="门店详情")
@@ -136,7 +144,12 @@ public class ShoppingCartController extends BaseController {
          * 3.判断用户是否使用积分抵消消费金额，如果使用减去相应积分
          * 4.判断用户运费生成最终金额
          */
+        DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
+        defaultTransactionDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = transactionManager.getTransaction(defaultTransactionDefinition);
+
         long data = -1;
+        GoodsOrder resultOrder = new GoodsOrder();
         User user = userServiceExt.getById(session.getId());
         if (user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
         List<ShoppingCart> cartList = shoppingCartServiceExt.findByUserId(user.getId());
@@ -162,17 +175,19 @@ public class ShoppingCartController extends BaseController {
                         sumOfMoney = sumOfMoney - resultAmount;
                         user.setSumOfMoney(sumOfMoney);
                         //生成待支付订单
-                        data = goodsOrderServiceExt.generateOrderForm(user, shop, query, null, resultAmount, cartList);
+                        resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, null, resultAmount, cartList);
                         //更新订单状态
-                        GoodsOrder order = goodsOrderServiceExt.getById(data);
-                        order.setStatus(Constant.SELF_ORDER_WAITING_SEND);
-                        goodsOrderServiceExt.update(order);
+                        resultOrder.setStatus(Constant.SELF_ORDER_WAITING_SEND);
+                        goodsOrderServiceExt.update(resultOrder);
+                        transactionManager.commit(status);
+                        return sendSuccess("支付成功");
                     } else {
+                        transactionManager.commit(status);
                         return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
                     }
                 } else {
                     //微信支付先生成订单
-                    data = goodsOrderServiceExt.generateOrderForm(user, shop, query, null, resultAmount, cartList);
+                    resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, null, resultAmount, cartList);
                 }
             }
             //配送员上门取货
@@ -191,21 +206,25 @@ public class ShoppingCartController extends BaseController {
                         sumOfMoney = sumOfMoney - resultAmount;
                         user.setSumOfMoney(sumOfMoney);
                         //生成待支付订单
-                        data = goodsOrderServiceExt.generateOrderForm(user, shop, query, null, resultAmount, cartList);
-                        GoodsOrder order = goodsOrderServiceExt.getById(data);
-                        order.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
-                        goodsOrderServiceExt.update(order);
+                        resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, null, resultAmount, cartList);
+                        resultOrder.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
+                        goodsOrderServiceExt.update(resultOrder);
+                        transactionManager.commit(status);
+                        return sendSuccess("支付成功");
                     } else {
+                        transactionManager.commit(status);
                         return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
                     }
                 } else {
-                    data = goodsOrderServiceExt.generateOrderForm(user, shop, query, address, resultAmount, cartList);
+                    resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, address, resultAmount, cartList);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            transactionManager.rollback(status);
         }
-        if(data > 0) return sendSuccess("下单成功");
+        transactionManager.commit(status);
+        if(resultOrder.getId() != null) return sendSuccess(resultOrder.getId());
         return sendArgsError("下单失败");
     }
 }
