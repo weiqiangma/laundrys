@@ -90,14 +90,14 @@ public class GoodsOrderService {
         return goodsOrderDao.update(order);
     }
 
-    public JsonResult update(UserSession session, GoodsOrder GoodsOrder) {
+    public JsonResult update(UserSession session, GoodsOrder goodsOrder) {
         /**
          * 1.判断status不为空
          * 2.判断前端status==数据库status+1(保证流程按顺序执行)
          */
-        Integer status = GoodsOrder.getStatus();
+        Integer status = goodsOrder.getStatus();
         if(status != null) {
-            GoodsOrder dbForm = goodsOrderDao.getById(GoodsOrder.getId());
+            GoodsOrder dbForm = goodsOrderDao.getById(goodsOrder.getId());
             if(!NumberUtils.equals(dbForm.getStatus() + 1, status)){
                 return new JsonResult().success("请按顺序执行订单流程");
             }
@@ -106,6 +106,9 @@ public class GoodsOrderService {
             if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
                 if(status == Constant.SELF_ORDER_WAITING_SEND) {
                     operate = "待送达门店";
+                }
+                else if(status == Constant.SELF_ORDER_SURE_SEND) {
+                    operate = "确认送达门店";
                 }
                 else if(status == Constant.SELF_ORDER_CLEANING) {
                     operate = "清洗中";
@@ -123,6 +126,9 @@ public class GoodsOrderService {
             if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
                 if(status == Constant.DELIVERY_ORDER_WAITING_REAP) {
                     operate = "待收货";
+                }
+                else if(status == Constant.DELIVERY_ORDER_SURE_TAKE) {
+                    operate = "确认收货";
                 }
                 else if(status == Constant.DELIVERY_ORDER_CLEANING) {
                     operate = "洗涤中";
@@ -153,7 +159,7 @@ public class GoodsOrderService {
 //                return new JsonResult().success("该订单已完成");
 //            }
             log.setUserId(session.getId());
-            log.setOrderId(GoodsOrder.getId());
+            log.setOrderId(goodsOrder.getId());
             if(session.isAdmin()) {
                 log.setUserKind(Constant.USER_TYPE_ADMIN);
             }
@@ -169,8 +175,8 @@ public class GoodsOrderService {
             log.setCreateTime(new Date());
             orderLogDao.insert(log);
         }
-        GoodsOrder.setUpdateTime(new Date());
-        int result = goodsOrderDao.update(GoodsOrder);
+        goodsOrder.setUpdateTime(new Date());
+        int result = goodsOrderDao.update(goodsOrder);
         return new JsonResult().success(Convert.toString(result));
     }
 

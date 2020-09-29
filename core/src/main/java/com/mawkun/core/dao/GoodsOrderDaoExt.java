@@ -4,6 +4,7 @@ import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
+import com.mawkun.core.base.entity.GoodsOrder;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -16,6 +17,8 @@ public interface GoodsOrderDaoExt {
      * @return
      */
     GoodsOrderVo selectDetail(Long id);
+
+    int updateBatch(List<GoodsOrderVo> list);
 
     /**
      *统计门店收入

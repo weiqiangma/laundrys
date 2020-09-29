@@ -101,4 +101,6 @@ public class GoodsOrderController extends BaseController {
         if (idList.size()>0) result = goodsOrderServiceExt.deleteByIds(idList);
         return sendSuccess(result);
     }
+
+
 }

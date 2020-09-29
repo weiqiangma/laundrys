@@ -25,27 +25,29 @@ public interface Constant {
     int INVEST_ORDER_WAITING_WAY = 1;   //待支付
     int INVEST_ORDER_FINISH = 2 ;       //已完成
 
+    //=============================新旧订单状态=============================//
+    int ORDER_NEW = 1;
+    int ORDER_OLD = 2;
+
     //=============================配送订单状态（用户）=============================//
     int ORDER_STATUS_WAITING_PAY = 1;   //待支付
 
-    int ORDER_STATUS_WAITING_REAP = 2;  //待收货
-    int ORDER_STATUS_CLEANING = 3;      //洗涤中
-    int ORDER_STATUS_WAITING_TAKE = 4;  //待取货
-    int ORDER_STATUS_SURE_TAKE = 5;     //已完成
-
-
     int DELIVERY_ORDER_WAITING_REAP = 2;    //待收货
-    int DELIVERY_ORDER_CLEANING = 3;        //洗涤中
-    int DELIVERY_ORDER_WAITING_TAKE = 4;    //待送达
-    int DELIVERY_ORDER_SURE_TAKE = 5;       //已完成
+    int DELIVERY_ORDER_SURE_TAKE = 3;       //确认收货
+    int DELIVERY_ORDER_CLEANING = 4;        //洗涤中
+    int DELIVERY_ORDER_WAITING_TAKE = 5;    //待送达
+    int DELIVERY_ORDER_SURE_FINISH = 6;       //已完成
 
 
     int SELF_ORDER_WAITING_SEND = 2;    //待送达门店
+    int SELF_ORDER_SURE_SEND = 3;       //确认送达
     int SELF_ORDER_CLEANING = 4;        //洗涤中
-    int SELF_ORDER_WAITING_TAKE = 5;    //待取货
-    int SELF_ORDER_SURE_TAKE = 6;       //已完成
+    int SELF_ORDER_WAITING_TAKE = 6;    //待取货
+    int SELF_ORDER_SURE_TAKE = 5;       //已完成
 
     int ORDER_STATUS_CANCEL = 7;        //订单取消
+
+    //=============================订单状态（用户）=============================//
 
     //=============================配送订单状态（实际）=============================//
 

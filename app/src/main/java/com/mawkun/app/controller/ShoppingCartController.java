@@ -206,7 +206,7 @@ public class ShoppingCartController extends BaseController {
                         sumOfMoney = sumOfMoney - resultAmount;
                         user.setSumOfMoney(sumOfMoney);
                         //生成待支付订单
-                        resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, null, resultAmount, cartList);
+                        resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, address, resultAmount, cartList);
                         resultOrder.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
                         goodsOrderServiceExt.update(resultOrder);
                         transactionManager.commit(status);

@@ -56,6 +56,8 @@
         <result column="transport_fee" property="transportFee"/>
         <result column="shop_name" property="shopName"/>
         <result column="user_address" property="userAddress"/>
+        <result column="link_mobile1" property="linkMobile1"/>
+        <result column="link_mobile2" property="linkMobile2"/>
         <result column="mobile" property="mobile"/>
         <result column="customerName" property="customerName"/>
         <result column="distributorName" property="distributorName"/>
@@ -77,15 +79,122 @@
         ifnull(ofm.transport_fee,0) transport_fee,
         shop.shop_name,
         cus.real_name customerName,
-        cus.mobile,
+        uas.link_mobile1,
+        uas.link_mobile2,
         dis.real_name distributorName
     FROM
         goods_order ofm
         left JOIN `user` cus on ofm.user_id =cus.id
+        left join user_address uas on ofm.address_id=uas.id
         LEFT JOIN `user` dis on ofm.distributor_id=dis.id
         left join shop on ofm.shop_id = shop.id
     WHERE ofm.id=#{id}
     </select>
+
+    <update id="updateBatch" parameterType="list">
+        update goods_order
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="user_id = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.userId}
+                </foreach>
+            </trim>
+            <trim prefix="shop_id = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.shopId}
+                </foreach>
+            </trim>
+            <trim prefix="distributor_id = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.distributorId}
+                </foreach>
+            </trim>
+            <trim prefix="address_id = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.addressId}
+                </foreach>
+            </trim>
+            <trim prefix="user_name = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.userName}
+                </foreach>
+            </trim>
+            <trim prefix="shop_name = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.shopName}
+                </foreach>
+            </trim>
+            <trim prefix="order_no = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.orderNo}
+                </foreach>
+            </trim>
+            <trim prefix="remark = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.remark}
+                </foreach>
+            </trim>
+            <trim prefix="status = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.status}
+                </foreach>
+            </trim>
+            <trim prefix="real_amount = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.realAmount}
+                </foreach>
+            </trim>
+            <trim prefix="total_amount = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.totalAmount}
+                </foreach>
+            </trim>
+            <trim prefix="user_address = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.userAddress}
+                </foreach>
+            </trim>
+            <trim prefix="transport_fee = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.transportFee}
+                </foreach>
+            </trim>
+            <trim prefix="transport_way = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.transportWay}
+                </foreach>
+            </trim>
+            <trim prefix="pay_kind = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.payKind}
+                </foreach>
+            </trim>
+            <trim prefix="pay_time = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.payTime}
+                </foreach>
+            </trim>
+            <trim prefix="isNew = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.isnew}
+                </foreach>
+            </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.updateTime}
+                </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    when id = #{item.id} then #{item.createTime}
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id,jdbcType=INTEGER}
+        </foreach>
+    </update>
 
     <resultMap type="com.mawkun.core.base.data.vo.GoodsOrderVo" id="OrderFormVoResultMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
@@ -102,12 +211,13 @@
         <result property="userAddress" column="user_address"/>
         <result property="userName" column="user_name"/>
         <result property="mobile" column="mobile"/>
+        <result property="location" column="location"/>
         <result property="transportFee" column="transport_fee"/>
         <result property="type" column="type"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
     <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
-        select goods_order.*, user.mobile from goods_order left join user on goods_order.user_id = user.id
+        select goods_order.*, ua.location, user.mobile from goods_order left join user on goods_order.user_id = user.id left join user_address ua on goods_order.address_id = ua.id
         <where>
             <if test="id != null and id > 0">
                 and goods_order.id = #{id}
@@ -115,7 +225,13 @@
             <if test="transportWay != null">
                 and goods_order.transport_way = #{transportWay}
             </if>
-            <if test="status != null">
+            <if test="type != null and type == 1">
+                and goods_order.distributor_id is null
+            </if>
+            <if test="type != null and type == 2">
+                and goods_order.distributor_id is not null
+            </if>
+            <if test="status != null ">
                 and goods_order.status = #{status}
             </if>
             <if test="orderNo != null and orderNo != ''">
@@ -134,7 +250,7 @@
                 </foreach>
             </if>
             <if test="createTime != null">
-                and DATE_FORMAT( goods_order.create_time, '%Y-%m-%d' ) = DATE_FORMAT( #{createTime}, '%Y-%m-%d' )
+                and DATE_FORMAT( goods_order.create_time, '%Y-%m-%d' ) = DATE_FORMAT(#{createTime}, '%Y-%m-%d' )
             </if>
         </where>
         order by goods_order.create_time desc

@@ -12,6 +12,9 @@ public class GoodsOrderVo extends GoodsOrder {
     private String customerName;        //客户姓名
     private String mobile;
     private String distributorName;     //配送员姓名
+    private String location;            //订单收货地址
+    private String linkMobile1;
+    private String linkMobile2;
     private String shopName;
     private Double amount;
     private List<OrderClothes> list;         //订单下商品

@@ -79,8 +79,11 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         List<Long> shopIdList = suList.stream().map(ShopUser::getShopId).collect(Collectors.toList());
         query.setShopIdList(shopIdList);
         query.setCreateTime(new Date());
+        query.setTransportWay(Constant.ORDER_DELIVERY_GET);
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
+        list.forEach(item -> item.setIsnew(Constant.ORDER_OLD));
+        //goodsOrderDaoExt.updateBatch(list);
         for(GoodsOrderVo orderVo : list) {
             List<OrderClothes> orderClothes  = orderClothesServiceExt.getByOrderId(orderVo.getId());
             orderVo.setList(orderClothes);
@@ -267,20 +270,31 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
 
     /**
      * 配送员确认收货
-     * @param session
+     * @param userId
      * @param order
      * @param description
      * @return
      */
-    public int orderTaking(UserSession session, GoodsOrder order, String description) {
+    public int orderTaking(Long userId, GoodsOrder order, String description) {
         /**
          * 1.更新订单状态
          * 2.生成订单操作记录
          */
         //TODO
-        //order.setStatus(Constant.ORDER_STATUS_SURE_REAP);
-        goodsOrderDao.update(order);
-        return orderLogServiceExt.createWaitingPayOrder(session.getId(), session.getUserName(), order.getId(), Constant.USER_TYPE_DISTRIBUTOR, Constant.ORDER_STATUS_CANCEL, "确认收货", description);
+        order.setStatus(Constant.DELIVERY_ORDER_SURE_TAKE);
+        order.setDistributorId(userId);
+        return goodsOrderDao.update(order);
+        //return orderLogServiceExt.createWaitingPayOrder(session.getId(), session.getUserName(), order.getId(), Constant.USER_TYPE_DISTRIBUTOR, Constant.ORDER_STATUS_CANCEL, "确认收货", description);
+    }
+
+    /**
+     * 配送员确认接单
+     * @param userId
+     * @param order
+     */
+    public int orderSure(Long userId, GoodsOrder order) {
+        order.setDistributorId(userId);
+        return goodsOrderDao.update(order);
     }
 
     /**
@@ -302,6 +316,10 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
             return true;
         }
         return false;
+    }
+
+    public void getDistributorFinishOrder() {
+
     }
 
 }

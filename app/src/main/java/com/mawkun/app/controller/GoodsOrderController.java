@@ -235,21 +235,41 @@ public class GoodsOrderController extends BaseController {
         return sendSuccess(page);
     }
 
-    @PostMapping("/orderTaking")
-    @ApiOperation(value="配送员确认订单", notes="配送员确认订单")
-    public JsonResult orderTaking(@LoginedAuth UserSession session, Long orderId, String description) {
+    @PostMapping("/orderSure")
+    @ApiOperation(value="配送员确认接单", notes="配送员确认接单")
+    public JsonResult orderSure(@LoginedAuth UserSession session, Long orderId) {
         if(!session.isDistributor()) {
             return sendArgsError("非配送员无权操作");
         }
-        GoodsOrder GoodsOrder = goodsOrderServiceExt.getById(orderId);
-        if(GoodsOrder == null) {
+        GoodsOrder goodsOrder = goodsOrderServiceExt.getById(orderId);
+        if(goodsOrder == null) {
             return sendArgsError("未查询到该订单");
         }
         boolean flag = goodsOrderServiceExt.checkOrderIsDistributor(session.getId(), orderId);
         if(!flag) {
             return sendArgsError("订单不属于配送员关联门店,无权操作");
         }
-        int result = goodsOrderServiceExt.orderTaking(session, GoodsOrder, description);
+        int result = goodsOrderServiceExt.orderSure(session.getId(), goodsOrder);
         return sendSuccess(result);
     }
+
+    @PostMapping("/orderTaking")
+    @ApiOperation(value="配送员确认订单", notes="配送员确认订单")
+    public JsonResult orderTaking(@LoginedAuth UserSession session, Long orderId, String description) {
+        if(!session.isDistributor()) {
+            return sendArgsError("非配送员无权操作");
+        }
+        GoodsOrder goodsOrder = goodsOrderServiceExt.getById(orderId);
+        if(goodsOrder == null) {
+            return sendArgsError("未查询到该订单");
+        }
+        boolean flag = goodsOrderServiceExt.checkOrderIsDistributor(session.getId(), orderId);
+        if(!flag) {
+            return sendArgsError("订单不属于配送员关联门店,无权操作");
+        }
+        int result = goodsOrderServiceExt.orderTaking(session.getId(), goodsOrder, description);
+        return sendSuccess(result);
+    }
+
+
 }

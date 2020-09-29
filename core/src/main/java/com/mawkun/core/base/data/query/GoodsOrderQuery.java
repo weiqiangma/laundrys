@@ -21,6 +21,7 @@ public class GoodsOrderQuery extends GoodsOrder {
     private Date createTimeStart;
     private Date createTimeEnd;
 
+    private Integer type;   //配送员界面1:待接单，2：已结单
     private Long amount;
     private Integer integral;
     private List<Long> shopIdList;
