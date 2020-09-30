@@ -102,5 +102,4 @@ public class GoodsOrderController extends BaseController {
         return sendSuccess(result);
     }
 
-
 }

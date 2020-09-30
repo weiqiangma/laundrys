@@ -271,5 +271,29 @@ public class GoodsOrderController extends BaseController {
         return sendSuccess(result);
     }
 
+    /**
+     * 获取新订单
+     * @param session
+     * @return
+     */
+    @PostMapping("/getNewOrder")
+    public JsonResult getNewOrder(@LoginedAuth UserSession session) {
+        if(!session.isDistributor()) return sendArgsError("非配送员无权操作");
+        List<GoodsOrderVo> resultList = goodsOrderServiceExt.getNewOrder(session.getId());
+        return sendSuccess(resultList);
+    }
+
+    /**
+     * 配送员订单统计
+     * @param session
+     * @return
+     */
+    @PostMapping("/statsDistributorOrder")
+    public JsonResult statsDistributorOrder(@LoginedAuth UserSession session) {
+        if(!session.isDistributor()) return sendArgsError("非配送员无权查看");
+        JSONObject object = goodsOrderServiceExt.statsDistributorOrder(session.getId());
+        return sendSuccess(object);
+    }
+
 
 }

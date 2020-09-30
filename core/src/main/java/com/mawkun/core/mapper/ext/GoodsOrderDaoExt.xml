@@ -243,6 +243,9 @@
             <if test="userId != null and userId > 0">
                 and goods_order.user_id = #{userId}
             </if>
+            <if test="isnew != null">
+                and goods_order.isNew = #{isnew}
+            </if>
             <if test="shopIdList != null">
                 and goods_order.shop_id in
                 <foreach item="item" index="index" collection="shopIdList" open="(" separator="," close=")">
@@ -251,6 +254,9 @@
             </if>
             <if test="createTime != null">
                 and DATE_FORMAT( goods_order.create_time, '%Y-%m-%d' ) = DATE_FORMAT(#{createTime}, '%Y-%m-%d' )
+            </if>
+            <if test="createTimeStart != null and createTimeEnd != null">
+                and goods_order.create_time between #{createTimeStart} and #{createTimeEnd}
             </if>
         </where>
         order by goods_order.create_time desc

@@ -106,6 +106,8 @@ public class WxApiController extends BaseController {
                 String totalFee = map.get("total_fee");
                 Date payTime = TimeUtils.convertWeiXinTime(timeEnd);
                 GoodsOrder orderForm = goodsOrderServiceExt.getByOrderNo(orderNo);
+                orderForm.setIsnew(Constant.ORDER_NEW);
+                goodsOrderServiceExt.update(orderForm);
                 //如果订单状态还是待支付，更新订单状态
                 if (orderForm.getStatus() == Constant.ORDER_STATUS_WAITING_PAY) {
                     User user = userServiceExt.getById(orderForm.getUserId());
@@ -167,6 +169,8 @@ public class WxApiController extends BaseController {
         if(!orderForm.getUserId().equals(session.getId())) {
             return sendArgsError("非下单用户无权编辑");
         }
+        orderForm.setIsnew(Constant.ORDER_NEW);
+        goodsOrderServiceExt.update(orderForm);
         JSONObject object = wxApiServiceExt.getOrderStatus(orderForm.getOrderNo());
         String resultCode = object.getString("result_code");
         if(StringUtils.equals(Constant.WX_RETURN_SUCCESS, resultCode)) {

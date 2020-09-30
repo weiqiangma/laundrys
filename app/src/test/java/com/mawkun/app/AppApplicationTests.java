@@ -1,11 +1,15 @@
 package com.mawkun.app;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mawkun.core.base.entity.GoodsOrder;
 import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 class AppApplicationTests {
@@ -30,14 +34,14 @@ class AppApplicationTests {
 
     @Test
     void createOrder() {
-        String accessToken = wxApiServiceExt.getAccessToken();
-        JSONObject object = new JSONObject();
-        object.put("thing1","军大衣");
-        object.put("character_string2","234826423672846");
-        object.put("thing3","2020年4月4日 20:00");
-        object.put("thing4","大双洗衣店");
-        object.put("thing5","您的衣服已经清洗完成请及时领取");
-        //wxApiServiceExt.sendMessageToUser(accessToken, "owrdq5Cdbl9sWklPO4tMwoRqkP68", object.toJSONString(), null, null);
+        List<Long> ids = new ArrayList<>();
+        ids.add(111111111L);
+        List<GoodsOrder> list = orderFormServiceExt.listByIds(ids);
+        if(list != null) {
+            System.out.println("hello");
+        } else {
+            System.out.println("world");
+        }
     }
 
     @Test
