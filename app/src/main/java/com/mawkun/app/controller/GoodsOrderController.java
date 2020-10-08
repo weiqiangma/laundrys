@@ -160,7 +160,7 @@ public class GoodsOrderController extends BaseController {
         return sendSuccess(goodsOrder);
     }
 
-    @PutMapping("/update")
+    @PostMapping("/update")
     @ApiOperation(value="编辑订单", notes="编辑订单")
     public JsonResult update(@LoginedAuth UserSession session, GoodsOrder goodsOrder){
         return goodsOrderServiceExt.update(session, goodsOrder);
@@ -215,7 +215,8 @@ public class GoodsOrderController extends BaseController {
         orderLog.setOrderId(orderId);
         List<OrderLog> list = orderLogServiceExt.listByEntity(orderLog);
         List<OrderLog> sortList = list.stream().sorted(Comparator.comparingInt(OrderLog::getStatus)).collect(Collectors.toList());
-        for(OrderLog log : sortList) {
+        List<OrderLog> resultList = sortList.stream().collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(OrderLog::getStatus))), ArrayList::new));
+        for(OrderLog log : resultList) {
             JSONObject object = new JSONObject();
             String createTime = DateUtils.format("yyyy-MM-dd HH:mm:ss", log.getCreateTime());
             object.put("status", log.getStatus());
@@ -276,10 +277,10 @@ public class GoodsOrderController extends BaseController {
      * @param session
      * @return
      */
-    @PostMapping("/getNewOrder")
+    @GetMapping("/getNewOrder")
     public JsonResult getNewOrder(@LoginedAuth UserSession session) {
         if(!session.isDistributor()) return sendArgsError("非配送员无权操作");
-        List<GoodsOrderVo> resultList = goodsOrderServiceExt.getNewOrder(session.getId());
+        List<GoodsOrderVo> resultList = goodsOrderServiceExt.getDistributorNewOrder(session.getId());
         return sendSuccess(resultList);
     }
 
@@ -294,6 +295,4 @@ public class GoodsOrderController extends BaseController {
         JSONObject object = goodsOrderServiceExt.statsDistributorOrder(session.getId());
         return sendSuccess(object);
     }
-
-
 }

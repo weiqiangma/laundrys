@@ -37,8 +37,11 @@
             <if test="id != null">
                 and id = #{id,jdbcType=INTEGER}
             </if>
-            <if test="kindId != null">
+            <if test="kindId != null and kindId != -1">
                 and kind_id = #{kindId,jdbcType=INTEGER}
+            </if>
+            <if test="kindId != null and kindId == -1">
+                and kind_id > 0
             </if>
             <if test="goodsName != null">
                 and goods_name = #{goodsName,jdbcType=VARCHAR}

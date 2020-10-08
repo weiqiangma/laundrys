@@ -99,7 +99,7 @@ public class UserController extends BaseController {
     @PutMapping("/update")
     @ApiOperation(value="编辑用户", notes="编辑用户")
     public JsonResult update(@LoginedAuth @ApiIgnore UserSession session, User user, String shopIds){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权编辑用户");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权编辑用户");
         int result = userServiceExt.update(user, shopIds);
         return sendSuccess(result);
     }
@@ -143,7 +143,7 @@ public class UserController extends BaseController {
         try(OutputStream outputStream = response.getOutputStream()) {
             response.setContentType("application/vnd.ms-excel");
             response.setCharacterEncoding("utf-8");
-            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("教职工考勤统计.xlsx", "UTF-8"));
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("用户信息统计.xlsx", "UTF-8"));
             EasyExcel.write(outputStream, User.class).sheet("用户统计").doWrite(list);
         } catch (Exception e) {
             e.printStackTrace();

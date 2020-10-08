@@ -2,8 +2,10 @@ package com.mawkun.admin.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.entity.SysParam;
 import com.mawkun.core.service.SysParamServiceExt;
+import com.mawkun.core.utils.ImageUtils;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,12 +33,17 @@ public class SysParamController extends BaseController {
 
     @GetMapping("/list")
     public JsonResult list(SysParam sysParam) {
-        List<SysParam> sysParamList = sysParamServiceExt.listByEntity(sysParam);
+        List<SysParam> sysParamList = sysParamServiceExt.getSysParamList();
         return sendSuccess(sysParamList);
     }
 
     @PostMapping("/insert")
-    public JsonResult insert(SysParam sysParam){
+    public JsonResult insert(SysParam sysParam, MultipartFile file){
+        if(file != null) {
+            MultipartFile[] files = {file};
+            String images = ImageUtils.uploadImages(files);
+            sysParam.setSysValue(images);
+        }
         sysParamServiceExt.insert(sysParam);
         return sendSuccess(sysParam);
     }
@@ -60,4 +67,15 @@ public class SysParamController extends BaseController {
         return result;
     }
 
+    @GetMapping("/getTransportFee")
+    public JsonResult getTransportFee() {
+        List<SysParam> list = sysParamServiceExt.getTransportFee();
+        return sendSuccess(list);
+    }
+
+    @GetMapping("/getMainPicture")
+    public JsonResult getMainPicture() {
+        List<SysParam> list = sysParamServiceExt.getMainPicture();
+        return sendSuccess(list);
+    }
 }

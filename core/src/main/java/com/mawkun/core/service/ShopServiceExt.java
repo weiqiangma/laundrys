@@ -58,6 +58,12 @@ public class ShopServiceExt extends ShopService {
         return shopDaoExt.insert(shop);
     }
 
+    public Shop getFirstLevelShop() {
+        Shop query = new Shop();
+        query.setLevel(0);
+        return shopDaoExt.getByEntity(query);
+    }
+
     /**
      * 编辑代纳普
      * @param shop
@@ -97,8 +103,7 @@ public class ShopServiceExt extends ShopService {
      */
     public JSONArray statsShopIncome(StateQuery query) {
         fillQueryData(query);
-        //List<GoodsOrderVo> list = orderFormDaoExt.statsShopIncome(query);
-        List<GoodsOrderVo> list = new ArrayList<>();
+        List<GoodsOrderVo> list = goodsOrderDaoExt.statsShopIncome(query);
         //根据type进行分组
         Map<String, GoodsOrderVo> dataMap = list.stream().collect(Collectors.toMap(GoodsOrderVo::getType, m->m));
         Date sTime = query.getStartTime();

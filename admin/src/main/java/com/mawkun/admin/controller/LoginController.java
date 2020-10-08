@@ -5,6 +5,7 @@ import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.CryptUtils;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSONObject;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.entity.Admin;
 import com.mawkun.core.base.entity.Goods;
@@ -52,12 +53,16 @@ public class LoginController extends BaseController {
             super.addAdminLog("管理员登录:帐号密码错误");
             return sendError("帐号密码错误");
         }
+        if(admin.getStatus() == Constant.USER_STATUS_LOCK) {
+            return sendArgsError("该用户已被封锁，如需解锁请联系主管理员");
+        }
         String token = CryptUtils.md5(String.valueOf(System.currentTimeMillis()) + admin.getId() + admin.getUserName() + System.nanoTime());
         JSONObject item = new JSONObject();
         item.put("id", admin.getId());
         item.put("shopId", admin.getShopId());
         item.put("mobile", admin.getMobile());
         item.put("realName", admin.getRealName());
+        item.put("level", admin.getLevel());
         item.put("token", token);
         UserSession session = new UserSession(token, admin);
         userCacheService.putAdminSession(token, session);

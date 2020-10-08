@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class SysParamServiceExt extends SysParamService {
 
@@ -38,15 +41,30 @@ public class SysParamServiceExt extends SysParamService {
         return sysParamDaoExt.update(param);
     }
 
+    public List<SysParam> getSysParamList() {
+        SysParam query = new SysParam();
+        query.setType(0);
+        return sysParamDaoExt.listByEntity(query);
+    }
+
     /**
      * 获取首页图片
      * @return
      */
-    public String getMainPicture() {
-        return sysParamDaoExt.selectSysValue("main_picture");
+    public List<SysParam> getMainPicture() {
+        List<SysParam> list = sysParamDaoExt.selectMainPicture("main_picture");
+        return list;
     }
 
     public String getMainAdvice() {
         return sysParamDaoExt.selectSysValue("main_advice");
+    }
+
+    public List<SysParam> getTransportFee() { return sysParamDaoExt.selectTransportFee(); }
+
+    public List<SysParam> getOrderNotice() { return sysParamDaoExt.selectOrderNotice(); }
+
+    public String getConsultMobile() {
+        return sysParamDaoExt.selectSysValue("consult_mobile");
     }
 }

@@ -98,8 +98,8 @@ public class GoodsOrderService {
         Integer status = goodsOrder.getStatus();
         if(status != null) {
             GoodsOrder dbForm = goodsOrderDao.getById(goodsOrder.getId());
-            if(!NumberUtils.equals(dbForm.getStatus() + 1, status)){
-                return new JsonResult().success("请按顺序执行订单流程");
+            if(!NumberUtils.equals(dbForm.getStatus() + 1, status) && !NumberUtils.equals(status, Constant.DELIVERY_ORDER_WAITING_REAP)){
+                return new JsonResult().error("请按顺序执行订单流程");
             }
             String operate = "";
             //客户送至门店
@@ -125,6 +125,7 @@ public class GoodsOrderService {
             //配送员上门取货
             if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
                 if(status == Constant.DELIVERY_ORDER_WAITING_REAP) {
+                    goodsOrder.setDistributorId(session.getId());
                     operate = "待收货";
                 }
                 else if(status == Constant.DELIVERY_ORDER_SURE_TAKE) {
@@ -136,29 +137,15 @@ public class GoodsOrderService {
                 else if(status == Constant.DELIVERY_ORDER_WAITING_TAKE) {
                     operate = "待送达";
                 }
-                else if(status == Constant.DELIVERY_ORDER_SURE_TAKE) {
+                else if(status == Constant.DELIVERY_ORDER_SURE_FINISH) {
                     operate = "已完成";
                 } else {
                     return new JsonResult().success("该订单已完成");
                 }
             }
             OrderLog log = new OrderLog();
-//            if(status == Constant.ORDER_STATUS_WAITING_REAP) {
-//                operate = "待收货";
-//            } else if(status == Constant.ORDER_STATUS_CANCEL) {
-//                operate = "确认收货";
-//            } else if(status == Constant.ORDER_STATUS_CLEANING) {
-//                operate = "洗涤中";
-//            } else if(status == Constant.ORDER_STATUS_WAITING_TAKE) {
-//                operate = "待取货";
-//            } else if(status == Constant.ORDER_STATUS_SURE_TAKE) {
-//                operate = "已完成";
-//            } else if(status == Constant.ORDER_STATUS_CANCEL) {
-//                operate = "取消订单";
-//            } else {
-//                return new JsonResult().success("该订单已完成");
-//            }
             log.setUserId(session.getId());
+            log.setUserName(session.getUserName());
             log.setOrderId(goodsOrder.getId());
             if(session.isAdmin()) {
                 log.setUserKind(Constant.USER_TYPE_ADMIN);

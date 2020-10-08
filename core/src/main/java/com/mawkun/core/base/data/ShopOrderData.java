@@ -10,6 +10,7 @@ import lombok.Data;
 public class ShopOrderData {
     private Long id;
     private Integer amount;
+    private Integer fee;
     private String shopName;
     private String type;
 }

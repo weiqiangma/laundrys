@@ -2,12 +2,14 @@ package com.mawkun.app.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import cn.pertech.common.utils.DateUtils;
 import cn.pertech.common.utils.NumberUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.entity.*;
+import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.dao.SysParamDaoExt;
 import com.mawkun.core.service.*;
 import com.mawkun.core.spring.annotation.LoginedAuth;
@@ -47,6 +49,10 @@ public class ShoppingCartController extends BaseController {
     //添加事务第一步 引入platformTransactionManager对象
     @Autowired
     private PlatformTransactionManager transactionManager;
+    @Autowired
+    private WxApiServiceExt wxApiServiceExt;
+    @Autowired
+    private ShopUserDaoExt shopUserDaoExt;
 
     @GetMapping("/get")
     @ApiOperation(value="门店详情", notes="门店详情")
@@ -89,8 +95,8 @@ public class ShoppingCartController extends BaseController {
 
     @PostMapping("/deleteByUserId")
     @ApiOperation(value="删除购物车", notes="删除购物车")
-    public JsonResult deleteByUserId(Long userId) {
-        int result = shoppingCartServiceExt.deleteByUserId(userId);
+    public JsonResult deleteByUserId(@LoginedAuth UserSession session) {
+        int result = shoppingCartServiceExt.deleteByUserId(session.getId());
         return sendSuccess(result);
     }
 
@@ -116,6 +122,22 @@ public class ShoppingCartController extends BaseController {
             int next = sortList.get(i+1).getDistance() * 1000;
             int max = sortList.get(paramList.size() -1).getDistance() * 1000;
             if(distance >= max) return sendArgsError("所选地址附近洗衣店即将开放，请耐心等待");
+            if(distance < front) {
+                int fee = 0;
+                int feeDiff = 0;
+                int lowAmount = sortList.get(i).getLowAmount();
+                if(amount >= lowAmount) {
+                    object.put("transportFee", 0);
+                    object.put("feeDiff", "");
+                    return sendSuccess(object);
+                }
+                String feeStr = sortList.get(i).getSysValue();
+                fee = NumberUtils.str2Int(feeStr);
+                feeDiff = lowAmount - amount;
+                object.put("transportFee", fee);
+                object.put("feeDiff", feeDiff);
+                break;
+            }
             if(distance >= front && distance < next) {
                 int fee = 0;
                 int feeDiff = 0;
@@ -175,10 +197,11 @@ public class ShoppingCartController extends BaseController {
                         sumOfMoney = sumOfMoney - resultAmount;
                         user.setSumOfMoney(sumOfMoney);
                         //生成待支付订单
-                        resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, null, resultAmount, cartList);
+                        resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, null, resultAmount, cartList, Constant.PAY_WITH_REMAINDER);
                         //更新订单状态
                         resultOrder.setStatus(Constant.SELF_ORDER_WAITING_SEND);
-                        goodsOrderServiceExt.update(resultOrder);
+                        resultOrder.setIsnew(Constant.ORDER_NEW);
+                        goodsOrderServiceExt.update(session, resultOrder);
                         transactionManager.commit(status);
                         return sendSuccess("支付成功");
                     } else {
@@ -187,7 +210,7 @@ public class ShoppingCartController extends BaseController {
                     }
                 } else {
                     //微信支付先生成订单
-                    resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, null, resultAmount, cartList);
+                    resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, null, resultAmount, cartList, Constant.PAY_WITH_WEIXIN);
                 }
             }
             //配送员上门取货
@@ -206,17 +229,21 @@ public class ShoppingCartController extends BaseController {
                         sumOfMoney = sumOfMoney - resultAmount;
                         user.setSumOfMoney(sumOfMoney);
                         //生成待支付订单
-                        resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, address, resultAmount, cartList);
+                        resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, address, resultAmount, cartList, Constant.PAY_WITH_REMAINDER);
                         resultOrder.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
+                        resultOrder.setIsnew(Constant.ORDER_NEW);
                         goodsOrderServiceExt.update(resultOrder);
                         transactionManager.commit(status);
+                        String timeEnd = DateUtils.format("yyyy-MM-dd HH:mm:ss", resultOrder.getCreateTime());
+                        List<String> openIdList = shopUserDaoExt.selectDistorOpenIdByShopId(resultOrder.getShopId());
+                        wxApiServiceExt.sendOrderPaySuccessNotice(user, resultOrder, timeEnd, openIdList);
                         return sendSuccess("支付成功");
                     } else {
                         transactionManager.commit(status);
                         return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
                     }
                 } else {
-                    resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, address, resultAmount, cartList);
+                    resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, address, resultAmount, cartList, Constant.PAY_WITH_WEIXIN);
                 }
             }
         } catch (Exception e) {

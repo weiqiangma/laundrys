@@ -57,6 +57,11 @@ public class GoodsController extends BaseController {
         return sendSuccess(goodsList);
     }
 
+    /**
+     * kindId = -1查询单品，kindId=0查询套餐
+     * @param query
+     * @return
+     */
     @GetMapping("/pageList")
     @ApiOperation(value="商品列表分页", notes="商品列表分业务")
     public JsonResult pageList(GoodsQuery query) {
@@ -67,7 +72,7 @@ public class GoodsController extends BaseController {
     @PostMapping("/insert")
     @ApiOperation(value="添加商品", notes="添加商品")
     public JsonResult insert(@LoginedAuth @ApiIgnore UserSession session, Goods goods, MultipartFile file){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权添加商品");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权添加商品");
         if(file == null || goods.getGoodsName() == null) return sendArgsError("缺少参数");
         List<Goods> goodsList = goodsServiceExt.getByName(goods.getGoodsName());
         if(!goodsList.isEmpty()) return sendArgsError("该商品名称已存在，请勿重复添加");
@@ -78,7 +83,7 @@ public class GoodsController extends BaseController {
     @PutMapping("/update")
     @ApiOperation(value="编辑商品", notes="编辑商品")
     public JsonResult update(@LoginedAuth @ApiIgnore UserSession session,Goods goods, MultipartFile file){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权编辑商品");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权编辑商品");
         List<Goods> goodsList = goodsServiceExt.getByName(goods.getGoodsName());
         if(goodsList.size() > 1) return sendError("该商品名称已存在，请勿重复添加");
         int result = goodsServiceExt.updateWithPic(goods, file);
@@ -88,7 +93,7 @@ public class GoodsController extends BaseController {
     @DeleteMapping("/delete")
     @ApiOperation(value="删除商品", notes="删除商品")
     public JsonResult deleteOne(@LoginedAuth @ApiIgnore UserSession session,Long id){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品");
         int result = goodsServiceExt.deleteById(id);
         return sendSuccess(result);
     }
@@ -97,7 +102,7 @@ public class GoodsController extends BaseController {
     @ApiOperation(value="批量删除商品", notes="批量删除商品")
     public JsonResult deleteBatch(@LoginedAuth @ApiIgnore UserSession session,String ids){
         int result = 0;
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品");
         List<String> idArray = Arrays.asList(ids.split(","));
         List idList = new ArrayList<>();
         idList = CollectionUtils.transform(idArray, new Transformer() {

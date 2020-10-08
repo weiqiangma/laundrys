@@ -21,6 +21,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author mawkun
@@ -52,13 +53,15 @@ public class KindController extends BaseController {
     @ApiOperation(value="商品类型列表", notes="商品类型列表")
     public JsonResult list(Kind kind) {
         List<Kind> kindList = kindServiceExt.listByEntity(kind);
-        return sendSuccess(kindList);
+        List<Kind> resultList = kindList.stream().filter(item -> item.getId() > 0).collect(Collectors.toList());
+        return sendSuccess(resultList);
     }
 
     @GetMapping("/pageList")
     @ApiOperation(value="商品类型列表分页", notes="商品类型列表分页")
     public JsonResult pageList(KindQuery query) {
         PageInfo page = kindServiceExt.pageByEntity(query);
+
         return sendSuccess(page);
     }
 }

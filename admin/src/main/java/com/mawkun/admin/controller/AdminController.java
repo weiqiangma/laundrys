@@ -7,6 +7,7 @@ import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.AdminQuery;
 import com.mawkun.core.base.entity.Admin;
 import com.mawkun.core.service.AdminServiceExt;
+import com.mawkun.core.service.ShopServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
@@ -34,6 +35,8 @@ public class AdminController extends BaseController {
     
     @Autowired
     private AdminServiceExt adminServiceExt;
+    @Autowired
+    private ShopServiceExt shopServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="根据id获取admin", notes="根据id获取admin")
@@ -45,7 +48,7 @@ public class AdminController extends BaseController {
     @GetMapping("/getByEntity")
     @ApiOperation(value="多条件获取admin", notes="多条件获取admin")
     public JsonResult getByEntity(@LoginedAuth @ApiIgnore UserSession session, Admin admin) {
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权查看");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权查看");
         Admin resultAdmin = adminServiceExt.getByEntity(admin);
         return sendSuccess(resultAdmin);
     }
@@ -53,7 +56,7 @@ public class AdminController extends BaseController {
     @GetMapping("/list")
     @ApiOperation(value="获取admin集合", notes="根据条件获取admin")
     public JsonResult list(@LoginedAuth @ApiIgnore UserSession session, Admin admin) {
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权查看");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权查看");
         List<Admin> adminList = adminServiceExt.listByEntity(admin);
         return sendSuccess(adminList);
     }
@@ -61,7 +64,7 @@ public class AdminController extends BaseController {
     @GetMapping("/pageList")
     @ApiOperation(value="管理员列表分页", notes="管理员列表分页")
     public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, AdminQuery query) {
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权查看");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权查看");
         PageInfo page = adminServiceExt.pageByEntity(query);
         return sendSuccess(page);
     }
@@ -69,8 +72,12 @@ public class AdminController extends BaseController {
     @PostMapping("/insert")
     @ApiOperation(value="添加admin", notes="添加admin")
     public JsonResult insert(@LoginedAuth @ApiIgnore UserSession session, Admin admin){
-        if(session.getShopId() > 0) return sendSuccess("子管理员无权添加管理员，请联系主管理员添加");
-        admin.setCreateTime(new Date());
+        if(session.getLevel() > 0) return sendSuccess("子管理员无权添加管理员，请联系主管理员添加");
+        Admin query = new Admin();
+        if(admin.getUserName() != null) query.setUserName(admin.getUserName());
+        if(admin.getMobile() != null) query.setMobile(admin.getMobile());
+        Admin resultAdmin = adminServiceExt.getByEntity(query);
+        if(resultAdmin == null) return sendArgsError("用户名或手机号重复,请重新添加");
         adminServiceExt.insert(admin);
         return sendSuccess(admin);
     }
@@ -87,7 +94,7 @@ public class AdminController extends BaseController {
     @ApiOperation(value="删除admin", notes="删除admin")
     @ApiImplicitParam(name = "id", value = "管理员ID", dataType = "Long", paramType = "header")
     public JsonResult deleteOne(@LoginedAuth @ApiIgnore UserSession session, Long id){
-        if(session.getShopId() > 0) return sendSuccess("子管理员无删除其他管理员权限");
+        if(session.getLevel() > 0) return sendSuccess("子管理员无删除其他管理员权限");
         adminServiceExt.deleteById(id);
         return sendSuccess("删除成功");
     }
@@ -96,7 +103,7 @@ public class AdminController extends BaseController {
     @ApiOperation(value="批量删除admin", notes="批量删除admin")
     public JsonResult deleteBatch(@LoginedAuth @ApiIgnore UserSession session,  String ids){
         int result = 0;
-        if(session.getShopId() > 0) return sendSuccess("子管理员无删除其他管理员权限");
+        if(session.getLevel() > 0) return sendSuccess("子管理员无删除其他管理员权限");
         List<String> idArray = Arrays.asList(ids.split(","));
         List idList = new ArrayList<>();
         idList = CollectionUtils.transform(idArray, new Transformer() {

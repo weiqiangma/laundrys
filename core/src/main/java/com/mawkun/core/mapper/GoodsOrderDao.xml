@@ -21,12 +21,14 @@
         <result property="payKind" column="pay_kind" jdbcType="OTHER"/>
         <result property="payTime" column="pay_time" jdbcType="TIMESTAMP"/>
         <result property="isnew" column="isNew" jdbcType="OTHER"/>
+        <result property="orderType" column="order_type" jdbcType="OTHER"/>
+        <result property="offlineMobile" column="offline_mobile" jdbcType="VARCHAR"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, shop_id, distributor_id, address_id, user_name, shop_name, order_no, remark, status, real_amount, total_amount, user_address, transport_fee, transport_way, pay_kind, pay_time, isNew, update_time, create_time      
+      id, user_id, shop_id, distributor_id, address_id, user_name, shop_name, order_no, remark, status, real_amount, total_amount, user_address, transport_fee, transport_way, pay_kind, pay_time, isNew, order_type, offline_mobile, update_time, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -98,6 +100,12 @@
             <if test="isnew != null">
                 and isNew = #{isnew,jdbcType=OTHER}
             </if>
+            <if test="orderType != null">
+                and order_type = #{orderType,jdbcType=OTHER}
+            </if>
+            <if test="offlineMobile != null">
+                and offline_mobile = #{offlineMobile,jdbcType=VARCHAR}
+            </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
             </if>
@@ -166,6 +174,12 @@
             </if>
             <if test="isnew != null">
                 and isNew = #{isnew,jdbcType=OTHER}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType,jdbcType=OTHER}
+            </if>
+            <if test="offlineMobile != null">
+                and offline_mobile = #{offlineMobile,jdbcType=VARCHAR}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -245,6 +259,12 @@
           <if test="isnew != null">
              isNew,
           </if>
+          <if test="orderType != null">
+             order_type,
+          </if>
+          <if test="offlineMobile != null">
+             offline_mobile,
+          </if>
           <if test="updateTime != null">
              update_time,
           </if>
@@ -307,6 +327,12 @@
           <if test="isnew != null">
              #{isnew,jdbcType=OTHER},
           </if>
+          <if test="orderType != null">
+             #{orderType,jdbcType=OTHER},
+          </if>
+          <if test="offlineMobile != null">
+             #{offlineMobile,jdbcType=VARCHAR},
+          </if>
           <if test="updateTime != null">
              #{updateTime,jdbcType=TIMESTAMP},
           </if>
@@ -319,10 +345,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into goods_order
-         (id, user_id, shop_id, distributor_id, address_id, user_name, shop_name, order_no, remark, status, real_amount, total_amount, user_address, transport_fee, transport_way, pay_kind, pay_time, isNew, update_time, create_time)
+         (id, user_id, shop_id, distributor_id, address_id, user_name, shop_name, order_no, remark, status, real_amount, total_amount, user_address, transport_fee, transport_way, pay_kind, pay_time, isNew, order_type, offline_mobile, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.distributorId,jdbcType=INTEGER}, #{item.addressId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.shopName,jdbcType=VARCHAR}, #{item.orderNo,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.realAmount,jdbcType=INTEGER}, #{item.totalAmount,jdbcType=INTEGER}, #{item.userAddress,jdbcType=VARCHAR}, #{item.transportFee,jdbcType=INTEGER}, #{item.transportWay,jdbcType=OTHER}, #{item.payKind,jdbcType=OTHER}, #{item.payTime,jdbcType=TIMESTAMP}, #{item.isnew,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.shopId,jdbcType=INTEGER}, #{item.distributorId,jdbcType=INTEGER}, #{item.addressId,jdbcType=INTEGER}, #{item.userName,jdbcType=VARCHAR}, #{item.shopName,jdbcType=VARCHAR}, #{item.orderNo,jdbcType=VARCHAR}, #{item.remark,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.realAmount,jdbcType=INTEGER}, #{item.totalAmount,jdbcType=INTEGER}, #{item.userAddress,jdbcType=VARCHAR}, #{item.transportFee,jdbcType=INTEGER}, #{item.transportWay,jdbcType=OTHER}, #{item.payKind,jdbcType=OTHER}, #{item.payTime,jdbcType=TIMESTAMP}, #{item.isnew,jdbcType=OTHER}, #{item.orderType,jdbcType=OTHER}, #{item.offlineMobile,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -380,6 +406,12 @@
             </if>
             <if test="isnew != null">
                 isNew = #{isnew,jdbcType=OTHER},
+            </if>
+            <if test="orderType != null">
+                order_type = #{orderType,jdbcType=OTHER},
+            </if>
+            <if test="offlineMobile != null and offlineMobile != ''">
+                offline_mobile = #{offlineMobile,jdbcType=VARCHAR},
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -446,6 +478,12 @@
             <if test="where.isnew == null and set.isnew != null">
                 isNew = #{set.isnew,jdbcType=OTHER},
             </if>
+            <if test="where.orderType == null and set.orderType != null">
+                order_type = #{set.orderType,jdbcType=OTHER},
+            </if>
+            <if test="where.offlineMobile == null and set.offlineMobile != null and set.offlineMobile != ''">
+                offline_mobile = #{set.offlineMobile,jdbcType=VARCHAR},
+            </if>
             <if test="where.updateTime == null and set.updateTime != null">
                 update_time = #{set.updateTime,jdbcType=TIMESTAMP},
             </if>
@@ -507,6 +545,12 @@
             </if>
             <if test="where.isnew != null">
                 and isNew = #{where.isnew,jdbcType=OTHER}
+            </if>
+            <if test="where.orderType != null">
+                and order_type = #{where.orderType,jdbcType=OTHER}
+            </if>
+            <if test="where.offlineMobile != null">
+                and offline_mobile = #{where.offlineMobile,jdbcType=VARCHAR}
             </if>
             <if test="where.updateTime != null">
                 and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
@@ -606,6 +650,16 @@
                   when id = #{item.id} then #{item.isnew}
                  </foreach>
             </trim>
+            <trim prefix="order_type = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.orderType}
+                 </foreach>
+            </trim>
+            <trim prefix="offline_mobile = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.offlineMobile}
+                 </foreach>
+            </trim>
             <trim prefix="update_time = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.updateTime}
@@ -682,6 +736,12 @@
             </if>
             <if test="isnew != null">
                 and isNew = #{isnew,jdbcType=OTHER}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType,jdbcType=OTHER}
+            </if>
+            <if test="offlineMobile != null">
+                and offline_mobile = #{offlineMobile,jdbcType=VARCHAR}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -760,6 +820,12 @@
             </if>
             <if test="isnew != null">
                 and isNew = #{isnew,jdbcType=OTHER}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType,jdbcType=OTHER}
+            </if>
+            <if test="offlineMobile != null">
+                and offline_mobile = #{offlineMobile,jdbcType=VARCHAR}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}

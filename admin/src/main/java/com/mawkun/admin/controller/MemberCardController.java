@@ -47,21 +47,21 @@ public class MemberCardController extends BaseController {
 
     @PostMapping("/insert")
     public JsonResult insert(@LoginedAuth UserSession session, MemberCard memberCard){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
         memberCardService.insert(memberCard);
         return sendSuccess(memberCard);
     }
 
     @PutMapping("/update")
     public JsonResult update(@LoginedAuth UserSession session, MemberCard memberCard){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
         int result = memberCardService.update(memberCard);
         return sendSuccess(result);
     }
 
     @DeleteMapping("/delete")
     public JsonResult deleteOne(@LoginedAuth UserSession session, Long id){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
         int result = memberCardService.deleteById(id);
         return sendSuccess(result);
     }
@@ -69,7 +69,7 @@ public class MemberCardController extends BaseController {
     @DeleteMapping("/deleteBatch")
     public JsonResult deleteBatch(@LoginedAuth UserSession session, String ids){
         int result = 0;
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
         List<String> idArray = Arrays.asList(ids.split(","));
         List idList = new ArrayList<>();
         idList = CollectionUtils.transform(idArray, new Transformer() {

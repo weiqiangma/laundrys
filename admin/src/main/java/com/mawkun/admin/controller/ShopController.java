@@ -5,11 +5,13 @@ import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.RequestUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.Shop;
+import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.service.ShopServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
@@ -41,6 +43,8 @@ public class ShopController extends BaseController {
     
     @Autowired
     private ShopServiceExt shopServiceExt;
+    @Autowired
+    private GoodsOrderServiceExt goodsOrderServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="门店详情", notes="门店详情")
@@ -74,10 +78,12 @@ public class ShopController extends BaseController {
     @PostMapping("/insert")
     @ApiOperation(value="添加门店", notes="添加门店")
     public JsonResult insert(@LoginedAuth @ApiIgnore UserSession session,Shop shop, MultipartFile[] files){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权添加门店");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权添加门店");
         if(files.length == 0) return sendError("请上传门店图片");
         List shopList = shopServiceExt.getByName(shop.getShopName());
         if(!shopList.isEmpty()) return sendError("该门店名称已存在，不能重复添加");
+        Shop resultShop = shopServiceExt.getFirstLevelShop();
+        if(resultShop != null) return sendArgsError("总店已存在，请勿重复添加");
         int result = shopServiceExt.insertWithPic(shop, files);
         return sendSuccess(result);
     }
@@ -85,9 +91,15 @@ public class ShopController extends BaseController {
     @PutMapping("/update")
     @ApiOperation(value="编辑门店", notes="编辑门店")
     public JsonResult update(@LoginedAuth @ApiIgnore UserSession session, Shop shop, MultipartFile[] files){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权编辑门店");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权编辑门店");
         List shopList = shopServiceExt.getByName(shop.getShopName());
         if(shopList.size() > 1) return sendError("该门店名称已存在不能重复添加");
+        if(shop.getLevel() != null && shop.getLevel() == 0) {
+            Shop resultShop = shopServiceExt.getById(shop.getId());
+            if(resultShop.getLevel() == Constant.SHOP_LEVEL_SECOND && shop.getLevel() == Constant.SHOP_LEVEL_FIRST) {
+                return sendArgsError("总店已存在，请勿重复添加");
+            }
+        }
         int result = shopServiceExt.updateWithPic(shop, files);
         return sendSuccess(result);
     }
@@ -95,7 +107,7 @@ public class ShopController extends BaseController {
     @DeleteMapping("/delete")
     @ApiOperation(value="删除门店", notes="删除门店")
     public JsonResult deleteOne(@LoginedAuth @ApiIgnore UserSession session,Long id){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除门店");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除门店");
         int result = shopServiceExt.deleteById(id);
         return sendSuccess(result);
     }
@@ -104,7 +116,7 @@ public class ShopController extends BaseController {
     @ApiOperation(value="批量删除门店", notes="批量删除门店")
     public JsonResult deleteBatch(@LoginedAuth @ApiIgnore UserSession session, String ids){
         int result = 0;
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除门店");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除门店");
         List<String> idArray = Arrays.asList(ids.split(","));
         List idList = new ArrayList<>();
         idList = CollectionUtils.transform(idArray, new Transformer() {
@@ -125,7 +137,8 @@ public class ShopController extends BaseController {
     @ApiOperation(value="统计门店收入", notes="统计门店收入")
     public JsonResult statsShopIncome(@LoginedAuth UserSession session) {
         StateQuery query = this.createQueryStateVo();
-        //if(session.getShopId() > 0) query.setShopId(session.getShopId());
+        query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
+        if(session.getShopId() > 0) query.setShopId(session.getShopId());
         JSONArray array = shopServiceExt.statsShopIncome(query);
         return sendSuccess(array);
     }
@@ -138,8 +151,19 @@ public class ShopController extends BaseController {
     @GetMapping("/statsShopOrder")
     public JsonResult statsShopOrder(@LoginedAuth UserSession session) {
         StateQuery query = this.createQueryStateVo();
-        //if(session.getShopId() > 0) query.setShopId(session.getShopId());
+        if(session.getShopId() > 0) query.setShopId(session.getShopId());
+        query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
         JSONArray array = shopServiceExt.statsShopOrder(query);
+        return sendSuccess(array);
+    }
+
+    @GetMapping("/statsDistributorOrder")
+    @ApiOperation(value="配送员订单统计", notes="配送员订单统计")
+    public JsonResult statsDistributorOrder(@LoginedAuth UserSession session) {
+        StateQuery query = this.createQueryStateVo();
+        query.setDistributorId(session.getId());
+        query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
+        JSONArray array = goodsOrderServiceExt.statsDistributorOrder(query);
         return sendSuccess(array);
     }
 

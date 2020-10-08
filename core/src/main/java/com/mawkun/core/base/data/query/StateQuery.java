@@ -7,9 +7,11 @@ import java.util.Date;
 @Data
 public class StateQuery {
     private Long shopId;
+    private Long distributorId;
     private Date startTime;
     private Date endTime;
     private String formatCode;
     private Integer type;
+    private Integer status;
     private int dateCount;
 }

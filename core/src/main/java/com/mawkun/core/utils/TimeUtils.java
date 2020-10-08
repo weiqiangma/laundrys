@@ -283,6 +283,16 @@ public class TimeUtils {
         return resultTime;
     }
 
+    public static String convertWeiXinTimeStr(String wxTime) throws ParseException {
+        String year = wxTime.substring(0,4);
+        String month = wxTime.substring(4, 6);
+        String day = wxTime.substring(6, 8);
+        String hour = wxTime.substring(8, 10);
+        String minute = wxTime.substring(10, 12);
+        String second = wxTime.substring(12, 14);
+        return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+    }
+
     public static void main(String[] args) throws ParseException {
         String sTime ="20200926125506";
         String year = sTime.substring(0,4);

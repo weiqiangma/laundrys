@@ -65,7 +65,7 @@ public class KindController extends BaseController {
     @PostMapping("/insert")
     @ApiOperation(value="添加商品类型", notes="添加商品类型")
     public JsonResult insert(@LoginedAuth @ApiIgnore UserSession session, Kind kind, MultipartFile file){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权添加商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权添加商品分类");
         if(file == null || kind.getKindName() == null) return sendError("缺少参数");
         Kind resultKind = kindServiceExt.getByName(kind.getKindName());
         if(resultKind != null) return sendError("该类型已存在不能重复添加");
@@ -76,7 +76,7 @@ public class KindController extends BaseController {
     @PutMapping("/update")
     @ApiOperation(value="编辑商品类型", notes="编辑商品类型")
     public JsonResult update(@LoginedAuth @ApiIgnore UserSession session,Kind kind, MultipartFile file){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权编辑商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权编辑商品分类");
         int result = kindServiceExt.updateWithPic(kind, file);
         return sendSuccess(result);
     }
@@ -84,7 +84,7 @@ public class KindController extends BaseController {
     @DeleteMapping("/delete")
     @ApiOperation(value="删除商品类型", notes="删除商品类型")
     public JsonResult deleteOne(@LoginedAuth @ApiIgnore UserSession session,Long id){
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
         int result = kindServiceExt.deleteById(id);
         return sendSuccess(result);
     }
@@ -93,7 +93,7 @@ public class KindController extends BaseController {
     @ApiOperation(value="批量删除商品类型", notes="批量删除商品类型")
     public JsonResult deleteBatch(@LoginedAuth @ApiIgnore UserSession session,String ids){
         int result = 0;
-        if(session.getShopId() > 0) return sendArgsError("子管理员无权删除商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
         List<String> idArray = Arrays.asList(ids.split(","));
         List idList = new ArrayList<>();
         idList = CollectionUtils.transform(idArray, new Transformer() {

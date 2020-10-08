@@ -29,4 +29,10 @@ public class AdminServiceExt extends AdminService {
         return new PageInfo(list);
     }
 
+    public Admin getByShopId(Long shopId) {
+        Admin query = new Admin();
+        query.setShopId(shopId);
+        return adminDaoExt.getByEntity(query);
+    }
+
 }

@@ -22,6 +22,8 @@ public interface ShopUserDaoExt extends ShopUserDao {
      */
     List<ShopUserVo> selectShopNameByUserId(@Param("userId") Long userId);
 
+    List<String> selectDistorOpenIdByShopId(@Param("shopId") Long shopId);
+
     int deleteByUserId(Long userId);
 
 }

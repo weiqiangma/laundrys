@@ -5,7 +5,12 @@ import cn.pertech.common.http.HttpUtils;
 import cn.pertech.common.utils.RandomUtils;
 import cn.pertech.common.utils.XmlUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.WxLoginResultData;
+import com.mawkun.core.base.entity.GoodsOrder;
+import com.mawkun.core.base.entity.InvestOrder;
+import com.mawkun.core.base.entity.OrderClothes;
+import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.CacheService;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.WechatDecryptDataUtil;
@@ -31,6 +36,7 @@ import java.security.Key;
 import java.security.MessageDigest;
 import java.security.Security;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Date 2020/9/8 16:42
@@ -51,6 +57,8 @@ public class WxApiServiceExt {
 
     @Autowired
     private CacheService cacheService;
+    @Autowired
+    private OrderClothesServiceExt orderClothesServiceExt;
 
     /**
      * 根据code获取用户openId
@@ -272,11 +280,12 @@ public class WxApiServiceExt {
      * @param page      小程序模板跳转页面
      * @param miniprogramState 跳转小程序类型
      */
-    public void sendMessage(String accessToken, String toUser, String data, String page, String miniprogramState) {
+    public void sendMessage(String accessToken, String toUser, String templateId, JSONObject data, String page, String miniprogramState) {
         String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + accessToken;
         try {
-            JSONObject object = new JSONObject();
-            object.put("toUser", toUser);
+            JSONObject object = new JSONObject(new LinkedHashMap<>());
+            object.put("touser", toUser);
+            object.put("template_id", templateId);
             object.put("data", data);
             String param = object.toJSONString();
             HttpResult result = HttpUtils.post(url, param, "UTF-8");
@@ -309,9 +318,60 @@ public class WxApiServiceExt {
         return accessToken;
     }
 
-    public void sendPaySuccessMsg(String openId, String data) {
+    public void sendPaySuccessMsg(String openId, String templateId, JSONObject data) {
         String accessToken = getAccessToken();
-        JSONObject object = new JSONObject();
-        sendMessage(accessToken, openId, data, null, null);
+        sendMessage(accessToken, openId, templateId, data, null, null);
+    }
+
+    /**
+     * 用户充值成功发送的通知
+     * @param user
+     * @param investOrder
+     * @param timeEnd
+     */
+    public void sendInvestSuccessNotice(User user, InvestOrder investOrder, String timeEnd) {
+        JSONObject object = new JSONObject(new LinkedHashMap<>());
+        JSONObject name1Object = new JSONObject();
+        name1Object.put("value", user.getUserName());
+        object.put("name1",name1Object);
+        JSONObject time2Object = new JSONObject();
+        time2Object.put("value", timeEnd);
+        object.put("time2",time2Object);
+        JSONObject amount3Object = new JSONObject();
+        amount3Object.put("value", investOrder.getAmountMoney()/100);
+        object.put("amount3", amount3Object);
+        JSONObject amount4Object = new JSONObject();
+        amount4Object.put("value", investOrder.getInvestMoney()/100);
+        object.put("amount4", amount4Object);
+        JSONObject amount5Object = new JSONObject();
+        amount5Object.put("value", investOrder.getResiduemoney()/100);
+        object.put("amount5", amount5Object);
+        sendPaySuccessMsg(user.getOpenId(), Constant.INVEST_SUCCESS_NOTICE, object);
+    }
+
+    public void sendOrderPaySuccessNotice(User user, GoodsOrder goodsOrder, String timeEnd, List<String> list) {
+        List<OrderClothes> orderClothes = orderClothesServiceExt.getByOrderId(goodsOrder.getId());
+        List<String> clothesList = orderClothes.stream().map(OrderClothes::getGoodsName).collect(Collectors.toList());
+        String goodsName = String.join(",", clothesList);
+
+        JSONObject object = new JSONObject(new LinkedHashMap<>());
+        JSONObject object1 = new JSONObject();
+        object1.put("value", user.getMobile());
+        object.put("phone_number13", object1);
+        JSONObject object2 = new JSONObject();
+        object2.put("value", goodsOrder.getOrderNo());
+        object.put("character_string2", object2);
+        JSONObject object3 = new JSONObject();
+        object3.put("value", goodsOrder.getTotalAmount()/100);
+        object.put("amount3", object3);
+        JSONObject object4 = new JSONObject();
+        object4.put("value", timeEnd);
+        object.put("date4", object4);
+        JSONObject object5 = new JSONObject();
+        object5.put("value", goodsName);
+        object.put("thing6", object5);
+        for(String openId : list) {
+            sendPaySuccessMsg(openId, Constant.ORDER_PAY_SUCCESS_NOTICE, object);
+        }
     }
 }

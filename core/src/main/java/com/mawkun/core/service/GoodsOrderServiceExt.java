@@ -1,19 +1,24 @@
 package com.mawkun.core.service;
 
+import cn.pertech.common.utils.DateUtils;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.dao.GoodsOrderDao;
+import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.data.query.GoodsQuery;
+import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.GoodsOrderService;
 import com.mawkun.core.dao.*;
 import com.mawkun.core.utils.StringUtils;
+import com.mawkun.core.utils.TimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -21,8 +26,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -61,12 +68,22 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         if(StringUtils.isNotEmpty(query.getShopName())) {
             query.setShopName("%" + query.getShopName() + "%");
         }
+        if(StringUtils.isNotEmpty(query.getLinkMobile1())) {
+            query.setLinkMobile1("%" + query.getLinkMobile1() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getLinkMobile2())) {
+            query.setLinkMobile2("%" + query.getLinkMobile2() + "%");
+        }
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
         for(GoodsOrderVo orderVo : list) {
             List<OrderClothes> orderClothes = orderClothesServiceExt.getByOrderId(orderVo.getId());
             orderVo.setList(orderClothes);
         }
         return new PageInfo<>(list);
+    }
+
+    public int setOrderIsOld(List<GoodsOrderVo> list) {
+        return goodsOrderDaoExt.setOrderIsOld(list);
     }
 
     /**
@@ -77,18 +94,21 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
      */
     public PageInfo<GoodsOrderVo> getDistributorOrder(Long userId, GoodsOrderQuery query) {
         query.init();
+        if(query.getType() == 2) {
+            query.setDistributorId(userId);
+        }
         ShopUser shopUser = new ShopUser();
         shopUser.setUserId(userId);
         List<ShopUser> suList = shopUserDaoExt.listByEntity(shopUser);
         List<Long> shopIdList = suList.stream().map(ShopUser::getShopId).collect(Collectors.toList());
         query.setShopIdList(shopIdList);
-        query.setCreateTime(new Date());
+        //query.setCreateTime(new Date());
         query.setTransportWay(Constant.ORDER_DELIVERY_GET);
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
         if(!list.isEmpty()) {
             list.forEach(item -> item.setIsnew(Constant.ORDER_OLD));
-            goodsOrderDaoExt.updateBatch(list);
+            goodsOrderDaoExt.setOrderIsOld(list);
             for (GoodsOrderVo orderVo : list) {
                 List<OrderClothes> orderClothes = orderClothesServiceExt.getByOrderId(orderVo.getId());
                 orderVo.setList(orderClothes);
@@ -142,7 +162,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
      * @param resultAmount
      */
     @Transactional
-    public GoodsOrder generateWaitingPayOrderForm(User user, Shop shop, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList) throws Exception {
+    public GoodsOrder generateWaitingPayOrderForm(User user, Shop shop, GoodsOrderQuery query, UserAddress address, Long resultAmount, List<ShoppingCart> cartList, Integer payKind) throws Exception {
         long result = -1;
         long orderKey = -1;
         //生成订单
@@ -156,6 +176,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         form.setUserName(user.getUserName());
         form.setRemark(query.getRemark());
         form.setStatus(Constant.ORDER_STATUS_WAITING_PAY);
+        form.setOrderType(Constant.ORDER_ONLINE);
         form.setTotalAmount(query.getAmount());
         form.setRealAmount(resultAmount);
         if(address != null && StringUtils.isNotEmpty(address.getDetail())) {
@@ -166,7 +187,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
             form.setTransportFee(query.getTransportFee());
         }
         form.setTransportWay(query.getTransportWay());
-        form.setPayKind(Constant.PAY_WITH_WEIXIN);
+        form.setPayKind(payKind);
         form.setUpdateTime(new Date());
         form.setCreateTime(new Date());
         result = goodsOrderDao.insert(form);
@@ -248,20 +269,22 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         return false;
     }
 
-    public void getDistributorFinishOrder() {
-
-    }
 
     /**
      * 获取新订单
      * @param userId
      * @return
      */
-    public List<GoodsOrderVo> getNewOrder(Long userId) {
+    public List<GoodsOrderVo> getDistributorNewOrder(Long userId) {
         List<ShopUserVo> spUserList = shopUserDaoExt.selectShopNameByUserId(userId);
         List<Long> shopIdList = spUserList.stream().map(ShopUserVo::getShopId).collect(Collectors.toList());
         GoodsOrderQuery query = new GoodsOrderQuery();
         query.setShopIdList(shopIdList);
+        query.setIsnew(Constant.ORDER_NEW);
+        return goodsOrderDaoExt.selectList(query);
+    }
+
+    public List<GoodsOrderVo> getShopNewOrder(GoodsOrderQuery query) {
         query.setIsnew(Constant.ORDER_NEW);
         return goodsOrderDaoExt.selectList(query);
     }
@@ -280,13 +303,98 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         List<GoodsOrderVo> waitSendOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_WAITING_TAKE).collect(Collectors.toList());
         List<GoodsOrderVo> finishOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_SURE_FINISH).collect(Collectors.toList());
         Long finishOrderTransportFee = finishOrders.stream().mapToLong(GoodsOrder::getTransportFee).sum();
+
+        GoodsOrderQuery orderQuery = new GoodsOrderQuery();
+        ShopUser shopUser = new ShopUser();
+        shopUser.setUserId(userId);
+        List<ShopUser> suList = shopUserDaoExt.listByEntity(shopUser);
+        List<Long> shopIdList = suList.stream().map(ShopUser::getShopId).collect(Collectors.toList());
+        orderQuery.setShopIdList(shopIdList);
+        orderQuery.setTransportWay(Constant.ORDER_DELIVERY_GET);
+        orderQuery.setType(1);
+        List<GoodsOrderVo> orderVos = goodsOrderDaoExt.selectList(orderQuery);
+
         JSONObject object = new JSONObject();
+        object.put("waitSureCount", orderVos.size());
         object.put("waitTakeCount", waitTakeOrders.size());
         object.put("sureTakeCount", sureTakeOrders.size());
         object.put("waitSendCount", waitSendOrders.size());
         object.put("finishCount", finishOrders.size());
         object.put("finishOrderTransportFee", finishOrderTransportFee);
         return object;
+    }
+
+    /**
+     * 统计配送员订单(后台图表)
+     * @param query
+     */
+    public JSONArray statsDistributorOrder(StateQuery query) {
+        fillQueryData(query);
+        List<ShopOrderData> list = goodsOrderDaoExt.statsShopOrder(query);
+        //根据type进行分组
+        Map<String, ShopOrderData> dataMap = list.stream().collect(Collectors.toMap(ShopOrderData::getType, m->m));
+        Date sTime = query.getStartTime();
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(sTime);
+        JSONArray array = new JSONArray();
+        for(int i = 0; i < query.getDateCount(); i++) {
+            String key = "";
+            if(query.getType()==1){
+                key = (i < 10) ? String.valueOf("0"+i):String.valueOf(i);
+            }else if(query.getType()==2){
+                key = DateUtils.format("yyyy-MM-dd",ca.getTime());
+            }else if(query.getType()==3 || query.getType()==4){
+                key = DateUtils.format("yyyy-MM-dd",ca.getTime());
+            }else{
+                continue;
+            }
+            ShopOrderData data = dataMap.get(key);
+            JSONObject object = new JSONObject();
+            String shopName = (data == null) ? "" : data.getShopName();
+            if(query.getShopId() == null) shopName = "";
+            Integer amount = (data == null) ? 0 : data.getAmount();
+            Integer fee = (data == null) ? 0 : data.getFee();
+            object.put("time", key);
+            object.put("fee", fee);
+            object.put("amount", amount);
+            array.add(object);
+            ca.add(Calendar.DAY_OF_MONTH,1);
+        }
+        return array;
+    }
+
+    private void fillQueryData(StateQuery queryVO) {
+        Date now = new Date();
+        if(queryVO.getType() == 1) {
+            //当天统计
+            queryVO.setStartTime(DateUtils.dateStartDate(now));
+            queryVO.setEndTime(DateUtils.dateEndDate(now));
+            queryVO.setFormatCode("%H");
+            queryVO.setDateCount(24);
+        }else if(queryVO.getType() == 2) {
+            //本周统计
+            queryVO.setStartTime(TimeUtils.getWeekStart());
+            queryVO.setEndTime(TimeUtils.getWeekEnd());
+            queryVO.setFormatCode("%Y-%m-%d");
+            queryVO.setDateCount(7);
+        }else if(queryVO.getType() == 3) {
+            //本月统计
+            queryVO.setStartTime(TimeUtils.getMonthStart());
+            queryVO.setEndTime(TimeUtils.getMonthEnd());
+            queryVO.setFormatCode("%Y-%m-%d");
+            int year = DateUtils.getYear();
+            int month = DateUtils.getMonth();
+            queryVO.setDateCount(DateUtils.getDaysOfMonth(year,month));
+        }else if(queryVO.getType()==4){
+            //自定义传入
+            queryVO.setFormatCode("%Y-%m-%d");
+            queryVO.setStartTime(DateUtils.dateStartDate(queryVO.getStartTime()));
+            //最后一天要取到时间
+            queryVO.setEndTime(DateUtils.dateEndDate(queryVO.getEndTime()));
+            int diff = (int)DateUtils.dayDiff(queryVO.getStartTime(), queryVO.getEndTime());
+            queryVO.setDateCount(diff);
+        }
+        //System.out.println("格式化后范围: "+JsonUtils.toString(queryVO));
     }
 
 }

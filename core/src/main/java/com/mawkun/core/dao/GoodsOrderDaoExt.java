@@ -18,7 +18,7 @@ public interface GoodsOrderDaoExt {
      */
     GoodsOrderVo selectDetail(Long id);
 
-    int updateBatch(List<GoodsOrderVo> list);
+    int setOrderIsOld(List<GoodsOrderVo> list);
 
     /**
      *统计门店收入
@@ -33,6 +33,13 @@ public interface GoodsOrderDaoExt {
      * @return
      */
     List<ShopOrderData> statsShopOrder(StateQuery query);
+
+    /**
+     * 统计配送员订单
+     * @param query
+     * @return
+     */
+    List<ShopOrderData> statsDistributorOrder(StateQuery query);
 
     /**
      * 订单列表

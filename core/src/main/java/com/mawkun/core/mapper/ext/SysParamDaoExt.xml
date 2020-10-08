@@ -3,10 +3,18 @@
 <mapper namespace="com.mawkun.core.dao.SysParamDaoExt">
 
     <select id="selectSysValue" resultType="java.lang.String" parameterType="java.lang.String">
-        select sys_value from sys_param where real_name = #{realName}
+        select sys_value from sys_param where real_name = #{realName} and status = 0
+    </select>
+
+    <select id="selectMainPicture" resultMap="com.mawkun.core.base.dao.SysParamDao.SysParamResultMap" parameterType="java.lang.String">
+        select * from sys_param where real_name = #{realName} and type = 2 and status = 0
     </select>
 
     <select id="selectTransportFee" resultMap="com.mawkun.core.base.dao.SysParamDao.SysParamResultMap">
-        select * from sys_param where real_name like '%transportfee%'
+        select * from sys_param where real_name like '%transportfee%' and status = 0
+    </select>
+
+    <select id="selectOrderNotice" resultMap="com.mawkun.core.base.dao.SysParamDao.SysParamResultMap">
+        select * from sys_param where real_name like '%notice%' and status = 0
     </select>
 </mapper>

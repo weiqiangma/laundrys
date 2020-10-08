@@ -11,6 +11,10 @@ public interface SysParamDaoExt extends SysParamDao {
 
     String selectSysValue(String realName);
 
+    List<SysParam> selectMainPicture(String realName);
+
     List<SysParam> selectTransportFee();
+
+    List<SysParam> selectOrderNotice();
 
 }

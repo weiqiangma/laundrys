@@ -79,7 +79,7 @@ public class UserSession {
     }
 
     public boolean isSuperAdmin() {
-        return (this.isAdmin() && this.shopId == 0 && this.level == 1);
+        return (this.isAdmin() && this.level == 0);
     }
 
     public boolean isCustomer() {

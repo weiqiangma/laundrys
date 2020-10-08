@@ -5,7 +5,7 @@
     <!-- 统计门店收入 -->
     <select id="statsShopIncome" resultType="com.mawkun.core.base.data.vo.GoodsOrderVo" parameterType="com.mawkun.core.base.data.query.StateQuery">
         SELECT
-        ifnull( SUM( real_amount ), 0 ) amount,
+        ifnull( SUM( total_amount ), 0 ) amount,
         DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
         FROM
         goods_order ofm
@@ -17,6 +17,9 @@
             <if test="shopId != null and shopId > 0">
                 AND shop.id = #{shopId}
             </if>
+            <if test="status != null">
+                AND ofm.status = #{status}
+            </if>
         </where>
         GROUP BY
         type
@@ -26,6 +29,7 @@
     <select id="statsShopOrder" resultType="com.mawkun.core.base.data.ShopOrderData" parameterType="com.mawkun.core.base.data.query.StateQuery">
         SELECT
         count( ofm.id ) amount,
+        sum( ofm.transport_fee) fee,
         DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
         <if test="shopId != null and shopId > 0">
             ,shop.shop_name shopName
@@ -33,6 +37,27 @@
         FROM
         goods_order ofm
         LEFT JOIN shop ON ofm.shop_id = shop.id
+        <where>
+            <if test="startTime != null and endTime != null">
+                AND ofm.create_time &gt;= #{startTime} AND ofm.create_time &lt;= #{endTime}
+            </if>
+            <if test="shopId != null and shopId > 0">
+                AND ofm.shop_id = #{shopId}
+            </if>
+            <if test="distributorId != null and distributorId > 0">
+                AND ofm.distributor_id = #{distributorId}
+            </if>
+            <if test="status != null">
+                AND ofm.status = #{status}
+            </if>
+        </where>
+        group by type
+    </select>
+
+    <select id="statsDistributorOrder" resultType="com.mawkun.core.base.data.ShopOrderData" parameterType="com.mawkun.core.base.data.query.StateQuery">
+        SELECT
+        count( ofm.id ) amount,
+        DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type FROM goods_order ofm
         <where>
             <if test="startTime != null and endTime != null">
                 AND ofm.create_time &gt;= #{startTime} AND ofm.create_time &lt;= #{endTime}
@@ -91,105 +116,8 @@
     WHERE ofm.id=#{id}
     </select>
 
-    <update id="updateBatch" parameterType="list">
-        update goods_order
-        <trim prefix="set" suffixOverrides=",">
-            <trim prefix="user_id = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.userId}
-                </foreach>
-            </trim>
-            <trim prefix="shop_id = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.shopId}
-                </foreach>
-            </trim>
-            <trim prefix="distributor_id = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.distributorId}
-                </foreach>
-            </trim>
-            <trim prefix="address_id = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.addressId}
-                </foreach>
-            </trim>
-            <trim prefix="user_name = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.userName}
-                </foreach>
-            </trim>
-            <trim prefix="shop_name = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.shopName}
-                </foreach>
-            </trim>
-            <trim prefix="order_no = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.orderNo}
-                </foreach>
-            </trim>
-            <trim prefix="remark = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.remark}
-                </foreach>
-            </trim>
-            <trim prefix="status = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.status}
-                </foreach>
-            </trim>
-            <trim prefix="real_amount = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.realAmount}
-                </foreach>
-            </trim>
-            <trim prefix="total_amount = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.totalAmount}
-                </foreach>
-            </trim>
-            <trim prefix="user_address = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.userAddress}
-                </foreach>
-            </trim>
-            <trim prefix="transport_fee = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.transportFee}
-                </foreach>
-            </trim>
-            <trim prefix="transport_way = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.transportWay}
-                </foreach>
-            </trim>
-            <trim prefix="pay_kind = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.payKind}
-                </foreach>
-            </trim>
-            <trim prefix="pay_time = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.payTime}
-                </foreach>
-            </trim>
-            <trim prefix="isNew = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.isnew}
-                </foreach>
-            </trim>
-            <trim prefix="update_time = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.updateTime}
-                </foreach>
-            </trim>
-            <trim prefix="create_time = case" suffix="end,">
-                <foreach collection="list" item="item" index="index">
-                    when id = #{item.id} then #{item.createTime}
-                </foreach>
-            </trim>
-        </trim>
+    <update id="setOrderIsOld" parameterType="list">
+        update goods_order set isNew = 2
         where id in
         <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
             #{item.id,jdbcType=INTEGER}
@@ -211,16 +139,23 @@
         <result property="userAddress" column="user_address"/>
         <result property="userName" column="user_name"/>
         <result property="mobile" column="mobile"/>
+        <result property="linkMobile1" column="link_mobile1"/>
+        <result property="linkMobile2" column="link_mobile2"/>
+        <result property="offlineMobile" column="offline_mobile"/>
         <result property="location" column="location"/>
         <result property="transportFee" column="transport_fee"/>
         <result property="type" column="type"/>
+        <result property="payKind" column="pay_kind"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
     <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
-        select goods_order.*, ua.location, user.mobile from goods_order left join user on goods_order.user_id = user.id left join user_address ua on goods_order.address_id = ua.id
+        select goods_order.*, ua.location, user.mobile, ua.link_mobile1, ua.link_mobile2 from goods_order left join user on goods_order.user_id = user.id left join user_address ua on goods_order.address_id = ua.id
         <where>
             <if test="id != null and id > 0">
                 and goods_order.id = #{id}
+            </if>
+            <if test="shopId != null and shopId > 0">
+                and goods_order.shop_id = #{shopId}
             </if>
             <if test="transportWay != null">
                 and goods_order.transport_way = #{transportWay}
@@ -238,13 +173,28 @@
                 and goods_order.order_no like #{orderNo}
             </if>
             <if test="shopName != null and shopName != ''">
-                and goods_order.shopName like #{shopName}
+                and goods_order.shop_name like #{shopName}
             </if>
             <if test="userId != null and userId > 0">
                 and goods_order.user_id = #{userId}
             </if>
+            <if test="distributorId != null and distributorId > 0">
+                and goods_order.distributor_id = #{distributorId}
+            </if>
             <if test="isnew != null">
                 and goods_order.isNew = #{isnew}
+            </if>
+            <if test="payKind != null">
+                and goods_order.pay_kind = #{payKind}
+            </if>
+            <if test="linkMobile1 != null">
+                and ua.link_mobile1 like #{linkMobile1}
+            </if>
+            <if test="linkMobile2 != null">
+                and ua.link_mobile2 like #{linkMobile2}
+            </if>
+            <if test="orderType != null">
+                and goods_order.order_type = #{orderType}
             </if>
             <if test="shopIdList != null">
                 and goods_order.shop_id in

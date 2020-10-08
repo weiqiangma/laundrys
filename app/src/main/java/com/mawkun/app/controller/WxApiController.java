@@ -11,6 +11,7 @@ import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.entity.*;
+import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.service.*;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.mawkun.core.utils.TimeUtils;
@@ -26,10 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -53,6 +51,8 @@ public class WxApiController extends BaseController {
     private WxApiServiceExt wxApiServiceExt;
     @Autowired
     private UserServiceExt userServiceExt;
+    @Autowired
+    private ShopUserDaoExt shopUserDaoExt;
     @Autowired
     private PayFlowServiceExt payFlowServiceExt;
     @Autowired
@@ -133,8 +133,9 @@ public class WxApiController extends BaseController {
                     goodsOrderServiceExt.update(session, orderForm);
                     //生成支付流水
                     payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
-                    //发送通知
-                    String accessToken = wxApiServiceExt.getAccessToken();
+                    //发送通知(给下单的用户及关联该门店的配送员)
+                    List<String> openIdList = shopUserDaoExt.selectDistorOpenIdByShopId(orderForm.getShopId());
+                    wxApiServiceExt.sendOrderPaySuccessNotice(user, orderForm, TimeUtils.convertWeiXinTimeStr(timeEnd), openIdList);
                 }
                 result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
             } else {
@@ -178,9 +179,11 @@ public class WxApiController extends BaseController {
             String openId = object.getString("openid");
             String timeEnd = object.getString("time_end");
             String totalFee = object.getString("total_fee");
+            String endTime = "";
             Date payTime = new Date();
             try {
                 payTime = TimeUtils.convertWeiXinTime(timeEnd);
+                endTime = TimeUtils.convertWeiXinTimeStr(timeEnd);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -209,7 +212,9 @@ public class WxApiController extends BaseController {
                     goodsOrderServiceExt.update(null, orderForm);
                     //生成支付流水
                     payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
-                    //发送通知
+                    //发送通知(给下单的用户及关联该门店的配送员)
+                    List<String> openIdList = shopUserDaoExt.selectDistorOpenIdByShopId(orderForm.getShopId());
+                    wxApiServiceExt.sendOrderPaySuccessNotice(user, orderForm, endTime, openIdList);
 
                 }
             }
@@ -295,13 +300,7 @@ public class WxApiController extends BaseController {
                     //生成支付流水
                     payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_INVEST);
                     //发送通知
-                    JSONObject object = new JSONObject();
-                    object.put("name1",user.getUserName());
-                    object.put("time2",payTime);
-                    object.put("amount3", investOrder.getAmountMoney());
-                    object.put("amount4", investOrder.getInvestMoney());
-                    object.put("amount5", investOrder.getResiduemoney());
-                    wxApiServiceExt.sendPaySuccessMsg(user.getOpenId(), object.toJSONString());
+                    wxApiServiceExt.sendInvestSuccessNotice(user, investOrder, timeEnd);
                     result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
                 } else {
                     result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
@@ -352,6 +351,8 @@ public class WxApiController extends BaseController {
                     investOrderServiceExt.update(investOrder);
                     //生成支付流水
                     payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_INVEST);
+                    //发送通知
+                    wxApiServiceExt.sendInvestSuccessNotice(user, investOrder, timeEnd);
                 }
             }
         } else {

@@ -2,20 +2,19 @@ package com.mawkun.core.base.common.constant;
 
 //系统常量
 public interface Constant {
-    int STATUS_NO = 0;
-    int STATUS_YES = 1;
 
     //=============================管理员类型=============================//
-    int ADMIN_TYPE_SUPER = 1;   //主管理员
-    int ADMIN_TYPE_COMMON = 2;  //普通管理员
+    int ADMIN_TYPE_SUPER = 0;   //主管理员
+    int ADMIN_TYPE_COMMON = 1;  //普通管理员
+    int ADMIN_TYPE_DISTRIBUTOR = 2;  //配送员
 
     //=============================用户类型及状态=============================//
     int USER_TYPE_CUSTOMER = 1;     //顾客
     int USER_TYPE_DISTRIBUTOR = 2;  //配送员
     int USER_TYPE_ADMIN = 3;        //管理员
 
-    int USER_STATUS_LOCK = 0;       //用户封锁
-    int USER_STATUS_ACTIVE = 1;     //用户激活
+    int USER_STATUS_ACTIVE = 0;     //用户激活
+    int USER_STATUS_LOCK = 1;       //用户封锁
 
     //=============================下单类型=============================//
     int ORDER_DELIVERY_SEND = 0;    //客户送至门店
@@ -39,42 +38,32 @@ public interface Constant {
     int DELIVERY_ORDER_SURE_FINISH = 6;       //已完成
 
 
-    int SELF_ORDER_WAITING_SEND = 2;    //待送达门店
+    int SELF_ORDER_WAITING_SEND = 2;    //待送达
     int SELF_ORDER_SURE_SEND = 3;       //确认送达
     int SELF_ORDER_CLEANING = 4;        //洗涤中
-    int SELF_ORDER_WAITING_TAKE = 6;    //待取货
-    int SELF_ORDER_SURE_TAKE = 5;       //已完成
+    int SELF_ORDER_WAITING_TAKE = 5;    //待取货
+    int SELF_ORDER_SURE_TAKE = 6;       //已完成
 
     int ORDER_STATUS_CANCEL = 7;        //订单取消
 
-    //=============================订单状态（用户）=============================//
-
-
-    //=============================配送订单状态=============================//
-
-
-    //=============================自提订单状态=============================//
-    int ORDER_WAITING_PAY = 1;   //待支付
-
-    //=============================收货员订单状态=============================//
-    int DISTRIBUTOR_ORDER_WAITING_TAKING = 1;   //待接单
-    int DISTRIBUTOR_ORDER_SURE_TAKE = 2;        //已接单
-    int DISTRIBUTOR_ORDER_TAKED = 3;            //已确认收货
-    int DISTRIBUTOR_ORDER_SERVICE = 4;          //确认送达
+    //线上订单
+    int ORDER_ONLINE = 0;
+    //线下订单
+    int ORDER_OFFLINE = 1;
 
     //=============================订单类型=============================//
     int ORDER_TYPE_GOODS = 1;   //商品订单
     int ORDER_TYPE_INVEST = 2;  //充值订单
 
     //=============================系统参数状态=============================//
-    int SYS_PARAM_OPEN = 1;     //开启
-    int SYS_PARAM_CLOSE = 0;    //关闭
+    int SYS_PARAM_OPEN = 0;     //开启
+    int SYS_PARAM_CLOSE = 1;    //关闭
 
     //=============================支付类型================================//
     int PAY_WITH_WEIXIN = 0;    //微信支付
     int PAY_WITH_ZHIFUBAO = 1;  //支付宝支付
     int PAY_WITH_CASH = 2;      //现金支付
-    int PAY_WITH_REMAINDER = 4; //余额支付
+    int PAY_WITH_REMAINDER = 3; //余额支付
     //=============================商品状态================================//
     int GOODS_GROUNDING = 0;    //上架
     int GOODS_UNDERCARRIAGE = 1;//下架
@@ -89,6 +78,11 @@ public interface Constant {
     String TRANSPORT_LEVEL2 = "transport_level2";
     String TRANSPORT_LEVEL3 = "transport_level3";
     String TRANSPORT_LEVEL4 = "transport_level4";
+
+    //充值成功通知
+    String INVEST_SUCCESS_NOTICE = "4p4vTZ7u2vfPAz3ys53e-J7lREebH9S7bSebErCmX-Q";
+    //下单成功通知
+    String ORDER_PAY_SUCCESS_NOTICE = "TAPOOL9sfkMwpVEDnwTF413bG187NTeL2NpcgTRIeww";
 
     //=============================充值卡券状态=============================//
     int MEMBER_CART_ON = 0;     //上架
@@ -117,15 +111,19 @@ public interface Constant {
     int PAY_STATU_REFUND_SUCCESS = 30;
     int PAY_STATU_REFUND_REJECT = 50;
 
-    //=============================购物车信息状态=============================
-
     //=============================微信返回结果状态=============================
     String WX_RETURN_SUCCESS = "SUCCESS";
 
     //=============================购物车信息状态=============================
+    //总店
     int SHOP_LEVEL_FIRST = 0;
     //分店
     int SHOP_LEVEL_SECOND = 1;
+
+    //=============================购物车信息状态=============================
+    //首页展示
+    int MAIN_KIND_SHOW = 0;
+    int MAIN_KIND_NOT_SHOW = 1;
 
     //正常
     int SHOP_STATUS_NORMAL = 0;

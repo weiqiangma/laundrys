@@ -23,6 +23,8 @@ public class GoodsOrderQuery extends GoodsOrder {
 
     private Integer type;   //配送员界面1:待接单，2：已结单
     private Long amount;
+    private String linkMobile1;
+    private String linkMobile2;
     private Integer integral;
     private List<Long> shopIdList;
 
