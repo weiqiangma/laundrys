@@ -7,4 +7,5 @@ import lombok.Data;
 public class GoodsVo extends Goods {
 
     private Integer goodsNum;
+    private String kindName;
 }

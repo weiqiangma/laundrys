@@ -36,6 +36,6 @@ public interface GoodsDaoExt extends GoodsDao {
      * @param query
      * @return
      */
-    Goods selectByTerms(GoodsQuery query);
+    List<GoodsVo> selectByTerms(GoodsQuery query);
 
 }

@@ -46,7 +46,7 @@ public class UserAddressController extends BaseController {
         if(session.getId() > 0) address.setUserId(session.getId());
         if(address.getProvince() == null || address.getCity() == null || address.getArea() == null || address.getStreet() == null)
             return sendArgsError("请填写完整格式地址");
-        return userAddressServiceExt.insertUserAddress(address);
+        return userAddressServiceExt.insertUserAddress(session.getId(), address);
     }
 
     @PostMapping("/update")

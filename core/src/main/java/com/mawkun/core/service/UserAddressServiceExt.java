@@ -31,14 +31,16 @@ public class UserAddressServiceExt extends UserAddressService {
         return userAddressDaoExt.getByEntity(userAddress);
     }
 
-    public String getDetailAddressById(Long id) {
-        UserAddress userAddress = userAddressDaoExt.getById(id);
-        String detailAddress = userAddress.getCity() + userAddress.getArea() + userAddress.getStreet() + userAddress.getDetail();
-        return detailAddress;
+    public void setUserAddressUnused(Long userId) {
+        UserAddress query = new UserAddress();
+        query.setUserId(userId);
+        List<UserAddress> list = userAddressDaoExt.listByEntity(query);
+        list.forEach(item -> item.setStatus(Constant.USER_ADDRESS_UNUSED));
+        userAddressDaoExt.updateBatch(list);
     }
 
 
-    public JsonResult insertUserAddress(UserAddress address) {
+    public JsonResult insertUserAddress(Long userId, UserAddress address) {
         String province = (address.getProvince() != null) ? address.getProvince() : "";
         String city = (address.getCity() != null) ? address.getCity() : "";
         String region = (address.getArea() != null) ? address.getArea() : "";
@@ -47,6 +49,9 @@ public class UserAddressServiceExt extends UserAddressService {
         String detailAddress = province + city + region + street + detail;
         String location = gaoDeApiServiceExt.getLalByAddress(detailAddress);
         if(StringUtils.isEmpty(location)) return new JsonResult().error("收货地址解析失败,请输入正确地址");
+        if(address.getStatus() != null && address.getStatus() == Constant.USER_ADDRESS_USED) {
+            setUserAddressUnused(userId);
+        }
         String[] lal = location.split(",");
         String longitude = lal[0];
         String latidute = lal[1];

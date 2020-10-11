@@ -28,11 +28,26 @@
         select * from goods where goods_name = #{name}
     </select>
 
-    <select id="selectByTerms" resultMap="com.mawkun.core.base.dao.GoodsDao.GoodsResultMap" parameterType="com.mawkun.core.base.data.query.GoodsQuery">
-        select * from goods
+    <resultMap type="com.mawkun.core.base.data.vo.GoodsVo" id="GoodsVoResultMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="kindId" column="kind_id" jdbcType="INTEGER"/>
+        <result property="goodsName" column="goods_name" jdbcType="VARCHAR"/>
+        <result property="price" column="price" jdbcType="INTEGER"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="picture" column="picture" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="kindName" column="kind_name"/>
+    </resultMap>
+
+    <select id="selectByTerms" resultMap="GoodsVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsQuery">
+        select goods.*, kind.kind_name from goods left join kind on goods.kind_id = kind.id
         <where>
-            <if test="id != null and id > 0">and id = #{id}</if>
-            <if test="status != null">and status = #{status}</if>
+            <if test="id != null and id > 0">and goods.id = #{id}</if>
+            <if test="status != null">and goods.status = #{status}</if>
+            <if test="kindId != null">and goods.kind_id = #{kindId}</if>
         </where>
     </select>
 </mapper>

@@ -290,9 +290,9 @@ public class GoodsOrderController extends BaseController {
      * @return
      */
     @PostMapping("/statsDistributorOrder")
-    public JsonResult statsDistributorOrder(@LoginedAuth UserSession session) {
+    public JsonResult statsDistributorOrder(@LoginedAuth UserSession session, Integer transportWay) {
         if(!session.isDistributor()) return sendArgsError("非配送员无权查看");
-        JSONObject object = goodsOrderServiceExt.statsDistributorOrder(session.getId());
+        JSONObject object = goodsOrderServiceExt.statsDistributorOrder(session.getId(), transportWay);
         return sendSuccess(object);
     }
 }

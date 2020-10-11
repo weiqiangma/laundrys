@@ -166,16 +166,21 @@ public class ShoppingCartController extends BaseController {
          * 3.判断用户是否使用积分抵消消费金额，如果使用减去相应积分
          * 4.判断用户运费生成最终金额
          */
-        DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
-        defaultTransactionDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        TransactionStatus status = transactionManager.getTransaction(defaultTransactionDefinition);
+//        DefaultTransactionDefinition defaultTransactionDefinition = new DefaultTransactionDefinition();
+//        defaultTransactionDefinition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+//        TransactionStatus status = transactionManager.getTransaction(defaultTransactionDefinition);
 
-        long data = -1;
         GoodsOrder resultOrder = new GoodsOrder();
         User user = userServiceExt.getById(session.getId());
-        if (user == null) return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
+        if (user == null) {
+            //transactionManager.commit(status);
+            return sendArgsError("数据库中未查询到该用户信息,请联系管理员");
+        }
         List<ShoppingCart> cartList = shoppingCartServiceExt.findByUserId(user.getId());
-        if (cartList.isEmpty()) return sendArgsError("购物车内无商品信息,请先添加");
+        if (cartList.isEmpty()) {
+            //transactionManager.commit(status);
+            return sendArgsError("购物车内无商品信息,请先添加");
+        }
         //计算购物车内商品总价格+运费
         long resultAmount = 0;
         for (ShoppingCart cart : cartList) {
@@ -184,9 +189,15 @@ public class ShoppingCartController extends BaseController {
             Long goodsAmount = price * goodsNum;
             resultAmount = goodsAmount + resultAmount;
         }
-        if(resultAmount != query.getAmount()) return sendArgsError("购物车内所选商品和实际商品价格不符,请重新添加");
+        if(resultAmount != query.getAmount()){
+            //transactionManager.commit(status);
+            return sendArgsError("购物车内所选商品和实际商品价格不符,请重新添加");
+        }
         Shop shop = shopServiceExt.getById(query.getShopId());
-        if (shop == null) return sendArgsError("所选店铺不存在,请重新选择");
+        if (shop == null) {
+            //transactionManager.commit(status);
+            return sendArgsError("所选店铺不存在,请重新选择");
+        }
         try {
             //顾客送至门店
             if (query.getTransportWay() == Constant.ORDER_DELIVERY_SEND) {
@@ -202,10 +213,14 @@ public class ShoppingCartController extends BaseController {
                         resultOrder.setStatus(Constant.SELF_ORDER_WAITING_SEND);
                         resultOrder.setIsnew(Constant.ORDER_NEW);
                         goodsOrderServiceExt.update(session, resultOrder);
-                        transactionManager.commit(status);
+                        String timeEnd = DateUtils.format("yyyy-MM-dd HH:mm:ss", resultOrder.getCreateTime());
+                        List<String> openIdList = shopUserDaoExt.selectDistorOpenIdByShopId(resultOrder.getShopId());
+                        wxApiServiceExt.sendOrderPaySuccessNotice(user, resultOrder, timeEnd, user.getOpenId());
+                        wxApiServiceExt.sendDistributorOrderTakeNotice(user, resultOrder, timeEnd, openIdList);
+                        //transactionManager.commit(status);
                         return sendSuccess("支付成功");
                     } else {
-                        transactionManager.commit(status);
+                        //transactionManager.commit(status);
                         return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
                     }
                 } else {
@@ -216,15 +231,24 @@ public class ShoppingCartController extends BaseController {
             //配送员上门取货
             if (query.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
                 UserAddress address = userAddressServiceExt.getByIdAndUserId(query.getAddressId(), user.getId());
-                if (address == null) return sendArgsError("未查询到该收获地址,请选择其它地址或重新添加");
+                if (address == null) {
+                    //transactionManager.commit(status);
+                    return sendArgsError("未查询到该收获地址,请选择其它地址或重新添加");
+                }
                 Long transportFee = shoppingCartServiceExt.countTransportFee(shop, address, resultAmount);
-                if (!transportFee.equals(query.getTransportFee())) return sendArgsError("运费计算有误");
+                if (!transportFee.equals(query.getTransportFee())) {
+                    //transactionManager.commit(status);
+                    return sendArgsError("运费计算有误");
+                }
                 //商品总价+运费
                 resultAmount = resultAmount + transportFee;
                 //判断是不是余额支付，如果是更新用户余额
                 if (query.getSumOfMoney() != null && query.getSumOfMoney() > 0) {
                     Long sumOfMoney = user.getSumOfMoney();
-                    if (!user.getSumOfMoney().equals(sumOfMoney)) return sendArgsError("用户余额不一致");
+                    if (!user.getSumOfMoney().equals(sumOfMoney)) {
+                        //transactionManager.commit(status);
+                        return sendArgsError("用户余额不一致");
+                    }
                     if (sumOfMoney >= resultAmount) {
                         sumOfMoney = sumOfMoney - resultAmount;
                         user.setSumOfMoney(sumOfMoney);
@@ -232,14 +256,15 @@ public class ShoppingCartController extends BaseController {
                         resultOrder = goodsOrderServiceExt.generateWaitingPayOrderForm(user, shop, query, address, resultAmount, cartList, Constant.PAY_WITH_REMAINDER);
                         resultOrder.setStatus(Constant.DELIVERY_ORDER_WAITING_REAP);
                         resultOrder.setIsnew(Constant.ORDER_NEW);
-                        goodsOrderServiceExt.update(resultOrder);
-                        transactionManager.commit(status);
+                        goodsOrderServiceExt.update(session, resultOrder);
+                        //transactionManager.commit(status);
                         String timeEnd = DateUtils.format("yyyy-MM-dd HH:mm:ss", resultOrder.getCreateTime());
                         List<String> openIdList = shopUserDaoExt.selectDistorOpenIdByShopId(resultOrder.getShopId());
-                        wxApiServiceExt.sendOrderPaySuccessNotice(user, resultOrder, timeEnd, openIdList);
+                        wxApiServiceExt.sendOrderPaySuccessNotice(user, resultOrder, timeEnd, user.getOpenId());
+                        wxApiServiceExt.sendDistributorOrderTakeNotice(user, resultOrder, timeEnd, openIdList);
                         return sendSuccess("支付成功");
                     } else {
-                        transactionManager.commit(status);
+                        //transactionManager.commit(status);
                         return sendArgsError("您的余额已不足,请充值或选择其它支付方式");
                     }
                 } else {
@@ -248,9 +273,9 @@ public class ShoppingCartController extends BaseController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            transactionManager.rollback(status);
+            //transactionManager.rollback(status);
         }
-        transactionManager.commit(status);
+        //transactionManager.commit(status);
         if(resultOrder.getId() != null) return sendSuccess(resultOrder.getId());
         return sendArgsError("下单失败");
     }

@@ -138,7 +138,7 @@ public class ShopController extends BaseController {
     public JsonResult statsShopIncome(@LoginedAuth UserSession session) {
         StateQuery query = this.createQueryStateVo();
         query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
-        if(session.getShopId() > 0) query.setShopId(session.getShopId());
+        if(session.getLevel() > 0) query.setShopId(session.getShopId());
         JSONArray array = shopServiceExt.statsShopIncome(query);
         return sendSuccess(array);
     }
@@ -151,7 +151,7 @@ public class ShopController extends BaseController {
     @GetMapping("/statsShopOrder")
     public JsonResult statsShopOrder(@LoginedAuth UserSession session) {
         StateQuery query = this.createQueryStateVo();
-        if(session.getShopId() > 0) query.setShopId(session.getShopId());
+        if(session.getLevel() > 0) query.setShopId(session.getShopId());
         query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
         JSONArray array = shopServiceExt.statsShopOrder(query);
         return sendSuccess(array);
@@ -163,6 +163,7 @@ public class ShopController extends BaseController {
         StateQuery query = this.createQueryStateVo();
         query.setDistributorId(session.getId());
         query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
+        query.setTransportWay(Constant.ORDER_DELIVERY_GET);
         JSONArray array = goodsOrderServiceExt.statsDistributorOrder(query);
         return sendSuccess(array);
     }

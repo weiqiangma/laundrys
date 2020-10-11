@@ -141,6 +141,21 @@ public class GoodsOrderController extends BaseController {
         return sendSuccess(result);
     }
 
+    @GetMapping("/export")
+    @ApiOperation(value="订单列表分页", notes="订单列表分页")
+    public JsonResult export(@LoginedAuth @ApiIgnore UserSession session, GoodsOrderQuery query) {
+        if(session.getLevel() > 0) {
+            query.setShopId(session.getShopId());
+        }
+        PageInfo page = goodsOrderServiceExt.pageByEntity(query);
+        List<GoodsOrderVo> list = page.getList();
+        if(list.size() > 0) {
+            list.forEach(item -> item.setIsnew(Constant.ORDER_OLD));
+            goodsOrderServiceExt.setOrderIsOld(list);
+        }
+        return sendSuccess(page);
+    }
+
     //查询统计对象(首页统计)
     private StateQuery createQueryStateVo(){
         int type = getIntPar("type",1);

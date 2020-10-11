@@ -138,6 +138,7 @@
         <result property="transportWay" column="transport_way" jdbcType="INTEGER"/>
         <result property="userAddress" column="user_address"/>
         <result property="userName" column="user_name"/>
+        <result property="distributorName" column="distributor_name"/>
         <result property="mobile" column="mobile"/>
         <result property="linkMobile1" column="link_mobile1"/>
         <result property="linkMobile2" column="link_mobile2"/>
@@ -149,7 +150,10 @@
         <result property="createTime" column="create_time"/>
     </resultMap>
     <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
-        select goods_order.*, ua.location, user.mobile, ua.link_mobile1, ua.link_mobile2 from goods_order left join user on goods_order.user_id = user.id left join user_address ua on goods_order.address_id = ua.id
+        select goods_order.*, ua.location, user.mobile, ua.link_mobile1, ua.link_mobile2, uw.user_name distributor_name from goods_order
+        left join user on goods_order.user_id = user.id
+        left join user_address ua on goods_order.address_id = ua.id
+        left join user uw on goods_order.distributor_id = uw.id
         <where>
             <if test="id != null and id > 0">
                 and goods_order.id = #{id}

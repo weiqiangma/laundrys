@@ -103,18 +103,23 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         List<Long> shopIdList = suList.stream().map(ShopUser::getShopId).collect(Collectors.toList());
         query.setShopIdList(shopIdList);
         //query.setCreateTime(new Date());
-        query.setTransportWay(Constant.ORDER_DELIVERY_GET);
+        //query.setTransportWay(Constant.ORDER_DELIVERY_GET);
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
-        if(!list.isEmpty()) {
-            list.forEach(item -> item.setIsnew(Constant.ORDER_OLD));
-            goodsOrderDaoExt.setOrderIsOld(list);
-            for (GoodsOrderVo orderVo : list) {
+        List<GoodsOrderVo> resultList = list.stream().filter(item -> !item.getUserId().equals(userId) || item.getStatus() == Constant.ORDER_STATUS_CANCEL).collect(Collectors.toList());
+        //配送员已结单过滤已完成的订单
+        if(query.getType() == 2) {
+            resultList = resultList.stream().filter(item -> item.getStatus() != Constant.DELIVERY_ORDER_SURE_FINISH).collect(Collectors.toList());
+        }
+        if(!resultList.isEmpty()) {
+            resultList.forEach(item -> item.setIsnew(Constant.ORDER_OLD));
+            goodsOrderDaoExt.setOrderIsOld(resultList);
+            for (GoodsOrderVo orderVo : resultList) {
                 List<OrderClothes> orderClothes = orderClothesServiceExt.getByOrderId(orderVo.getId());
                 orderVo.setList(orderClothes);
             }
         }
-        return new PageInfo<>(list);
+        return new PageInfo<>(resultList);
     }
 
     /**
@@ -294,15 +299,16 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
      * @param userId
      * @return
      */
-    public JSONObject statsDistributorOrder(Long userId) {
+    public JSONObject statsDistributorOrder(Long userId, Integer transportway) {
         GoodsOrderQuery query = new GoodsOrderQuery();
         query.setDistributorId(userId);
-        List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
+        query.setTransportWay(transportway);
+        List<GoodsOrderVo> resultList = goodsOrderDaoExt.selectList(query);
+        List<GoodsOrderVo> list = resultList.stream().filter(item -> item.getUserId() != userId).collect(Collectors.toList());
         List<GoodsOrderVo> waitTakeOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_WAITING_REAP).collect(Collectors.toList());
         List<GoodsOrderVo> sureTakeOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_SURE_TAKE).collect(Collectors.toList());
         List<GoodsOrderVo> waitSendOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_WAITING_TAKE).collect(Collectors.toList());
         List<GoodsOrderVo> finishOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_SURE_FINISH).collect(Collectors.toList());
-        Long finishOrderTransportFee = finishOrders.stream().mapToLong(GoodsOrder::getTransportFee).sum();
 
         GoodsOrderQuery orderQuery = new GoodsOrderQuery();
         ShopUser shopUser = new ShopUser();
@@ -310,17 +316,22 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         List<ShopUser> suList = shopUserDaoExt.listByEntity(shopUser);
         List<Long> shopIdList = suList.stream().map(ShopUser::getShopId).collect(Collectors.toList());
         orderQuery.setShopIdList(shopIdList);
-        orderQuery.setTransportWay(Constant.ORDER_DELIVERY_GET);
+        orderQuery.setTransportWay(transportway);
         orderQuery.setType(1);
         List<GoodsOrderVo> orderVos = goodsOrderDaoExt.selectList(orderQuery);
+        List<GoodsOrderVo> resultOrders = orderVos.stream().filter(item -> !item.getUserId().equals(userId)).collect(Collectors.toList());
 
         JSONObject object = new JSONObject();
-        object.put("waitSureCount", orderVos.size());
+        if(query.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
+            Long finishOrderTransportFee = finishOrders.stream().mapToLong(GoodsOrder::getTransportFee).sum();
+            object.put("waitTakeCount", waitTakeOrders.size());
+            object.put("finishOrderTransportFee", finishOrderTransportFee);
+        }
         object.put("waitTakeCount", waitTakeOrders.size());
+        object.put("waitSureCount", resultOrders.size());
         object.put("sureTakeCount", sureTakeOrders.size());
         object.put("waitSendCount", waitSendOrders.size());
         object.put("finishCount", finishOrders.size());
-        object.put("finishOrderTransportFee", finishOrderTransportFee);
         return object;
     }
 

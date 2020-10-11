@@ -53,8 +53,7 @@ public class KindController extends BaseController {
     @ApiOperation(value="商品类型列表", notes="商品类型列表")
     public JsonResult list(Kind kind) {
         List<Kind> kindList = kindServiceExt.listByEntity(kind);
-        List<Kind> resultList = kindList.stream().filter(item -> item.getId() > 0).collect(Collectors.toList());
-        return sendSuccess(resultList);
+        return sendSuccess(kindList);
     }
 
     @GetMapping("/pageList")

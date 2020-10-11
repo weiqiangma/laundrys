@@ -7,11 +7,9 @@ import cn.pertech.common.utils.XmlUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.WxLoginResultData;
-import com.mawkun.core.base.entity.GoodsOrder;
-import com.mawkun.core.base.entity.InvestOrder;
-import com.mawkun.core.base.entity.OrderClothes;
-import com.mawkun.core.base.entity.User;
+import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.CacheService;
+import com.mawkun.core.base.service.UserAddressService;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.WechatDecryptDataUtil;
 import com.xiaoleilu.hutool.crypto.SecureUtil;
@@ -57,6 +55,8 @@ public class WxApiServiceExt {
 
     @Autowired
     private CacheService cacheService;
+    @Autowired
+    private UserAddressServiceExt userAddressServiceExt;
     @Autowired
     private OrderClothesServiceExt orderClothesServiceExt;
 
@@ -290,6 +290,14 @@ public class WxApiServiceExt {
             String param = object.toJSONString();
             HttpResult result = HttpUtils.post(url, param, "UTF-8");
             JSONObject jsonObject = result.asJSON();
+            if(jsonObject.containsKey("errcode")) {
+                //accessToken超时或无效
+                String errcode = jsonObject.getString("errcode");
+                if(StringUtils.equals(errcode, "42001")) {
+                    String newToken = getNewAccessToken();
+                    sendMessage(newToken, toUser, templateId, data, page, miniprogramState);
+                }
+            }
             System.out.println(jsonObject);
         } catch (Exception e) {
             e.printStackTrace();
@@ -305,6 +313,21 @@ public class WxApiServiceExt {
         if(StringUtils.isNotEmpty(accessToken)) {
             return accessToken;
         }
+        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + AppId + "&secret=" + AppSecret;
+        try {
+            HttpResult result = HttpUtils.get(url);
+            JSONObject object = result.asJSON();
+            accessToken = object.getString("access_token");
+            int expiresIn = object.getIntValue("expires_in");
+            cacheService.put("accessToken", accessToken, expiresIn);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return accessToken;
+    }
+
+    public String getNewAccessToken() {
+        String accessToken = "";
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + AppId + "&secret=" + AppSecret;
         try {
             HttpResult result = HttpUtils.get(url);
@@ -349,7 +372,7 @@ public class WxApiServiceExt {
         sendPaySuccessMsg(user.getOpenId(), Constant.INVEST_SUCCESS_NOTICE, object);
     }
 
-    public void sendOrderPaySuccessNotice(User user, GoodsOrder goodsOrder, String timeEnd, List<String> list) {
+    public void sendOrderPaySuccessNotice(User user, GoodsOrder goodsOrder, String timeEnd, String openId) {
         List<OrderClothes> orderClothes = orderClothesServiceExt.getByOrderId(goodsOrder.getId());
         List<String> clothesList = orderClothes.stream().map(OrderClothes::getGoodsName).collect(Collectors.toList());
         String goodsName = String.join(",", clothesList);
@@ -370,8 +393,34 @@ public class WxApiServiceExt {
         JSONObject object5 = new JSONObject();
         object5.put("value", goodsName);
         object.put("thing6", object5);
+        sendPaySuccessMsg(openId, Constant.ORDER_PAY_SUCCESS_NOTICE, object);
+    }
+
+    public void sendDistributorOrderTakeNotice(User user, GoodsOrder goodsOrder, String timeEnd, List<String> list) {
+        List<OrderClothes> orderClothes = orderClothesServiceExt.getByOrderId(goodsOrder.getId());
+        List<String> clothesList = orderClothes.stream().map(OrderClothes::getGoodsName).collect(Collectors.toList());
+        String goodsName = String.join(",", clothesList);
+
+        UserAddress address = userAddressServiceExt.getById(goodsOrder.getAddressId());
+
+        JSONObject object = new JSONObject(new LinkedHashMap<>());
+        JSONObject object1 = new JSONObject();
+        object1.put("value", goodsOrder.getOrderNo());
+        object.put("character_string1", object1);
+        JSONObject object2 = new JSONObject();
+        object2.put("value", goodsName);
+        object.put("date2", object2);
+        JSONObject object3 = new JSONObject();
+        object3.put("value", goodsOrder.getShopName());
+        object.put("thing3", object3);
+        JSONObject object4 = new JSONObject();
+        object4.put("value", address.getDetail());
+        object.put("thing7", object4);
+        JSONObject object5 = new JSONObject();
+        object5.put("value", address.getLinkMobile1());
+        object.put("phone_number9", object5);
         for(String openId : list) {
-            sendPaySuccessMsg(openId, Constant.ORDER_PAY_SUCCESS_NOTICE, object);
+            sendPaySuccessMsg(openId, Constant.DISTRIBUTOR_ORDER_TAKE, object);
         }
     }
 }

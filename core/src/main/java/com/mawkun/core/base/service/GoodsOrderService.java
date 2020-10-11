@@ -108,6 +108,7 @@ public class GoodsOrderService {
                     operate = "待送达门店";
                 }
                 else if(status == Constant.SELF_ORDER_SURE_SEND) {
+                    goodsOrder.setDistributorId(session.getId());
                     operate = "确认送达门店";
                 }
                 else if(status == Constant.SELF_ORDER_CLEANING) {
@@ -125,7 +126,8 @@ public class GoodsOrderService {
             //配送员上门取货
             if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
                 if(status == Constant.DELIVERY_ORDER_WAITING_REAP) {
-                    goodsOrder.setDistributorId(session.getId());
+                    //goodsOrder.setDistributorId(session.getId());
+                    if(goodsOrder.getDistributorId() != null) goodsOrder.setDistributorId(goodsOrder.getDistributorId());
                     operate = "待收货";
                 }
                 else if(status == Constant.DELIVERY_ORDER_SURE_TAKE) {

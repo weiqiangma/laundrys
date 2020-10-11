@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsQuery;
+import com.mawkun.core.base.data.vo.GoodsVo;
 import com.mawkun.core.base.entity.Goods;
 import com.mawkun.core.service.GoodsServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
@@ -54,8 +55,9 @@ public class GoodsController extends BaseController {
 
     @GetMapping("/list")
     @ApiOperation(value="商品列表", notes="商品列表")
-    public JsonResult list(Goods goods) {
-        List<Goods> goodsList = goodsServiceExt.listByEntity(goods);
+    public JsonResult list(GoodsQuery query) {
+        //List<Goods> goodsList = goodsServiceExt.listByEntity(goods);
+        List<GoodsVo> goodsList =  goodsServiceExt.selectList(query);
         List<Goods> resutlList = goodsList.stream().filter(a -> a.getStatus() == Constant.GOODS_GROUNDING).collect(Collectors.toList());
         return sendSuccess(resutlList);
     }

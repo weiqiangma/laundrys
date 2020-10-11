@@ -13,5 +13,6 @@ public class StateQuery {
     private String formatCode;
     private Integer type;
     private Integer status;
+    private Integer transportWay;
     private int dateCount;
 }

@@ -4,6 +4,7 @@ import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.CryptUtils;
 import cn.pertech.common.utils.NumberUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.WxLoginResultData;

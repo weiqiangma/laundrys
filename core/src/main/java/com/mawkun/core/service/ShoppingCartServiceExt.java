@@ -4,6 +4,7 @@ import cn.pertech.common.utils.NumberUtils;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsQuery;
+import com.mawkun.core.base.data.vo.GoodsVo;
 import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.ShoppingCartService;
 import com.mawkun.core.dao.GoodsDaoExt;
@@ -53,7 +54,8 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
         GoodsQuery query = new GoodsQuery();
         query.setId(goodsId);
         query.setStatus(Constant.GOODS_GROUNDING);
-        Goods goods = goodsDaoExt.selectByTerms(query);
+        List<GoodsVo> goodsVoList = goodsDaoExt.selectByTerms(query);
+        GoodsVo goods = goodsVoList.get(0);
         Validate.notNull(goods, "数据库中未查询到该商品信息");
         ShoppingCart resultCart = shoppingCartDaoExt.selectByUserId(session.getId(), goodsId, null);
         if (resultCart != null) {
@@ -117,6 +119,15 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
             int next = sortList.get(i+1).getDistance() * 1000;
             int max = sortList.get(paramList.size() -1).getDistance() * 1000;
             if(distance >= max) return (long) -1;
+            if(distance < front) {
+                int lowAmount = sortList.get(i).getLowAmount();
+                if(amount >= lowAmount) {
+                    return fee;
+                }
+                String feeStr = sortList.get(i).getSysValue();
+                fee = NumberUtils.str2Long(feeStr);
+                return fee;
+            }
             if(distance >= front && distance < next) {
                 long lowAmount = sortList.get(i).getLowAmount();
                 if(amount >= lowAmount) {

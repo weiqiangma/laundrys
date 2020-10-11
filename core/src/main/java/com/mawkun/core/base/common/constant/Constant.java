@@ -83,6 +83,10 @@ public interface Constant {
     String INVEST_SUCCESS_NOTICE = "4p4vTZ7u2vfPAz3ys53e-J7lREebH9S7bSebErCmX-Q";
     //下单成功通知
     String ORDER_PAY_SUCCESS_NOTICE = "TAPOOL9sfkMwpVEDnwTF413bG187NTeL2NpcgTRIeww";
+    //客户取货通知
+    String CUSTOMER_ORDER_TAKE = "xamFZO9kXJBWWdai9kV-C7MMeSQvK6vpKJ-7yT2Xp1E";
+    //配送员取货通知
+    String DISTRIBUTOR_ORDER_TAKE = "xamFZO9kXJBWWdai9kV-C0rovxQQm-1yuc7kr5gDG5w";
 
     //=============================充值卡券状态=============================//
     int MEMBER_CART_ON = 0;     //上架
@@ -91,6 +95,7 @@ public interface Constant {
     //=============================用户地址状态=============================//
     int USER_ADDRESS_USED = 0;      //默认地址
     int USER_ADDRESS_UNUSED = 1;
+
     //=============================系统用户状态=============================
     //用户登录和请求token权限返回状态
     int LOGIN_NOTFIND = 40000;

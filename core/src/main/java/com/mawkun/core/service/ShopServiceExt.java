@@ -12,10 +12,12 @@ import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
 import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.Shop;
+import com.mawkun.core.base.entity.SysParam;
 import com.mawkun.core.base.entity.UserAddress;
 import com.mawkun.core.base.service.ShopService;
 import com.mawkun.core.dao.GoodsOrderDaoExt;
 import com.mawkun.core.dao.ShopDaoExt;
+import com.mawkun.core.dao.SysParamDaoExt;
 import com.mawkun.core.utils.ImageUtils;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.TimeUtils;
@@ -41,6 +43,8 @@ public class ShopServiceExt extends ShopService {
     private GoodsOrderDaoExt goodsOrderDaoExt;
     @Resource
     private GaoDeApiServiceExt gaoDeApiServiceExt;
+    @Resource
+    private SysParamDaoExt sysParamDaoExt;
 
     /**
      * 添加店铺
@@ -181,6 +185,7 @@ public class ShopServiceExt extends ShopService {
      * @return
      */
     public PageInfo pageByEntity(ShopQuery query) {
+        List<ShopVo> resultList = new ArrayList<>();
         query.init();
         if(!StringUtils.isEmpty(query.getShopName())) {
             query.setShopName("%" + query.getShopName() + "%");
@@ -188,21 +193,64 @@ public class ShopServiceExt extends ShopService {
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<ShopVo> list = shopDaoExt.selectList(query);
         //根据用户收货地址计和各门店距离
-        if(query.getAddressId() != null) {
+        List<SysParam> paramList = sysParamDaoExt.selectTransportFee();
+        List<SysParam> sortList = paramList.stream().sorted(Comparator.comparingInt(SysParam::getDistance)).collect(Collectors.toList());
+        int max = sortList.get(paramList.size() -1).getDistance() * 1000;
+
+//        for(ShopVo shopVo : list) {
+//            UserAddress address = userAddressServiceExt.getById(query.getAddressId());
+//            String originalLal = address.getLocation();
+//            String destincation =   shopVo.getLocation();
+//            String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
+//            Integer distance = NumberUtils.str2Int(distanceStr);
+//            shopVo.setLength(distance);
+//            distanceStr = convertDistanceUnit(distanceStr);
+//            shopVo.setDistance(distanceStr);
+//        }
+
+        if(query.getAddressId() == null) {
+            //List<ShopVo> sortShopList = list.stream().sorted(Comparator.comparingInt(ShopVo::getLength)).collect(Collectors.toList());
+            return new PageInfo<ShopVo>(list);
+        } else {
             for(ShopVo shopVo : list) {
                 UserAddress address = userAddressServiceExt.getById(query.getAddressId());
                 String originalLal = address.getLocation();
                 String destincation =   shopVo.getLocation();
-                String distance = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
-                shopVo.setLength(NumberUtils.str2Int(distance));
-                distance = convertDistanceUnit(distance);
-                shopVo.setDistance(distance);
+                String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
+                Integer distance = NumberUtils.str2Int(distanceStr);
+                if(distance < max) {
+                    shopVo.setLength(distance);
+                    distanceStr = convertDistanceUnit(distanceStr);
+                    shopVo.setDistance(distanceStr);
+                    resultList.add(shopVo);
+                }
             }
-            List<ShopVo> sortList = list.stream().sorted(Comparator.comparingInt(ShopVo::getLength)).collect(Collectors.toList());
-            list = sortList;
+            List<ShopVo> sortShopList = resultList.stream().sorted(Comparator.comparingInt(ShopVo::getLength)).collect(Collectors.toList());
+            return new PageInfo<ShopVo>(sortShopList);
         }
 
-        return new PageInfo<ShopVo>(list);
+
+//        if(query.getAddressId() != null) {
+//            for(ShopVo shopVo : list) {
+//                UserAddress address = userAddressServiceExt.getById(query.getAddressId());
+//                String originalLal = address.getLocation();
+//                String destincation =   shopVo.getLocation();
+//                String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
+//                Integer distance = NumberUtils.str2Int(distanceStr);
+//                if(distance < max) {
+//                    shopVo.setLength(distance);
+//                    distanceStr = convertDistanceUnit(distanceStr);
+//                    shopVo.setDistance(distanceStr);
+//                    resultList.add(shopVo);
+//                }
+//            }
+//            List<ShopVo> sortShopList = list.stream().sorted(Comparator.comparingInt(ShopVo::getLength)).collect(Collectors.toList());
+//            resultList = sortShopList;
+//        } else {
+//
+//        }
+//
+//        return new PageInfo<ShopVo>(resultList);
     }
 
 
