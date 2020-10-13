@@ -13,6 +13,10 @@ public interface Constant {
     int USER_TYPE_DISTRIBUTOR = 2;  //配送员
     int USER_TYPE_ADMIN = 3;        //管理员
 
+    int USER_TYPE_MAN = 0;              //先生
+    int USER_TYPE_WOMAN = 1;            //女士
+    int USER_TYPE_UNKNOW = 2;           //未知
+
     int USER_STATUS_ACTIVE = 0;     //用户激活
     int USER_STATUS_LOCK = 1;       //用户封锁
 

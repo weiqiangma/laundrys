@@ -1,19 +1,23 @@
 package com.mawkun.core.base.entity;
 
+import java.util.Date;
+
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * (UserAddress)实体类
  *
  * @author mawkun
- * @since 2020-09-18 14:20:43
+ * @date 2020-10-13 22:05:58
  */
 @Data
 public class UserAddress {
 
     private Long id;
     /**
-     * 用户ID
+     * 用户id
      */
     private Long userId;
     /**
@@ -21,23 +25,27 @@ public class UserAddress {
      */
     private String province;
     /**
-     * 市
+     * 城市
      */
     private String city;
     /**
-     * 区
+     * 区域
      */
     private String area;
     /**
-     * 街道
+     * 微信定位地址
      */
-    private String street;
+    private String name;
+    /**
+     * 微信定位地址
+     */
+    private String address;
     /**
      * 详细地址
      */
     private String detail;
     /**
-     * 精确地址
+     * 全地址
      */
     private String exactAddress;
     /**
@@ -45,15 +53,17 @@ public class UserAddress {
      */
     private String linkMan;
     /**
-     * 联系手机号1
+     * 性别
+     */
+    private Integer gender;
+    /**
+     * 联系人电话
      */
     private String linkMobile1;
-    /**
-     * 联系手机号2
-     */
+
     private String linkMobile2;
     /**
-     * 地址编码
+     * 地理编码
      */
     private String code;
     /**
@@ -65,12 +75,24 @@ public class UserAddress {
      */
     private String latidute;
     /**
-     * 经纬度坐标
+     * 坐标对
      */
     private String location;
     /**
-     * 1：默认使用
+     * 状态
      */
     private Integer status;
+    /**
+     * 更新时间
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date updateTime;
+    /**
+     * 创建时间
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date createTime;
 
 }

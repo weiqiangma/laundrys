@@ -40,26 +40,23 @@ public class UserAddressServiceExt extends UserAddressService {
     }
 
 
-    public JsonResult insertUserAddress(Long userId, UserAddress address) {
-        String province = (address.getProvince() != null) ? address.getProvince() : "";
-        String city = (address.getCity() != null) ? address.getCity() : "";
-        String region = (address.getArea() != null) ? address.getArea() : "";
-        String street = (address.getStreet() != null) ? address.getStreet() : "";
-        String detail = (address.getDetail() != null) ? address.getDetail() : "";
-        String detailAddress = province + city + region + street + detail;
+    public JsonResult insertUserAddress(Long userId, UserAddress userAddress) {
+        String address = (userAddress.getAddress() != null) ? userAddress.getAddress() : "";
+        String detail = (userAddress.getDetail() != null) ? userAddress.getDetail() : "";
+        String detailAddress = address + detail;
         String location = gaoDeApiServiceExt.getLalByAddress(detailAddress);
         if(StringUtils.isEmpty(location)) return new JsonResult().error("收货地址解析失败,请输入正确地址");
-        if(address.getStatus() != null && address.getStatus() == Constant.USER_ADDRESS_USED) {
+        if(userAddress.getStatus() != null && userAddress.getStatus() == Constant.USER_ADDRESS_USED) {
             setUserAddressUnused(userId);
         }
         String[] lal = location.split(",");
         String longitude = lal[0];
         String latidute = lal[1];
-        address.setExactAddress(detailAddress);
-        address.setLongitude(longitude);
-        address.setLatidute(latidute);
-        address.setLocation(location);
-        int result = userAddressDaoExt.insert(address);
+        userAddress.setExactAddress(detailAddress);
+        userAddress.setLongitude(longitude);
+        userAddress.setLatidute(latidute);
+        userAddress.setLocation(location);
+        int result = userAddressDaoExt.insert(userAddress);
         if(result < 1) return new JsonResult().error("收货地址添加失败");
         return new JsonResult().success("地址添加成功");
     }

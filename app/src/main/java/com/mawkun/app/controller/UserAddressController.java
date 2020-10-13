@@ -44,7 +44,7 @@ public class UserAddressController extends BaseController {
     @PostMapping("/insert")
     public JsonResult insert(@LoginedAuth UserSession session, UserAddress address){
         if(session.getId() > 0) address.setUserId(session.getId());
-        if(address.getProvince() == null || address.getCity() == null || address.getArea() == null || address.getStreet() == null)
+        if(address.getAddress() == null || address.getDetail() == null)
             return sendArgsError("请填写完整格式地址");
         return userAddressServiceExt.insertUserAddress(session.getId(), address);
     }

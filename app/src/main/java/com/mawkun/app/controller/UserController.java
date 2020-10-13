@@ -115,7 +115,8 @@ public class UserController extends BaseController {
         if(user == null) return sendArgsError("未查询到该用户信息");
         WxLoginResultData data = wxApiServiceExt.getOpenIdByCode(code);
         session.setSessionKey(data.getSessionKey());
-        String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, session.getSessionKey(), iv);
+        //String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, session.getSessionKey(), iv);
+        String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, data.getSessionKey(), iv);
         user.setMobile(mobile);
         userServiceExt.update(user, null);
         return sendSuccess("ok", mobile);

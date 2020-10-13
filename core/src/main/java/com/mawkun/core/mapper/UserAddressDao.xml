@@ -8,21 +8,25 @@
         <result property="province" column="province" jdbcType="VARCHAR"/>
         <result property="city" column="city" jdbcType="VARCHAR"/>
         <result property="area" column="area" jdbcType="VARCHAR"/>
-        <result property="street" column="street" jdbcType="VARCHAR"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
         <result property="detail" column="detail" jdbcType="VARCHAR"/>
         <result property="exactAddress" column="exact_address" jdbcType="VARCHAR"/>
         <result property="linkMan" column="link_man" jdbcType="VARCHAR"/>
+        <result property="gender" column="gender" jdbcType="OTHER"/>
         <result property="linkMobile1" column="link_mobile1" jdbcType="VARCHAR"/>
         <result property="linkMobile2" column="link_mobile2" jdbcType="VARCHAR"/>
         <result property="code" column="code" jdbcType="VARCHAR"/>
         <result property="longitude" column="longitude" jdbcType="VARCHAR"/>
         <result property="latidute" column="latidute" jdbcType="VARCHAR"/>
         <result property="location" column="location" jdbcType="VARCHAR"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, province, city, area, street, detail, exact_address, link_man, link_mobile1, link_mobile2, code, longitude, latidute, location, status      
+      id, user_id, province, city, area, name, address, detail, exact_address, link_man, gender, link_mobile1, link_mobile2, code, longitude, latidute, location, status, update_time, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -55,8 +59,11 @@
             <if test="area != null">
                 and area = #{area,jdbcType=VARCHAR}
             </if>
-            <if test="street != null">
-                and street = #{street,jdbcType=VARCHAR}
+            <if test="name != null">
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
             </if>
             <if test="detail != null">
                 and detail = #{detail,jdbcType=VARCHAR}
@@ -66,6 +73,9 @@
             </if>
             <if test="linkMan != null">
                 and link_man = #{linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="linkMobile1 != null">
                 and link_mobile1 = #{linkMobile1,jdbcType=VARCHAR}
@@ -86,7 +96,13 @@
                 and location = #{location,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>
@@ -112,8 +128,11 @@
             <if test="area != null">
                 and area = #{area,jdbcType=VARCHAR}
             </if>
-            <if test="street != null">
-                and street = #{street,jdbcType=VARCHAR}
+            <if test="name != null">
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
             </if>
             <if test="detail != null">
                 and detail = #{detail,jdbcType=VARCHAR}
@@ -123,6 +142,9 @@
             </if>
             <if test="linkMan != null">
                 and link_man = #{linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="linkMobile1 != null">
                 and link_mobile1 = #{linkMobile1,jdbcType=VARCHAR}
@@ -143,7 +165,13 @@
                 and location = #{location,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>
@@ -178,8 +206,11 @@
           <if test="area != null">
              area,
           </if>
-          <if test="street != null">
-             street,
+          <if test="name != null">
+             name,
+          </if>
+          <if test="address != null">
+             address,
           </if>
           <if test="detail != null">
              detail,
@@ -189,6 +220,9 @@
           </if>
           <if test="linkMan != null">
              link_man,
+          </if>
+          <if test="gender != null">
+             gender,
           </if>
           <if test="linkMobile1 != null">
              link_mobile1,
@@ -211,6 +245,12 @@
           <if test="status != null">
              status,
           </if>
+          <if test="updateTime != null">
+             update_time,
+          </if>
+          <if test="createTime != null">
+             create_time,
+          </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
           <if test="id != null">
@@ -228,8 +268,11 @@
           <if test="area != null">
              #{area,jdbcType=VARCHAR},
           </if>
-          <if test="street != null">
-             #{street,jdbcType=VARCHAR},
+          <if test="name != null">
+             #{name,jdbcType=VARCHAR},
+          </if>
+          <if test="address != null">
+             #{address,jdbcType=VARCHAR},
           </if>
           <if test="detail != null">
              #{detail,jdbcType=VARCHAR},
@@ -239,6 +282,9 @@
           </if>
           <if test="linkMan != null">
              #{linkMan,jdbcType=VARCHAR},
+          </if>
+          <if test="gender != null">
+             #{gender,jdbcType=OTHER},
           </if>
           <if test="linkMobile1 != null">
              #{linkMobile1,jdbcType=VARCHAR},
@@ -259,7 +305,13 @@
              #{location,jdbcType=VARCHAR},
           </if>
           <if test="status != null">
-             #{status,jdbcType=INTEGER},
+             #{status,jdbcType=OTHER},
+          </if>
+          <if test="updateTime != null">
+             #{updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="createTime != null">
+             #{createTime,jdbcType=TIMESTAMP},
           </if>
         </trim>
     </insert>
@@ -267,10 +319,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into user_address
-         (id, user_id, province, city, area, street, detail, exact_address, link_man, link_mobile1, link_mobile2, code, longitude, latidute, location, status)
+         (id, user_id, province, city, area, name, address, detail, exact_address, link_man, gender, link_mobile1, link_mobile2, code, longitude, latidute, location, status, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.area,jdbcType=VARCHAR}, #{item.street,jdbcType=VARCHAR}, #{item.detail,jdbcType=VARCHAR}, #{item.exactAddress,jdbcType=VARCHAR}, #{item.linkMan,jdbcType=VARCHAR}, #{item.linkMobile1,jdbcType=VARCHAR}, #{item.linkMobile2,jdbcType=VARCHAR}, #{item.code,jdbcType=VARCHAR}, #{item.longitude,jdbcType=VARCHAR}, #{item.latidute,jdbcType=VARCHAR}, #{item.location,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.province,jdbcType=VARCHAR}, #{item.city,jdbcType=VARCHAR}, #{item.area,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.detail,jdbcType=VARCHAR}, #{item.exactAddress,jdbcType=VARCHAR}, #{item.linkMan,jdbcType=VARCHAR}, #{item.gender,jdbcType=OTHER}, #{item.linkMobile1,jdbcType=VARCHAR}, #{item.linkMobile2,jdbcType=VARCHAR}, #{item.code,jdbcType=VARCHAR}, #{item.longitude,jdbcType=VARCHAR}, #{item.latidute,jdbcType=VARCHAR}, #{item.location,jdbcType=VARCHAR}, #{item.status,jdbcType=OTHER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -290,8 +342,11 @@
             <if test="area != null and area != ''">
                 area = #{area,jdbcType=VARCHAR},
             </if>
-            <if test="street != null and street != ''">
-                street = #{street,jdbcType=VARCHAR},
+            <if test="name != null and name != ''">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address,jdbcType=VARCHAR},
             </if>
             <if test="detail != null and detail != ''">
                 detail = #{detail,jdbcType=VARCHAR},
@@ -301,6 +356,9 @@
             </if>
             <if test="linkMan != null and linkMan != ''">
                 link_man = #{linkMan,jdbcType=VARCHAR},
+            </if>
+            <if test="gender != null">
+                gender = #{gender,jdbcType=OTHER},
             </if>
             <if test="linkMobile1 != null and linkMobile1 != ''">
                 link_mobile1 = #{linkMobile1,jdbcType=VARCHAR},
@@ -321,7 +379,13 @@
                 location = #{location,jdbcType=VARCHAR},
             </if>
             <if test="status != null">
-                status = #{status,jdbcType=INTEGER},
+                status = #{status,jdbcType=OTHER},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -343,8 +407,11 @@
             <if test="where.area == null and set.area != null and set.area != ''">
                 area = #{set.area,jdbcType=VARCHAR},
             </if>
-            <if test="where.street == null and set.street != null and set.street != ''">
-                street = #{set.street,jdbcType=VARCHAR},
+            <if test="where.name == null and set.name != null and set.name != ''">
+                name = #{set.name,jdbcType=VARCHAR},
+            </if>
+            <if test="where.address == null and set.address != null and set.address != ''">
+                address = #{set.address,jdbcType=VARCHAR},
             </if>
             <if test="where.detail == null and set.detail != null and set.detail != ''">
                 detail = #{set.detail,jdbcType=VARCHAR},
@@ -354,6 +421,9 @@
             </if>
             <if test="where.linkMan == null and set.linkMan != null and set.linkMan != ''">
                 link_man = #{set.linkMan,jdbcType=VARCHAR},
+            </if>
+            <if test="where.gender == null and set.gender != null">
+                gender = #{set.gender,jdbcType=OTHER},
             </if>
             <if test="where.linkMobile1 == null and set.linkMobile1 != null and set.linkMobile1 != ''">
                 link_mobile1 = #{set.linkMobile1,jdbcType=VARCHAR},
@@ -374,7 +444,13 @@
                 location = #{set.location,jdbcType=VARCHAR},
             </if>
             <if test="where.status == null and set.status != null">
-                status = #{set.status,jdbcType=INTEGER},
+                status = #{set.status,jdbcType=OTHER},
+            </if>
+            <if test="where.updateTime == null and set.updateTime != null">
+                update_time = #{set.updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="where.createTime == null and set.createTime != null">
+                create_time = #{set.createTime,jdbcType=TIMESTAMP},
             </if>
         </set>
         <where>
@@ -393,8 +469,11 @@
             <if test="where.area != null">
                 and area = #{where.area,jdbcType=VARCHAR}
             </if>
-            <if test="where.street != null">
-                and street = #{where.street,jdbcType=VARCHAR}
+            <if test="where.name != null">
+                and name = #{where.name,jdbcType=VARCHAR}
+            </if>
+            <if test="where.address != null">
+                and address = #{where.address,jdbcType=VARCHAR}
             </if>
             <if test="where.detail != null">
                 and detail = #{where.detail,jdbcType=VARCHAR}
@@ -404,6 +483,9 @@
             </if>
             <if test="where.linkMan != null">
                 and link_man = #{where.linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="where.gender != null">
+                and gender = #{where.gender,jdbcType=OTHER}
             </if>
             <if test="where.linkMobile1 != null">
                 and link_mobile1 = #{where.linkMobile1,jdbcType=VARCHAR}
@@ -424,7 +506,13 @@
                 and location = #{where.location,jdbcType=VARCHAR}
             </if>
             <if test="where.status != null">
-                and status = #{where.status,jdbcType=INTEGER}
+                and status = #{where.status,jdbcType=OTHER}
+            </if>
+            <if test="where.updateTime != null">
+                and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="where.createTime != null">
+                and create_time = #{where.createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </update>
@@ -453,9 +541,14 @@
                   when id = #{item.id} then #{item.area}
                  </foreach>
             </trim>
-            <trim prefix="street = case" suffix="end,">
+            <trim prefix="name = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
-                  when id = #{item.id} then #{item.street}
+                  when id = #{item.id} then #{item.name}
+                 </foreach>
+            </trim>
+            <trim prefix="address = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.address}
                  </foreach>
             </trim>
             <trim prefix="detail = case" suffix="end,">
@@ -471,6 +564,11 @@
             <trim prefix="link_man = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.linkMan}
+                 </foreach>
+            </trim>
+            <trim prefix="gender = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.gender}
                  </foreach>
             </trim>
             <trim prefix="link_mobile1 = case" suffix="end,">
@@ -508,6 +606,16 @@
                   when id = #{item.id} then #{item.status}
                  </foreach>
             </trim>
+            <trim prefix="update_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.updateTime}
+                 </foreach>
+            </trim>
+            <trim prefix="create_time = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.createTime}
+                 </foreach>
+            </trim>
         </trim>
         where id in
         <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
@@ -536,8 +644,11 @@
             <if test="area != null">
                 and area = #{area,jdbcType=VARCHAR}
             </if>
-            <if test="street != null">
-                and street = #{street,jdbcType=VARCHAR}
+            <if test="name != null">
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
             </if>
             <if test="detail != null">
                 and detail = #{detail,jdbcType=VARCHAR}
@@ -547,6 +658,9 @@
             </if>
             <if test="linkMan != null">
                 and link_man = #{linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="linkMobile1 != null">
                 and link_mobile1 = #{linkMobile1,jdbcType=VARCHAR}
@@ -567,7 +681,13 @@
                 and location = #{location,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </delete>
@@ -602,8 +722,11 @@
             <if test="area != null">
                 and area = #{area,jdbcType=VARCHAR}
             </if>
-            <if test="street != null">
-                and street = #{street,jdbcType=VARCHAR}
+            <if test="name != null">
+                and name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="address != null">
+                and address = #{address,jdbcType=VARCHAR}
             </if>
             <if test="detail != null">
                 and detail = #{detail,jdbcType=VARCHAR}
@@ -613,6 +736,9 @@
             </if>
             <if test="linkMan != null">
                 and link_man = #{linkMan,jdbcType=VARCHAR}
+            </if>
+            <if test="gender != null">
+                and gender = #{gender,jdbcType=OTHER}
             </if>
             <if test="linkMobile1 != null">
                 and link_mobile1 = #{linkMobile1,jdbcType=VARCHAR}
@@ -633,7 +759,13 @@
                 and location = #{location,jdbcType=VARCHAR}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
             </if>
         </where>
     </select>

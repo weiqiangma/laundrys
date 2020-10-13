@@ -83,7 +83,7 @@ public class KindServiceExt extends KindService {
         Kind query = new Kind();
         query.setNavStatus(Constant.MAIN_KIND_SHOW);
         List<Kind> list = kindDaoExt.listByEntity(query);
-        List<Kind> sortedList = list.stream().sorted(Comparator.comparingInt(Kind::getSort).reversed()).collect(Collectors.toList());
+        List<Kind> sortedList = list.stream().sorted(Comparator.comparingInt(Kind::getMainSort)).collect(Collectors.toList());
         for(Kind kind : sortedList) {
             JSONObject object = new JSONObject();
             Goods goodsQuery = new Goods();

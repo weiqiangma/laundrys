@@ -144,7 +144,7 @@ public class ShoppingCartController extends BaseController {
                 int lowAmount = sortList.get(i).getLowAmount();
                 if(amount >= lowAmount) {
                     object.put("transportFee", 0);
-                    object.put("feeDiff", "");
+                    object.put("feeDiff", feeDiff);
                     return sendSuccess(object);
                 }
                 String feeStr = sortList.get(i).getSysValue();

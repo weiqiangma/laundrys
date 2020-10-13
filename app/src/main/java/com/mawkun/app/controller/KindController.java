@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.KindQuery;
 import com.mawkun.core.base.entity.Kind;
+import com.mawkun.core.base.entity.SysParam;
 import com.mawkun.core.service.KindServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
@@ -20,6 +21,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +55,8 @@ public class KindController extends BaseController {
     @ApiOperation(value="商品类型列表", notes="商品类型列表")
     public JsonResult list(Kind kind) {
         List<Kind> kindList = kindServiceExt.listByEntity(kind);
-        return sendSuccess(kindList);
+        List<Kind> sortList = kindList.stream().sorted(Comparator.comparingInt(Kind::getSort).reversed()).collect(Collectors.toList());
+        return sendSuccess(sortList);
     }
 
     @GetMapping("/pageList")
