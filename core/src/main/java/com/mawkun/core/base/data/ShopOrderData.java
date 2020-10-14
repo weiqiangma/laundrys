@@ -13,4 +13,7 @@ public class ShopOrderData {
     private Integer fee;
     private String shopName;
     private String type;
+
+    private Integer totalAmount;
+    private Integer totalTransportFee;
 }

@@ -121,6 +121,28 @@ public class TimeUtils {
     }
 
     /**
+     * 本年开始时间
+     * @return
+     */
+    public static Date getCurrentYearStartTime() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONDAY), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.YEAR));
+        return cal.getTime();
+    }
+
+    /**
+     * 本年结束时间
+     * @return
+     */
+    public static Date getCurrentYearEndTime() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(getCurrentYearStartTime());
+        cal.add(Calendar.YEAR, 1);
+        return cal.getTime();
+    }
+
+    /**
      * 向date中加addMinutesValue分钟
      * @param date
      * @param addMinutesValue 添加的分钟

@@ -42,8 +42,17 @@ public interface GoodsOrderDaoExt {
     List<ShopOrderData> statsDistributorOrder(StateQuery query);
 
     /**
+     * 多条件统计订单
+     * @param query
+     * @return
+     */
+    ShopOrderData statsGoodsOrder(GoodsOrderQuery query);
+
+    /**
      * 订单列表
      * @return
      */
     List<GoodsOrderVo> selectList(GoodsOrderQuery query);
+
+    List<GoodsOrder> getGoodsOrderList(GoodsOrderQuery query);
 }

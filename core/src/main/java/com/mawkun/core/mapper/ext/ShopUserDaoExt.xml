@@ -16,6 +16,10 @@
         select `user`.open_id from shop_user left join `user` on shop_user.user_id = `user`.id where shop_user.shop_id = #{shopId}
     </select>
 
+    <select id="selectDistorIdByShopId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        select `user`.id from shop_user left join `user` on shop_user.user_id = `user`.id where shop_user.shop_id = #{shopId}
+    </select>
+
     <delete id="deleteByUserId" parameterType="java.lang.Long">
         delete from shop_user where user_id = #{userId}
     </delete>

@@ -8,6 +8,12 @@ public interface Constant {
     int ADMIN_TYPE_COMMON = 1;  //普通管理员
     int ADMIN_TYPE_DISTRIBUTOR = 2;  //配送员
 
+    int TIME_TYPE_DAY = 0;
+    int TIME_TYPE_WEEK = 1;
+    int TIME_TYPE_MONTH = 2;
+    int TIME_TYPE_YEAR = 3;
+    int TIME_TYPE_RANDOM = 4;
+
     //=============================用户类型及状态=============================//
     int USER_TYPE_CUSTOMER = 1;     //顾客
     int USER_TYPE_DISTRIBUTOR = 2;  //配送员

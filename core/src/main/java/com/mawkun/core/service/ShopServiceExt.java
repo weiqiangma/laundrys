@@ -17,6 +17,7 @@ import com.mawkun.core.base.entity.UserAddress;
 import com.mawkun.core.base.service.ShopService;
 import com.mawkun.core.dao.GoodsOrderDaoExt;
 import com.mawkun.core.dao.ShopDaoExt;
+import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.dao.SysParamDaoExt;
 import com.mawkun.core.utils.ImageUtils;
 import com.mawkun.core.utils.StringUtils;
@@ -43,6 +44,8 @@ public class ShopServiceExt extends ShopService {
     private GoodsOrderDaoExt goodsOrderDaoExt;
     @Resource
     private GaoDeApiServiceExt gaoDeApiServiceExt;
+    @Resource
+    private ShopUserDaoExt shopUserDaoExt;
     @Resource
     private SysParamDaoExt sysParamDaoExt;
 
@@ -210,6 +213,11 @@ public class ShopServiceExt extends ShopService {
 
         if(query.getAddressId() == null) {
             //List<ShopVo> sortShopList = list.stream().sorted(Comparator.comparingInt(ShopVo::getLength)).collect(Collectors.toList());
+            for(ShopVo shopVo : list) {
+                List<Long> idList = shopUserDaoExt.selectDistorIdByShopId(shopVo.getId());
+                String ids = StringUtils.join(idList,",");
+                shopVo.setDistributorIds(ids);
+            }
             return new PageInfo<ShopVo>(list);
         } else {
             for(ShopVo shopVo : list) {

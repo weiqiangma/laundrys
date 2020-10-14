@@ -134,6 +134,14 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         return goodsOrderDao.getByEntity(goodsOrder);
     }
 
+    public List<GoodsOrder> getGoodsOrderList(GoodsOrderQuery query) {
+        return goodsOrderDaoExt.getGoodsOrderList(query);
+    }
+
+    public ShopOrderData statsGoodsOrder(GoodsOrderQuery query) {
+        return goodsOrderDaoExt.statsGoodsOrder(query);
+    }
+
     public GoodsOrder getByOrderNo(String orderNo) {
         GoodsOrder goodsOrder = new GoodsOrder();
         goodsOrder.setOrderNo(orderNo);

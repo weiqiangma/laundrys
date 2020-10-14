@@ -69,6 +69,31 @@
         group by type
     </select>
 
+    <select id="statsGoodsOrder" resultType="com.mawkun.core.base.data.ShopOrderData" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
+        select sum(total_amount) as totalAmount, sum(transport_fee) totalTransportFee from goods_order
+        <where>
+            <if test="shopId != null and shopId > 0">
+                and shop_id = #{shopId}
+            </if>
+            <if test="distributorId != null and distributorId > 0">
+                and distributor_id = #{distributorId}
+            </if>
+            <if test="payKind != null">
+                and pay_kind = #{payKind}
+            </if>
+            <if test="transportWay != null">
+                and transport_way = #{transportWay}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType}
+            </if>
+            <if test="createTimeStart != null and createTimeEnd != null">
+                and DATE_FORMAT(create_time, '%Y-%m-%d' ) &gt;= DATE_FORMAT(#{createTimeStart}, '%Y-%m-%d' )
+                and DATE_FORMAT(create_time, '%Y-%m-%d' ) &lt;= DATE_FORMAT(#{createTimeEnd}, '%Y-%m-%d' )
+            </if>
+        </where>
+    </select>
+
 
     <resultMap id="OrderFormDetailResultMap" type="com.mawkun.core.base.data.vo.GoodsOrderVo">
         <id column="id" property="id"/>
@@ -214,5 +239,26 @@
             </if>
         </where>
         order by goods_order.create_time desc
+    </select>
+
+    <select id="getGoodsOrderList" resultMap="com.mawkun.core.base.dao.GoodsOrderDao.GoodsOrderResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
+        select * from goods_order
+        <where>
+            <if test="shopId != null and shopId > 0">
+                and shop_id = #{shopId}
+            </if>
+            <if test="distributorId != null and distributorId > 0">
+                and distributor_id = #{distributorId}
+            </if>
+            <if test="payKind != null">
+                and pay_kind = #{payKind}
+            </if>
+            <if test="transportWay != null">
+                and transport_way = #{transportWay}
+            </if>
+            <if test="orderType != null">
+                and order_type = #{orderType}
+            </if>
+        </where>
     </select>
 </mapper>
