@@ -23,7 +23,9 @@ public class GoodsOrderQuery extends GoodsOrder {
 
     private Integer type;   //配送员界面1:待接单，2：已结单
     private Integer orderType;  //订单类型
+    private Integer timeType;
     private Long amount;
+    private String distributorMobile;
     private String linkMobile1;
     private String linkMobile2;
     private Integer integral;

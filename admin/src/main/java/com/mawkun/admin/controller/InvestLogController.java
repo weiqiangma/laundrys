@@ -2,14 +2,18 @@ package com.mawkun.admin.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import cn.pertech.common.utils.DateUtils;
 import com.alibaba.excel.EasyExcel;
-import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.data.PageInfo;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.InvestOrderQuery;
+import com.mawkun.core.base.data.vo.InvestOrderStatsVo;
 import com.mawkun.core.base.entity.InvestOrder;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.service.InvestOrderServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
+import com.mawkun.core.utils.TimeUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
@@ -20,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,7 +68,38 @@ public class InvestLogController extends BaseController {
     @ApiOperation(value="充值日志列表分页", notes="充值日志列表分页")
     public JsonResult pageList(@LoginedAuth UserSession session, InvestOrderQuery query) {
         if(session.getId() > 0) query.setUserId(session.getId());
-        PageInfo<InvestOrder> pageInfo = investOrderServiceExt.pageList(query);
+        query.setStatus(Constant.ORDER_TYPE_INVEST);
+        if(query.getTimeType()!= null) {
+            Date sTime = new Date();
+            Date eTime = new Date();
+            if(Constant.TIME_TYPE_DAY == query.getTimeType()) {
+                sTime = DateUtils.timeNow();
+                eTime = DateUtils.dateEndDate(sTime);
+            }
+            if(Constant.TIME_TYPE_WEEK == query.getTimeType()) {
+                sTime = TimeUtils.getWeekStart();
+                eTime = TimeUtils.getWeekEnd();
+            }
+            if(Constant.TIME_TYPE_MONTH == query.getTimeType()) {
+                sTime = TimeUtils.getMonthStart();
+                eTime = TimeUtils.getMonthEnd();
+            }
+            if(Constant.TIME_TYPE_YEAR == query.getTimeType()) {
+                sTime = TimeUtils.getCurrentYearStartTime();
+                eTime = TimeUtils.getCurrentYearEndTime();
+            }
+            if(Constant.TIME_TYPE_RANDOM == query.getTimeType()) {
+                sTime = query.getCreateTimeStart();
+                eTime = query.getCreateTimeEnd();
+            }
+            query.setStartTime(sTime);
+            query.setEndTime(eTime);
+        }
+        PageInfo pageInfo = investOrderServiceExt.pageList(query);
+        InvestOrderStatsVo investOrderStatsVo = investOrderServiceExt.statsInvestOrder(query);
+        pageInfo.setInvestMoney(investOrderStatsVo.getInvestMoney());
+        pageInfo.setGiftMoney(investOrderStatsVo.getGiftMoney());
+        pageInfo.setAmountMoney(investOrderStatsVo.getAmountMoney());
         return sendSuccess(pageInfo);
     }
 
@@ -90,11 +126,11 @@ public class InvestLogController extends BaseController {
         List<InvestOrder> resultList = new ArrayList<>();
         for(InvestOrder order : list) {
             Long amountMoney = order.getAmountMoney() / 100;
-            Long residueMoney = order.getResiduemoney() / 100;
+            Long residueMoney = order.getResidueMoney() / 100;
             Long investMoney = order.getInvestMoney() / 100;
             Long giftMoney =order.getGiftMoney() / 100;
             order.setAmountMoney(amountMoney);
-            order.setResiduemoney(residueMoney);
+            order.setResidueMoney(residueMoney);
             order.setInvestMoney(investMoney);
             order.setGiftMoney(giftMoney);
             resultList.add(order);

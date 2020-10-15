@@ -4,9 +4,9 @@ import cn.pertech.common.utils.DateUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.dao.GoodsOrderDao;
+import com.mawkun.core.base.data.PageInfo;
 import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
@@ -73,6 +73,9 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         }
         if(StringUtils.isNotEmpty(query.getLinkMobile2())) {
             query.setLinkMobile2("%" + query.getLinkMobile2() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getDistributorMobile())) {
+            query.setLinkMobile2("%" + query.getDistributorMobile() + "%");
         }
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
         for(GoodsOrderVo orderVo : list) {

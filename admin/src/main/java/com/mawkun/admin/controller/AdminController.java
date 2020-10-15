@@ -77,7 +77,7 @@ public class AdminController extends BaseController {
         if(admin.getUserName() != null) query.setUserName(admin.getUserName());
         if(admin.getMobile() != null) query.setMobile(admin.getMobile());
         Admin resultAdmin = adminServiceExt.getByEntity(query);
-        if(resultAdmin == null) return sendArgsError("用户名或手机号重复,请重新添加");
+        if(resultAdmin != null) return sendArgsError("用户名或手机号重复,请重新添加");
         adminServiceExt.insert(admin);
         return sendSuccess(admin);
     }

@@ -367,7 +367,7 @@ public class WxApiServiceExt {
         amount4Object.put("value", investOrder.getInvestMoney()/100);
         object.put("amount4", amount4Object);
         JSONObject amount5Object = new JSONObject();
-        amount5Object.put("value", investOrder.getResiduemoney()/100);
+        amount5Object.put("value", investOrder.getResidueMoney()/100);
         object.put("amount5", amount5Object);
         sendPaySuccessMsg(user.getOpenId(), Constant.INVEST_SUCCESS_NOTICE, object);
     }

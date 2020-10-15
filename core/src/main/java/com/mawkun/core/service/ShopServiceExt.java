@@ -11,6 +11,7 @@ import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
 import com.mawkun.core.base.data.vo.ShopVo;
+import com.mawkun.core.base.entity.Admin;
 import com.mawkun.core.base.entity.Shop;
 import com.mawkun.core.base.entity.SysParam;
 import com.mawkun.core.base.entity.UserAddress;
@@ -48,6 +49,8 @@ public class ShopServiceExt extends ShopService {
     private ShopUserDaoExt shopUserDaoExt;
     @Resource
     private SysParamDaoExt sysParamDaoExt;
+    @Resource
+    private AdminServiceExt adminServiceExt;
 
     /**
      * 添加店铺
@@ -217,6 +220,10 @@ public class ShopServiceExt extends ShopService {
                 List<Long> idList = shopUserDaoExt.selectDistorIdByShopId(shopVo.getId());
                 String ids = StringUtils.join(idList,",");
                 shopVo.setDistributorIds(ids);
+                Admin adminQuery = new Admin();
+                adminQuery.setShopId(shopVo.getId());
+                List<Admin> adminList = adminServiceExt.listByEntity(adminQuery);
+                shopVo.setAdminList(adminList);
             }
             return new PageInfo<ShopVo>(list);
         } else {

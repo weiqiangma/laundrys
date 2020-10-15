@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -93,6 +94,8 @@ public class UserServiceExt extends UserService {
         String orderNo = StringUtils.createOrderFormNo(String.valueOf(primaryKey));
         InvestOrder investOrder = investOrderServiceExt.getById(primaryKey);
         investOrder.setOrderNo(orderNo);
+        investOrder.setCreateTime(new Date());
+        investOrder.setUpdateTime(new Date());
         investOrderServiceExt.update(investOrder);
         //调用微信接口生成支付参数供前端调用
         JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderNo, investMoney.toString(), Constant.INVEST_WITH_CARD, Constant.INVEST_WITH_CARD, notifyUrl);

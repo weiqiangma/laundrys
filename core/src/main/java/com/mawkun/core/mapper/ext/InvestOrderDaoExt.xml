@@ -12,7 +12,7 @@
         <result property="investMoney" column="invest_money" jdbcType="INTEGER"/>
         <result property="giftMoney" column="gift_money" jdbcType="INTEGER"/>
         <result property="amountMoney" column="amount_money" jdbcType="INTEGER"/>
-        <result property="residuemoney" column="residueMoney" jdbcType="INTEGER"/>
+        <result property="residueMoney" column="residue_money" jdbcType="INTEGER"/>
         <result property="status" column="status" jdbcType="OTHER"/>
         <result property="payTime" column="pay_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
@@ -20,13 +20,28 @@
         <result property="description" column="description"/>
     </resultMap>
         <select id="selectListByTerms" resultMap="InvestOrderDataResultMap" parameterType="com.mawkun.core.base.data.query.InvestOrderQuery">
-            select invest_order.*, member_card.description from invest_order left join member_card on invest_order.cart_id = member_card.id
+            select invest_order.*, member_card.description from invest_order left join member_card on invest_order.cart_id = member_card.id left join user on invest_order.user_id = user.id
             <where>
                 <if test="userId != null">and user_id = #{userId}</if>
+                <if test="mobile != null">and user.mobile like #{mobile}</if>
                 <if test="orderNo != null">and order_no like #{orderNo}</if>
                 <if test="userName != null and userName != ''">and user_name like #{userName}</if>
+                <if test="status != null">and invest_order.status = #{status}</if>
                 <if test="startTime != null and endTime != null">and create_time between #{startTime} and #{endTime}</if>
             </where>
             order by invest_order.create_time desc
+        </select>
+
+        <select id="statsInvestOrder" resultType="com.mawkun.core.base.data.vo.InvestOrderStatsVo" parameterType="com.mawkun.core.base.data.query.InvestOrderQuery">
+            select sum(invest_money) investMoney, sum(gift_money) giftMoney, sum(amount_money) amountMoney  from invest_order
+            <where>
+                <if test="startTime != null and endTime != null">
+                    and DATE_FORMAT(create_time, '%Y-%m-%d' ) &gt;= DATE_FORMAT(#{startTime}, '%Y-%m-%d' )
+                    and DATE_FORMAT(create_time, '%Y-%m-%d' ) &lt;= DATE_FORMAT(#{endTime}, '%Y-%m-%d' )
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+            </where>
         </select>
 </mapper>

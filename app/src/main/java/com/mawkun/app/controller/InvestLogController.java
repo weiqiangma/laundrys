@@ -2,7 +2,7 @@ package com.mawkun.app.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
-import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.data.PageInfo;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.InvestOrderQuery;
 import com.mawkun.core.base.entity.InvestOrder;

@@ -87,6 +87,9 @@
             <if test="orderType != null">
                 and order_type = #{orderType}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
             <if test="createTimeStart != null and createTimeEnd != null">
                 and DATE_FORMAT(create_time, '%Y-%m-%d' ) &gt;= DATE_FORMAT(#{createTimeStart}, '%Y-%m-%d' )
                 and DATE_FORMAT(create_time, '%Y-%m-%d' ) &lt;= DATE_FORMAT(#{createTimeEnd}, '%Y-%m-%d' )
@@ -175,7 +178,7 @@
         <result property="createTime" column="create_time"/>
     </resultMap>
     <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
-        select goods_order.*, ua.location, user.mobile, ua.link_mobile1, ua.link_mobile2, uw.user_name distributor_name from goods_order
+        select goods_order.*, ua.location, user.mobile, ua.link_mobile1, ua.link_mobile2, uw.user_name as distributor_name from goods_order
         left join user on goods_order.user_id = user.id
         left join user_address ua on goods_order.address_id = ua.id
         left join user uw on goods_order.distributor_id = uw.id
@@ -216,6 +219,9 @@
             <if test="payKind != null">
                 and goods_order.pay_kind = #{payKind}
             </if>
+            <if test="distributorMobile != null">
+                and uw.mobile like #{distributorMobile}
+            </if>
             <if test="linkMobile1 != null">
                 and ua.link_mobile1 like #{linkMobile1}
             </if>
@@ -235,7 +241,8 @@
                 and DATE_FORMAT( goods_order.create_time, '%Y-%m-%d' ) = DATE_FORMAT(#{createTime}, '%Y-%m-%d' )
             </if>
             <if test="createTimeStart != null and createTimeEnd != null">
-                and goods_order.create_time between #{createTimeStart} and #{createTimeEnd}
+                and DATE_FORMAT(goods_order.create_time, '%Y-%m-%d' ) &gt;= DATE_FORMAT(#{createTimeStart}, '%Y-%m-%d' )
+                and DATE_FORMAT(goods_order.create_time, '%Y-%m-%d' ) &lt;= DATE_FORMAT(#{createTimeEnd}, '%Y-%m-%d' )
             </if>
         </where>
         order by goods_order.create_time desc

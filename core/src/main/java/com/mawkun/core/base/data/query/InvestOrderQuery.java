@@ -7,8 +7,13 @@ import java.util.Date;
 
 @Data
 public class InvestOrderQuery extends InvestOrder {
+    private String mobile;
     private Integer pageNo;
     private Integer pageSize;
+    private Integer timeType;
+
+    private Date createTimeStart;
+    private Date createTimeEnd;
     private Date startTime;
     private Date endTime;
 

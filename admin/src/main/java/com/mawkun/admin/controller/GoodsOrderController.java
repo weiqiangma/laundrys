@@ -2,10 +2,11 @@ package com.mawkun.admin.controller;
 
 import cn.pertech.common.abs.BaseController;
 import cn.pertech.common.spring.JsonResult;
+import cn.pertech.common.utils.DateUtils;
 import cn.pertech.common.utils.RequestUtils;
-import com.alibaba.fastjson.JSONArray;
-import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.data.PageInfo;
+import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.data.query.StateQuery;
@@ -14,6 +15,7 @@ import com.mawkun.core.base.entity.GoodsOrder;
 import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.mawkun.core.utils.StringUtils;
+import com.mawkun.core.utils.TimeUtils;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -71,11 +73,45 @@ public class GoodsOrderController extends BaseController {
         if(session.getLevel() > 0) {
             query.setShopId(session.getShopId());
         }
-        PageInfo page = goodsOrderServiceExt.pageByEntity(query);
+        Date sTime = new Date();
+        Date eTime = new Date();
+        if(query.getTimeType() != null) {
+            if (Constant.TIME_TYPE_DAY == query.getTimeType()) {
+                sTime = DateUtils.timeNow();
+                eTime = DateUtils.dateEndDate(sTime);
+            }
+            if (Constant.TIME_TYPE_WEEK == query.getTimeType()) {
+                sTime = TimeUtils.getWeekStart();
+                eTime = TimeUtils.getWeekEnd();
+            }
+            if (Constant.TIME_TYPE_MONTH == query.getTimeType()) {
+                sTime = TimeUtils.getMonthStart();
+                eTime = TimeUtils.getMonthEnd();
+            }
+            if (Constant.TIME_TYPE_YEAR == query.getTimeType()) {
+                sTime = TimeUtils.getCurrentYearStartTime();
+                eTime = TimeUtils.getCurrentYearEndTime();
+            }
+            if (Constant.TIME_TYPE_RANDOM == query.getTimeType()) {
+                sTime = query.getCreateTimeStart();
+                eTime = query.getCreateTimeEnd();
+            }
+            query.setCreateTimeStart(sTime);
+            query.setCreateTimeEnd(eTime);
+        }
+        PageInfo<GoodsOrderVo> page = goodsOrderServiceExt.pageByEntity(query);
         List<GoodsOrderVo> list = page.getList();
         if(list.size() > 0) {
             list.forEach(item -> item.setIsnew(Constant.ORDER_OLD));
             goodsOrderServiceExt.setOrderIsOld(list);
+        }
+        ShopOrderData shopOrderData = goodsOrderServiceExt.statsGoodsOrder(query);
+        if(shopOrderData != null) {
+            page.setTotalAmount(shopOrderData.getTotalAmount());
+            page.setTotalTransportFee(shopOrderData.getTotalTransportFee());
+        } else{
+            page.setTotalAmount(0);
+            page.setTotalTransportFee(0);
         }
         return sendSuccess(page);
     }

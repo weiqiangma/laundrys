@@ -2,6 +2,7 @@ package com.mawkun.core.dao;
 
 import com.mawkun.core.base.dao.InvestOrderDao;
 import com.mawkun.core.base.data.query.InvestOrderQuery;
+import com.mawkun.core.base.data.vo.InvestOrderStatsVo;
 import com.mawkun.core.base.entity.InvestOrder;
 import org.springframework.stereotype.Repository;
 
@@ -15,5 +16,7 @@ import java.util.List;
 public interface InvestOrderDaoExt extends InvestOrderDao {
 
     List<InvestOrder> selectListByTerms(InvestOrderQuery query);
+
+    InvestOrderStatsVo statsInvestOrder(InvestOrderQuery query);
     
 }

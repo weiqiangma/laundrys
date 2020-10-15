@@ -1,8 +1,9 @@
 package com.mawkun.core.service;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.data.PageInfo;
 import com.mawkun.core.base.data.query.InvestOrderQuery;
+import com.mawkun.core.base.data.vo.InvestOrderStatsVo;
 import com.mawkun.core.base.entity.InvestOrder;
 import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.entity.User;
@@ -34,6 +35,9 @@ public class InvestOrderServiceExt extends InvestOrderService {
         if(StringUtils.isNotEmpty(query.getOrderNo())) {
             query.setOrderNo("%" + query.getOrderNo() + "%");
         }
+        if(StringUtils.isNotEmpty(query.getMobile())) {
+            query.setMobile("%" + query.getMobile() + "%");
+        }
         List<InvestOrder> list = investOrderDaoExt.selectListByTerms(query);
         return new PageInfo<>(list);
     }
@@ -51,6 +55,10 @@ public class InvestOrderServiceExt extends InvestOrderService {
         return investOrderDaoExt.getByEntity(investLog);
     }
 
+    public InvestOrderStatsVo statsInvestOrder(InvestOrderQuery query) {
+        return investOrderDaoExt.statsInvestOrder(query);
+    }
+
     public Long save(User user, MemberCard cart, Integer status, Long investMoney, Long giftMoney, Long amoutMoney, Long residueMoney) {
         InvestOrder investOrder = new InvestOrder();
         investOrder.setUserId(user.getId());
@@ -61,7 +69,8 @@ public class InvestOrderServiceExt extends InvestOrderService {
         investOrder.setInvestMoney(investMoney);
         investOrder.setGiftMoney(giftMoney);
         investOrder.setAmountMoney(amoutMoney);
-        investOrder.setResiduemoney(residueMoney);
+        investOrder.setResidueMoney(residueMoney);
+        investOrder.setUpdateTime(new Date());
         investOrder.setCreateTime(new Date());
         investOrderDaoExt.insert(investOrder);
         return investOrder.getId();

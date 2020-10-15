@@ -81,7 +81,11 @@ public class PageInfo<T> extends PageSerializable<T> {
     private int navigateLastPage;
 
     private Integer totalAmount;
-    private Integer totalSize;
+    private Integer totalTransportFee;
+
+    private Integer investMoney;
+    private Integer giftMoney;
+    private Integer amountMoney;
 
     public PageInfo() {
     }
@@ -265,12 +269,12 @@ public class PageInfo<T> extends PageSerializable<T> {
         this.totalAmount = totalAmount;
     }
 
-    public Integer getTotalSize() {
-        return totalSize;
+    public Integer getTotalTransportFee() {
+        return totalTransportFee;
     }
 
-    public void setTotalSize(Integer totalSize) {
-        this.totalSize = totalSize;
+    public void setTotalTransportFee(Integer totalTransportFee) {
+        this.totalTransportFee = totalTransportFee;
     }
 
     @Deprecated
@@ -373,6 +377,30 @@ public class PageInfo<T> extends PageSerializable<T> {
 
     public void setNavigateLastPage(int navigateLastPage) {
         this.navigateLastPage = navigateLastPage;
+    }
+
+    public Integer getInvestMoney() {
+        return investMoney;
+    }
+
+    public void setInvestMoney(Integer investMoney) {
+        this.investMoney = investMoney;
+    }
+
+    public Integer getGiftMoney() {
+        return giftMoney;
+    }
+
+    public void setGiftMoney(Integer giftMoney) {
+        this.giftMoney = giftMoney;
+    }
+
+    public Integer getAmountMoney() {
+        return amountMoney;
+    }
+
+    public void setAmountMoney(Integer amountMoney) {
+        this.amountMoney = amountMoney;
     }
 
     @Override

@@ -7,8 +7,9 @@ import cn.pertech.common.utils.NumberUtils;
 import cn.pertech.common.utils.StringUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.data.PageInfo;
+import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
@@ -21,6 +22,7 @@ import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
+import com.mawkun.core.utils.TimeUtils;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -82,7 +84,34 @@ public class GoodsOrderController extends BaseController {
         if(session.getId() > 0) {
             query.setUserId(session.getId());
         }
+            Date sTime = new Date();
+            Date eTime = new Date();
+            if(Constant.TIME_TYPE_DAY == query.getTimeType()) {
+                sTime = DateUtils.timeNow();
+                eTime = DateUtils.dateEndDate(sTime);
+            }
+            if(Constant.TIME_TYPE_WEEK == query.getTimeType()) {
+                sTime = TimeUtils.getWeekStart();
+                eTime = TimeUtils.getWeekEnd();
+            }
+            if(Constant.TIME_TYPE_MONTH == query.getTimeType()) {
+                sTime = TimeUtils.getMonthStart();
+                eTime = TimeUtils.getMonthEnd();
+            }
+            if(Constant.TIME_TYPE_YEAR == query.getTimeType()) {
+                sTime = TimeUtils.getCurrentYearStartTime();
+                eTime = TimeUtils.getCurrentYearEndTime();
+            }
+            if(Constant.TIME_TYPE_RANDOM == query.getTimeType()) {
+                sTime = query.getCreateTimeStart();
+                eTime = query.getCreateTimeEnd();
+            }
+            query.setCreateTimeStart(sTime);
+            query.setCreateTimeEnd(eTime);
         PageInfo page = goodsOrderServiceExt.pageByEntity(query);
+        ShopOrderData shopOrderData = goodsOrderServiceExt.statsGoodsOrder(query);
+        page.setTotalAmount(shopOrderData.getTotalAmount());
+        page.setTotalTransportFee(shopOrderData.getTotalTransportFee());
         return sendSuccess(page);
     }
 

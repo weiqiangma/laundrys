@@ -12,7 +12,7 @@
         <result property="investMoney" column="invest_money" jdbcType="INTEGER"/>
         <result property="giftMoney" column="gift_money" jdbcType="INTEGER"/>
         <result property="amountMoney" column="amount_money" jdbcType="INTEGER"/>
-        <result property="residuemoney" column="residueMoney" jdbcType="INTEGER"/>
+        <result property="residueMoney" column="residue_money" jdbcType="INTEGER"/>
         <result property="status" column="status" jdbcType="OTHER"/>
         <result property="payTime" column="pay_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
@@ -20,7 +20,7 @@
     </resultMap>
 
     <sql id="table_field">
-      id, user_id, cart_id, order_no, user_name, cart_name, invest_money, gift_money, amount_money, residueMoney, status, pay_time, update_time, create_time      
+      id, user_id, cart_id, order_no, user_name, cart_name, invest_money, gift_money, amount_money, residue_money, status, pay_time, update_time, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -65,8 +65,8 @@
             <if test="amountMoney != null">
                 and amount_money = #{amountMoney,jdbcType=INTEGER}
             </if>
-            <if test="residuemoney != null">
-                and residueMoney = #{residuemoney,jdbcType=INTEGER}
+            <if test="residueMoney != null">
+                and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
             <if test="status != null">
                 and status = #{status,jdbcType=OTHER}
@@ -116,8 +116,8 @@
             <if test="amountMoney != null">
                 and amount_money = #{amountMoney,jdbcType=INTEGER}
             </if>
-            <if test="residuemoney != null">
-                and residueMoney = #{residuemoney,jdbcType=INTEGER}
+            <if test="residueMoney != null">
+                and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
             <if test="status != null">
                 and status = #{status,jdbcType=OTHER}
@@ -176,8 +176,8 @@
           <if test="amountMoney != null">
              amount_money,
           </if>
-          <if test="residuemoney != null">
-             residueMoney,
+          <if test="residueMoney != null">
+             residue_money,
           </if>
           <if test="status != null">
              status,
@@ -220,8 +220,8 @@
           <if test="amountMoney != null">
              #{amountMoney,jdbcType=INTEGER},
           </if>
-          <if test="residuemoney != null">
-             #{residuemoney,jdbcType=INTEGER},
+          <if test="residueMoney != null">
+             #{residueMoney,jdbcType=INTEGER},
           </if>
           <if test="status != null">
              #{status,jdbcType=OTHER},
@@ -241,10 +241,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into invest_order
-         (id, user_id, cart_id, order_no, user_name, cart_name, invest_money, gift_money, amount_money, residueMoney, status, pay_time, update_time, create_time)
+         (id, user_id, cart_id, order_no, user_name, cart_name, invest_money, gift_money, amount_money, residue_money, status, pay_time, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.orderNo,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.investMoney,jdbcType=INTEGER}, #{item.giftMoney,jdbcType=INTEGER}, #{item.amountMoney,jdbcType=INTEGER}, #{item.residuemoney,jdbcType=INTEGER}, #{item.status,jdbcType=OTHER}, #{item.payTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.userId,jdbcType=INTEGER}, #{item.cartId,jdbcType=INTEGER}, #{item.orderNo,jdbcType=VARCHAR}, #{item.userName,jdbcType=VARCHAR}, #{item.cartName,jdbcType=VARCHAR}, #{item.investMoney,jdbcType=INTEGER}, #{item.giftMoney,jdbcType=INTEGER}, #{item.amountMoney,jdbcType=INTEGER}, #{item.residueMoney,jdbcType=INTEGER}, #{item.status,jdbcType=OTHER}, #{item.payTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -276,8 +276,8 @@
             <if test="amountMoney != null">
                 amount_money = #{amountMoney,jdbcType=INTEGER},
             </if>
-            <if test="residuemoney != null">
-                residueMoney = #{residuemoney,jdbcType=INTEGER},
+            <if test="residueMoney != null">
+                residue_money = #{residueMoney,jdbcType=INTEGER},
             </if>
             <if test="status != null">
                 status = #{status,jdbcType=OTHER},
@@ -323,8 +323,8 @@
             <if test="where.amountMoney == null and set.amountMoney != null">
                 amount_money = #{set.amountMoney,jdbcType=INTEGER},
             </if>
-            <if test="where.residuemoney == null and set.residuemoney != null">
-                residueMoney = #{set.residuemoney,jdbcType=INTEGER},
+            <if test="where.residueMoney == null and set.residueMoney != null">
+                residue_money = #{set.residueMoney,jdbcType=INTEGER},
             </if>
             <if test="where.status == null and set.status != null">
                 status = #{set.status,jdbcType=OTHER},
@@ -367,8 +367,8 @@
             <if test="where.amountMoney != null">
                 and amount_money = #{where.amountMoney,jdbcType=INTEGER}
             </if>
-            <if test="where.residuemoney != null">
-                and residueMoney = #{where.residuemoney,jdbcType=INTEGER}
+            <if test="where.residueMoney != null">
+                and residue_money = #{where.residueMoney,jdbcType=INTEGER}
             </if>
             <if test="where.status != null">
                 and status = #{where.status,jdbcType=OTHER}
@@ -429,9 +429,9 @@
                   when id = #{item.id} then #{item.amountMoney}
                  </foreach>
             </trim>
-            <trim prefix="residueMoney = case" suffix="end,">
+            <trim prefix="residue_money = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
-                  when id = #{item.id} then #{item.residuemoney}
+                  when id = #{item.id} then #{item.residueMoney}
                  </foreach>
             </trim>
             <trim prefix="status = case" suffix="end,">
@@ -494,8 +494,8 @@
             <if test="amountMoney != null">
                 and amount_money = #{amountMoney,jdbcType=INTEGER}
             </if>
-            <if test="residuemoney != null">
-                and residueMoney = #{residuemoney,jdbcType=INTEGER}
+            <if test="residueMoney != null">
+                and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
             <if test="status != null">
                 and status = #{status,jdbcType=OTHER}
@@ -554,8 +554,8 @@
             <if test="amountMoney != null">
                 and amount_money = #{amountMoney,jdbcType=INTEGER}
             </if>
-            <if test="residuemoney != null">
-                and residueMoney = #{residuemoney,jdbcType=INTEGER}
+            <if test="residueMoney != null">
+                and residue_money = #{residueMoney,jdbcType=INTEGER}
             </if>
             <if test="status != null">
                 and status = #{status,jdbcType=OTHER}
