@@ -117,6 +117,10 @@ public interface Constant {
     int LOGIN_AUTHORITY = 40003;
     //没有token授权码
     int LOGIN_TOKEN_EMPTY = 40005;
+    //没有权限,操作失败
+    int LOGIN_TIME_OUT_OVER = 405;
+    //没有token授权码
+    int LOGIN_TIME_REFUSE = 403;
 
     //=============================支付状态=============================
     //状态10:支付成功,20:等待退款,30:退款失败,40:退款成功 50:拒绝退款

@@ -1,7 +1,7 @@
 package com.mawkun.core.service;
 
-import cn.pertech.common.spring.JsonResult;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.entity.UserAddress;
 import com.mawkun.core.base.service.UserAddressService;
 import com.mawkun.core.dao.UserAddressDaoExt;

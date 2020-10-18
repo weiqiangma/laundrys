@@ -1,11 +1,11 @@
 package com.mawkun.core.base.service;
 
-import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.NumberUtils;
 import cn.pertech.common.utils.StringUtils;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.dao.OrderLogDao;
 import com.mawkun.core.base.dao.GoodsOrderDao;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.entity.GoodsOrder;
 import com.mawkun.core.base.entity.OrderLog;
@@ -127,6 +127,7 @@ public class GoodsOrderService {
             if(dbForm.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
                 if(status == Constant.DELIVERY_ORDER_WAITING_REAP) {
                     //goodsOrder.setDistributorId(session.getId());
+                    if(dbForm.getDistributorId() != null) return new JsonResult().error("该订单已被其他骑手确认接单");
                     if(goodsOrder.getDistributorId() != null) goodsOrder.setDistributorId(goodsOrder.getDistributorId());
                     operate = "待收货";
                 }

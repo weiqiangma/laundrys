@@ -1,7 +1,7 @@
 package com.mawkun.admin.controller;
 
-import cn.pertech.common.abs.BaseController;
-import cn.pertech.common.spring.JsonResult;
+import com.mawkun.core.base.controller.BaseController;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.service.MemberCardService;
@@ -21,7 +21,7 @@ import java.util.List;
  * @date 2020-09-17 22:44:11
  */
 @RestController
-@RequestMapping("/MemberCard")
+@RequestMapping("/adm/memberCard")
 public class MemberCardController extends BaseController {
     
     @Autowired
@@ -45,28 +45,28 @@ public class MemberCardController extends BaseController {
         return sendSuccess(memberCardList);
     }
 
-    @PostMapping("/insert")
+    @RequestMapping("/insert")
     public JsonResult insert(@LoginedAuth UserSession session, MemberCard memberCard){
-        if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
+        if(session.getLevel() > 0) return sendArgsError("子管理员无权添加");
         memberCardService.insert(memberCard);
         return sendSuccess(memberCard);
     }
 
-    @PutMapping("/update")
+    @RequestMapping("/update")
     public JsonResult update(@LoginedAuth UserSession session, MemberCard memberCard){
         if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
         int result = memberCardService.update(memberCard);
         return sendSuccess(result);
     }
 
-    @DeleteMapping("/delete")
+    @RequestMapping("/delete")
     public JsonResult deleteOne(@LoginedAuth UserSession session, Long id){
         if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");
         int result = memberCardService.deleteById(id);
         return sendSuccess(result);
     }
 
-    @DeleteMapping("/deleteBatch")
+    @RequestMapping("/deleteBatch")
     public JsonResult deleteBatch(@LoginedAuth UserSession session, String ids){
         int result = 0;
         if(session.getLevel() > 0) return sendArgsError("子管理员无权删除商品分类");

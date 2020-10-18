@@ -74,6 +74,12 @@ public class ShopServiceExt extends ShopService {
         return shopDaoExt.getByEntity(query);
     }
 
+    public List<Shop> getShopByStatus(Integer status) {
+        Shop query = new Shop();
+        query.setLevel(status);
+        return shopDaoExt.listByEntity(query);
+    }
+
     /**
      * 编辑代纳普
      * @param shop
@@ -288,8 +294,10 @@ public class ShopServiceExt extends ShopService {
             queryVO.setDateCount(24);
         }else if(queryVO.getType() == 2) {
             //本周统计
-            queryVO.setStartTime(TimeUtils.getWeekStart());
-            queryVO.setEndTime(TimeUtils.getWeekEnd());
+//            queryVO.setStartTime(TimeUtils.getWeekStart());
+//            queryVO.setEndTime(TimeUtils.getWeekEnd());
+            queryVO.setStartTime(TimeUtils.getBeginDayOfWeek());
+            queryVO.setEndTime(TimeUtils.getEndDayOfWeek());
             queryVO.setFormatCode("%Y-%m-%d");
             queryVO.setDateCount(7);
         }else if(queryVO.getType() == 3) {

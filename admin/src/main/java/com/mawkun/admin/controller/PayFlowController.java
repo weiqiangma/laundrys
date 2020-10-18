@@ -1,7 +1,7 @@
 package com.mawkun.admin.controller;
 
-import cn.pertech.common.abs.BaseController;
-import cn.pertech.common.spring.JsonResult;
+import com.mawkun.core.base.controller.BaseController;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.entity.PayFlow;
 import com.mawkun.core.base.service.PayFlowService;
 import org.springframework.web.bind.annotation.*;

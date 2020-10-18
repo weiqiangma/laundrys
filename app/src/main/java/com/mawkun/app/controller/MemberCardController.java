@@ -1,8 +1,8 @@
 package com.mawkun.app.controller;
 
-import cn.pertech.common.abs.BaseController;
-import cn.pertech.common.spring.JsonResult;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.controller.BaseController;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.entity.MemberCard;
 import com.mawkun.core.base.service.MemberCardService;
 import io.swagger.annotations.Api;

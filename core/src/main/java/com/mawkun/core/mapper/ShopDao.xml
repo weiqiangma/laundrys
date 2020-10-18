@@ -10,14 +10,16 @@
         <result property="longitude" column="longitude" jdbcType="VARCHAR"/>
         <result property="latitude" column="latitude" jdbcType="VARCHAR"/>
         <result property="location" column="location" jdbcType="VARCHAR"/>
-        <result property="level" column="level" jdbcType="INTEGER"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="level" column="level" jdbcType="OTHER"/>
+        <result property="status" column="status" jdbcType="OTHER"/>
+        <result property="bossName" column="boss_name" jdbcType="VARCHAR"/>
+        <result property="bossMobile" column="boss_mobile" jdbcType="VARCHAR"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="table_field">
-      id, shop_name, address, picture, longitude, latitude, location, level, status, update_time, create_time      
+      id, shop_name, address, picture, longitude, latitude, location, level, status, boss_name, boss_mobile, update_time, create_time      
     </sql>
        
     <!--通过Id查询单个-->
@@ -57,10 +59,16 @@
                 and location = #{location,jdbcType=VARCHAR}
             </if>
             <if test="level != null">
-                and level = #{level,jdbcType=INTEGER}
+                and level = #{level,jdbcType=OTHER}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="bossName != null">
+                and boss_name = #{bossName,jdbcType=VARCHAR}
+            </if>
+            <if test="bossMobile != null">
+                and boss_mobile = #{bossMobile,jdbcType=VARCHAR}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -99,10 +107,16 @@
                 and location = #{location,jdbcType=VARCHAR}
             </if>
             <if test="level != null">
-                and level = #{level,jdbcType=INTEGER}
+                and level = #{level,jdbcType=OTHER}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="bossName != null">
+                and boss_name = #{bossName,jdbcType=VARCHAR}
+            </if>
+            <if test="bossMobile != null">
+                and boss_mobile = #{bossMobile,jdbcType=VARCHAR}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -155,6 +169,12 @@
           <if test="status != null">
              status,
           </if>
+          <if test="bossName != null">
+             boss_name,
+          </if>
+          <if test="bossMobile != null">
+             boss_mobile,
+          </if>
           <if test="updateTime != null">
              update_time,
           </if>
@@ -185,10 +205,16 @@
              #{location,jdbcType=VARCHAR},
           </if>
           <if test="level != null">
-             #{level,jdbcType=INTEGER},
+             #{level,jdbcType=OTHER},
           </if>
           <if test="status != null">
-             #{status,jdbcType=INTEGER},
+             #{status,jdbcType=OTHER},
+          </if>
+          <if test="bossName != null">
+             #{bossName,jdbcType=VARCHAR},
+          </if>
+          <if test="bossMobile != null">
+             #{bossMobile,jdbcType=VARCHAR},
           </if>
           <if test="updateTime != null">
              #{updateTime,jdbcType=TIMESTAMP},
@@ -202,10 +228,10 @@
     <!--批量新增所有列，列表长度不能为0，且列表id统一为null或者统一不为null-->
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true" parameterType="list">
         insert into shop
-         (id, shop_name, address, picture, longitude, latitude, location, level, status, update_time, create_time)
+         (id, shop_name, address, picture, longitude, latitude, location, level, status, boss_name, boss_mobile, update_time, create_time)
         values
         <foreach item="item" collection="list" separator="," open="" close="" index="index">
-         (#{item.id,jdbcType=INTEGER}, #{item.shopName,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.picture,jdbcType=VARCHAR}, #{item.longitude,jdbcType=VARCHAR}, #{item.latitude,jdbcType=VARCHAR}, #{item.location,jdbcType=VARCHAR}, #{item.level,jdbcType=INTEGER}, #{item.status,jdbcType=INTEGER}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+         (#{item.id,jdbcType=INTEGER}, #{item.shopName,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.picture,jdbcType=VARCHAR}, #{item.longitude,jdbcType=VARCHAR}, #{item.latitude,jdbcType=VARCHAR}, #{item.location,jdbcType=VARCHAR}, #{item.level,jdbcType=OTHER}, #{item.status,jdbcType=OTHER}, #{item.bossName,jdbcType=VARCHAR}, #{item.bossMobile,jdbcType=VARCHAR}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 
@@ -232,10 +258,16 @@
                 location = #{location,jdbcType=VARCHAR},
             </if>
             <if test="level != null">
-                level = #{level,jdbcType=INTEGER},
+                level = #{level,jdbcType=OTHER},
             </if>
             <if test="status != null">
-                status = #{status,jdbcType=INTEGER},
+                status = #{status,jdbcType=OTHER},
+            </if>
+            <if test="bossName != null and bossName != ''">
+                boss_name = #{bossName,jdbcType=VARCHAR},
+            </if>
+            <if test="bossMobile != null and bossMobile != ''">
+                boss_mobile = #{bossMobile,jdbcType=VARCHAR},
             </if>
             <if test="updateTime != null">
                 update_time = #{updateTime,jdbcType=TIMESTAMP},
@@ -270,10 +302,16 @@
                 location = #{set.location,jdbcType=VARCHAR},
             </if>
             <if test="where.level == null and set.level != null">
-                level = #{set.level,jdbcType=INTEGER},
+                level = #{set.level,jdbcType=OTHER},
             </if>
             <if test="where.status == null and set.status != null">
-                status = #{set.status,jdbcType=INTEGER},
+                status = #{set.status,jdbcType=OTHER},
+            </if>
+            <if test="where.bossName == null and set.bossName != null and set.bossName != ''">
+                boss_name = #{set.bossName,jdbcType=VARCHAR},
+            </if>
+            <if test="where.bossMobile == null and set.bossMobile != null and set.bossMobile != ''">
+                boss_mobile = #{set.bossMobile,jdbcType=VARCHAR},
             </if>
             <if test="where.updateTime == null and set.updateTime != null">
                 update_time = #{set.updateTime,jdbcType=TIMESTAMP},
@@ -305,10 +343,16 @@
                 and location = #{where.location,jdbcType=VARCHAR}
             </if>
             <if test="where.level != null">
-                and level = #{where.level,jdbcType=INTEGER}
+                and level = #{where.level,jdbcType=OTHER}
             </if>
             <if test="where.status != null">
-                and status = #{where.status,jdbcType=INTEGER}
+                and status = #{where.status,jdbcType=OTHER}
+            </if>
+            <if test="where.bossName != null">
+                and boss_name = #{where.bossName,jdbcType=VARCHAR}
+            </if>
+            <if test="where.bossMobile != null">
+                and boss_mobile = #{where.bossMobile,jdbcType=VARCHAR}
             </if>
             <if test="where.updateTime != null">
                 and update_time = #{where.updateTime,jdbcType=TIMESTAMP}
@@ -363,6 +407,16 @@
                   when id = #{item.id} then #{item.status}
                  </foreach>
             </trim>
+            <trim prefix="boss_name = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.bossName}
+                 </foreach>
+            </trim>
+            <trim prefix="boss_mobile = case" suffix="end,">
+                 <foreach collection="list" item="item" index="index">
+                  when id = #{item.id} then #{item.bossMobile}
+                 </foreach>
+            </trim>
             <trim prefix="update_time = case" suffix="end,">
                  <foreach collection="list" item="item" index="index">
                   when id = #{item.id} then #{item.updateTime}
@@ -408,10 +462,16 @@
                 and location = #{location,jdbcType=VARCHAR}
             </if>
             <if test="level != null">
-                and level = #{level,jdbcType=INTEGER}
+                and level = #{level,jdbcType=OTHER}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="bossName != null">
+                and boss_name = #{bossName,jdbcType=VARCHAR}
+            </if>
+            <if test="bossMobile != null">
+                and boss_mobile = #{bossMobile,jdbcType=VARCHAR}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -459,10 +519,16 @@
                 and location = #{location,jdbcType=VARCHAR}
             </if>
             <if test="level != null">
-                and level = #{level,jdbcType=INTEGER}
+                and level = #{level,jdbcType=OTHER}
             </if>
             <if test="status != null">
-                and status = #{status,jdbcType=INTEGER}
+                and status = #{status,jdbcType=OTHER}
+            </if>
+            <if test="bossName != null">
+                and boss_name = #{bossName,jdbcType=VARCHAR}
+            </if>
+            <if test="bossMobile != null">
+                and boss_mobile = #{bossMobile,jdbcType=VARCHAR}
             </if>
             <if test="updateTime != null">
                 and update_time = #{updateTime,jdbcType=TIMESTAMP}

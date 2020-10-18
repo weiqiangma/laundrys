@@ -1,8 +1,9 @@
 package com.mawkun.admin.controller;
 
-import cn.pertech.common.abs.BaseController;
-import cn.pertech.common.spring.JsonResult;
+
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.controller.BaseController;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.AdminQuery;
 import com.mawkun.core.base.entity.Admin;
@@ -66,6 +67,7 @@ public class AdminController extends BaseController {
     public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, AdminQuery query) {
         if(session.getLevel() > 0) return sendArgsError("子管理员无权查看");
         PageInfo page = adminServiceExt.pageByEntity(query);
+        JsonResult result = sendSuccess(page);
         return sendSuccess(page);
     }
 

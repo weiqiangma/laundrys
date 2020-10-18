@@ -1,7 +1,7 @@
 package com.mawkun.app.controller;
 
-import cn.pertech.common.abs.BaseController;
-import cn.pertech.common.spring.JsonResult;
+import com.mawkun.core.base.controller.BaseController;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.PageInfo;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.InvestOrderQuery;

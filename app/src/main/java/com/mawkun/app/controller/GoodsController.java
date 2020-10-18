@@ -1,13 +1,14 @@
 package com.mawkun.app.controller;
 
-import cn.pertech.common.abs.BaseController;
-import cn.pertech.common.spring.JsonResult;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.controller.BaseController;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsQuery;
 import com.mawkun.core.base.data.vo.GoodsVo;
 import com.mawkun.core.base.entity.Goods;
+import com.mawkun.core.base.entity.SysParam;
 import com.mawkun.core.service.GoodsServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
@@ -23,6 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +61,8 @@ public class GoodsController extends BaseController {
         //List<Goods> goodsList = goodsServiceExt.listByEntity(goods);
         List<GoodsVo> goodsList =  goodsServiceExt.selectList(query);
         List<Goods> resutlList = goodsList.stream().filter(a -> a.getStatus() == Constant.GOODS_GROUNDING).collect(Collectors.toList());
-        return sendSuccess(resutlList);
+        List<Goods> sortList = resutlList.stream().sorted(Comparator.comparingInt(Goods::getSort).reversed()).collect(Collectors.toList());
+        return sendSuccess(sortList);
     }
 
     @GetMapping("/pageList")

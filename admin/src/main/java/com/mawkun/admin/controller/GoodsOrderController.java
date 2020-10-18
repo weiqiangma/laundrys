@@ -1,10 +1,10 @@
 package com.mawkun.admin.controller;
 
-import cn.pertech.common.abs.BaseController;
-import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.DateUtils;
 import cn.pertech.common.utils.RequestUtils;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.controller.BaseController;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.PageInfo;
 import com.mawkun.core.base.data.ShopOrderData;
 import com.mawkun.core.base.data.UserSession;
@@ -83,6 +83,8 @@ public class GoodsOrderController extends BaseController {
             if (Constant.TIME_TYPE_WEEK == query.getTimeType()) {
                 sTime = TimeUtils.getWeekStart();
                 eTime = TimeUtils.getWeekEnd();
+                sTime = TimeUtils.getBeginDayOfWeek();
+                eTime = TimeUtils.getEndDayOfWeek();
             }
             if (Constant.TIME_TYPE_MONTH == query.getTimeType()) {
                 sTime = TimeUtils.getMonthStart();
@@ -109,6 +111,13 @@ public class GoodsOrderController extends BaseController {
         if(shopOrderData != null) {
             page.setTotalAmount(shopOrderData.getTotalAmount());
             page.setTotalTransportFee(shopOrderData.getTotalTransportFee());
+            if(shopOrderData.getTotalTransportFee() == null) {
+                page.setTotalTransportFee(0);
+            }
+            if(shopOrderData.getTotalAmount() == null) {
+                page.setTotalAmount(0);
+            }
+
         } else{
             page.setTotalAmount(0);
             page.setTotalTransportFee(0);
@@ -174,6 +183,7 @@ public class GoodsOrderController extends BaseController {
             resultList = goodsOrderServiceExt.getShopNewOrder(query);
         }
         if(resultList.size() > 0) result = 1;
+        JsonResult result1 = sendSuccess(result);
         return sendSuccess(result);
     }
 
@@ -185,11 +195,7 @@ public class GoodsOrderController extends BaseController {
         }
         PageInfo page = goodsOrderServiceExt.pageByEntity(query);
         List<GoodsOrderVo> list = page.getList();
-        if(list.size() > 0) {
-            list.forEach(item -> item.setIsnew(Constant.ORDER_OLD));
-            goodsOrderServiceExt.setOrderIsOld(list);
-        }
-        return sendSuccess(page);
+        return sendSuccess(list);
     }
 
     //查询统计对象(首页统计)

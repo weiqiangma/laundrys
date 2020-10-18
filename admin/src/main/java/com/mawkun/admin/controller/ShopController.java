@@ -1,11 +1,11 @@
 package com.mawkun.admin.controller;
 
-import cn.pertech.common.abs.BaseController;
-import cn.pertech.common.spring.JsonResult;
 import cn.pertech.common.utils.RequestUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.controller.BaseController;
+import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
@@ -82,8 +82,11 @@ public class ShopController extends BaseController {
         if(files.length == 0) return sendError("请上传门店图片");
         List shopList = shopServiceExt.getByName(shop.getShopName());
         if(!shopList.isEmpty()) return sendError("该门店名称已存在，不能重复添加");
-        Shop resultShop = shopServiceExt.getFirstLevelShop();
-        if(resultShop != null) return sendArgsError("总店已存在，请勿重复添加");
+        //Shop resultShop = shopServiceExt.getFirstLevelShop();
+        if(shop.getLevel() != null && shop.getLevel() == Constant.SHOP_LEVEL_FIRST) {
+            List<Shop> resultShop = shopServiceExt.getShopByStatus(shop.getStatus());
+            if(resultShop != null && resultShop.size() > 0) return sendArgsError("总店已存在，请勿重复添加");
+        }
         int result = shopServiceExt.insertWithPic(shop, files);
         return sendSuccess(result);
     }
@@ -137,7 +140,7 @@ public class ShopController extends BaseController {
     @ApiOperation(value="统计门店收入", notes="统计门店收入")
     public JsonResult statsShopIncome(@LoginedAuth UserSession session) {
         StateQuery query = this.createQueryStateVo();
-        query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
+        //query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
         if(session.getLevel() > 0) query.setShopId(session.getShopId());
         JSONArray array = shopServiceExt.statsShopIncome(query);
         return sendSuccess(array);
@@ -152,7 +155,7 @@ public class ShopController extends BaseController {
     public JsonResult statsShopOrder(@LoginedAuth UserSession session) {
         StateQuery query = this.createQueryStateVo();
         if(session.getLevel() > 0) query.setShopId(session.getShopId());
-        query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
+        //query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
         JSONArray array = shopServiceExt.statsShopOrder(query);
         return sendSuccess(array);
     }
