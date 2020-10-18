@@ -13,11 +13,13 @@ import com.mawkun.core.base.entity.Kind;
 import com.mawkun.core.base.service.KindService;
 import com.mawkun.core.dao.KindDaoExt;
 import com.mawkun.core.utils.ImageUtils;
+import com.mawkun.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -85,13 +87,23 @@ public class KindServiceExt extends KindService {
         List<Kind> list = kindDaoExt.listByEntity(query);
         List<Kind> sortedList = list.stream().sorted(Comparator.comparingInt(Kind::getMainSort)).collect(Collectors.toList());
         for(Kind kind : sortedList) {
+            List<Goods> resultList = new ArrayList<>();
             JSONObject object = new JSONObject();
             Goods goodsQuery = new Goods();
             goodsQuery.setKindId(kind.getId());
             List<Goods> goods = goodsServiceExt.listByEntity(goodsQuery);
-            List<Goods> resultList = goods.stream().limit(3).collect(Collectors.toList());
+            /**
+             * 任意洗护套餐显示6
+             */
+            if(kind.getId() == 0) {
+                resultList = goods.stream().limit(6).collect(Collectors.toList());
+                resultList = resultList.stream().sorted(Comparator.comparingInt(Goods::getSort).reversed()).collect(Collectors.toList());
+            } else {
+                resultList = goods.stream().limit(3).collect(Collectors.toList());
+            }
             object.put("title", kind.getKindName());
             object.put("list", resultList);
+            object.put("length", goods.size());
             array.add(object);
         }
         return array;

@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class GoodsOrderVo {
+public class ExportGoodsOrderVo {
     @ExcelProperty("ID")
     private Long id;
     /**
@@ -133,26 +133,16 @@ public class GoodsOrderVo {
     private String customerName;        //客户姓名
     @ExcelProperty("微信电话")
     private String mobile;
-    @ExcelProperty("配送员手机号")
-    private String distributorMobile;
     @ExcelProperty("配送员姓名")
     private String distributorName;     //配送员姓名
-    @ExcelProperty("坐标")
-    private String location;            //订单收货地址
     @ExcelProperty("收货地址")
-    private String address;
-    @ExcelProperty("微信定位")
-    private String name;
-    @ExcelProperty("详细地址")
-    private String detail;
+    private String location;            //订单收货地址
     @ExcelProperty("联系电话")
     private String linkMobile1;
     @ExcelProperty("备用联系电话")
     private String linkMobile2;
     @ExcelProperty("总金额")
     private Double amount;
-    @ExcelIgnore
-    private List<OrderClothes> list;         //订单下商品
     @ExcelIgnore
     private String type;
 }

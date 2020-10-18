@@ -36,7 +36,7 @@ public class GoodsOrderQuery extends GoodsOrder {
             pageNo = 1;
         }
         if(pageSize == null) {
-            pageSize = 20;
+            pageSize = 5;
         }
     }
 }

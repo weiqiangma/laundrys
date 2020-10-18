@@ -8,6 +8,7 @@ import com.mawkun.core.base.data.query.GoodsQuery;
 import com.mawkun.core.base.entity.Goods;
 import com.mawkun.core.service.GoodsServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
+import com.mawkun.core.utils.StringUtils;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -85,7 +86,12 @@ public class GoodsController extends BaseController {
     public JsonResult update(@LoginedAuth @ApiIgnore UserSession session,Goods goods, MultipartFile file){
         if(session.getLevel() > 0) return sendArgsError("子管理员无权编辑商品");
         List<Goods> goodsList = goodsServiceExt.getByName(goods.getGoodsName());
-        if(goodsList.size() > 1) return sendError("该商品名称已存在，请勿重复添加");
+        if(goodsList.size() > 1) {
+            Goods resultGoods = goodsList.get(0);
+            if(!StringUtils.equals(goods.getGoodsName(), resultGoods.getGoodsName())) {
+                return sendError("该商品名称已存在，请勿重复添加");
+            }
+        }
         int result = goodsServiceExt.updateWithPic(goods, file);
         return sendSuccess(result);
     }

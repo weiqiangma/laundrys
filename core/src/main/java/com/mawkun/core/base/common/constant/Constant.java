@@ -122,6 +122,8 @@ public interface Constant {
     //没有token授权码
     int LOGIN_TIME_REFUSE = 403;
 
+    int USER_NOT_FOUND = 409;
+
     //=============================支付状态=============================
     //状态10:支付成功,20:等待退款,30:退款失败,40:退款成功 50:拒绝退款
     String PAY_STATU_SUCCESS = "SUCCESS";

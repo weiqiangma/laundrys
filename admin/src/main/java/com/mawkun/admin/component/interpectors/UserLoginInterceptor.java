@@ -1,6 +1,5 @@
 package com.mawkun.admin.component.interpectors;
 
-import cn.pertech.common.abs.BaseHandlerInterceptor;
 import cn.pertech.common.constants.Constants;
 import cn.pertech.common.spring.SpringContext;
 import cn.pertech.common.utils.StringUtils;
@@ -44,7 +43,7 @@ public class UserLoginInterceptor extends BaseHandlerInterceptor {
         String token = request.getHeader("Authorization");
         if (StringUtils.isEmpty(token)) {
             logger.error("没有授权信息>>>" + request.getRequestURI());
-            sendJsonError(request, response, Constant.LOGIN_TOKEN_EMPTY, "权限错误[获取不到授权信息]");
+            sendJsonError(request, response, Constant.LOGIN_TIME_REFUSE, "拒绝访问");
             return false;
         }
         if (userCacheService == null) {
@@ -53,7 +52,7 @@ public class UserLoginInterceptor extends BaseHandlerInterceptor {
         UserSession userSession = userCacheService.getAdminSession(token);
         if (userSession == null) {
             logger.error("权限错误(登录超时):openId=" + token);
-            sendJsonError(request, response, Constant.LOGIN_TIME_OUT, "权限错误(登录超时)");
+            sendJsonError(request, response, Constant.LOGIN_TIME_OUT_OVER, "登陆超时");
             return false;
         }
 

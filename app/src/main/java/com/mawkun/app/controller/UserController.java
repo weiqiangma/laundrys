@@ -17,6 +17,7 @@ import com.mawkun.core.service.WxApiServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,6 +76,13 @@ public class UserController extends BaseController {
     public JsonResult getByToken(@LoginedAuth UserSession session){
         Validate.notNull(session.getId());
         User user = userServiceExt.getById(session.getId());
+        /**
+         * 如果数据库user已经是配送员，更新该用户session
+         */
+        if(user != null && user.getKind() == Constant.USER_TYPE_DISTRIBUTOR) {
+            session.setKind(user.getKind());
+            userCacheService.putUserSession(session.getToken(), session);
+        }
         return sendSuccess(user);
     }
 
@@ -101,6 +109,8 @@ public class UserController extends BaseController {
     @PostMapping("/updateUserInfo")
     @ApiOperation(value="编辑用户", notes="编辑用户")
     public JsonResult update(@LoginedAuth UserSession session, User user){
+        User resultUser = userServiceExt.getById(session.getId());
+        if(resultUser == null) return sendArgsError("未查询到该用户信息");
         user.setId(session.getId());
         user.setStatus(Constant.USER_STATUS_ACTIVE);
         int result = userServiceExt.update(user, null);
@@ -117,6 +127,7 @@ public class UserController extends BaseController {
         session.setSessionKey(data.getSessionKey());
         String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, data.getSessionKey(), iv);
         //String mobile = wxApiServiceExt.getPhoneNumber(encryptedData, session.getSessionKey(), iv);
+        if(StringUtils.isEmpty(mobile)) return sendArgsError("微信授权手机号失败");
         user.setMobile(mobile);
         userServiceExt.update(user, null);
         return sendSuccess("ok", mobile);

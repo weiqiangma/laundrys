@@ -99,7 +99,7 @@ public class GoodsOrderService {
         if(status != null) {
             GoodsOrder dbForm = goodsOrderDao.getById(goodsOrder.getId());
             if(!NumberUtils.equals(dbForm.getStatus() + 1, status) && !NumberUtils.equals(status, Constant.DELIVERY_ORDER_WAITING_REAP)){
-                return new JsonResult().error("请按顺序执行订单流程");
+                return new JsonResult().error("该订单状态已更新，请刷新");
             }
             String operate = "";
             //客户送至门店

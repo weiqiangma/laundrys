@@ -9,7 +9,7 @@
     </parent>
     <groupId>com.mawkun</groupId>
     <artifactId>app</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
     <name>app</name>
     <description>Demo project for Spring Boot</description>

@@ -5,7 +5,9 @@ import cn.pertech.common.spring.SpringContext;
 import cn.pertech.common.utils.StringUtils;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.UserSession;
+import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.UserCacheService;
+import com.mawkun.core.service.UserServiceExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,7 @@ public class UserLoginInterceptor extends BaseHandlerInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(UserLoginInterceptor.class);
 
     private UserCacheService userCacheService;
+    private UserServiceExt userServiceExt;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         super.init(request, response, handler);
@@ -49,10 +52,19 @@ public class UserLoginInterceptor extends BaseHandlerInterceptor {
         if (userCacheService == null) {
             userCacheService = SpringContext.getBean("userCacheService", UserCacheService.class);
         }
+        if(userServiceExt == null) {
+            userServiceExt = SpringContext.getBean("userServiceExt", UserServiceExt.class);
+        }
         UserSession userSession = userCacheService.getUserSession(token);
         if (userSession == null) {
             logger.error("权限错误(登录超时):openId=" + token);
             sendJsonError(request, response, Constant.LOGIN_TIME_OUT_OVER, "登录超时");
+            return false;
+        }
+        User user = userServiceExt.getById(userSession.getId());
+        if(user == null) {
+            logger.error("查询不到该用户信息");
+            sendJsonError(request, response, Constant.USER_NOT_FOUND, "未查询到该用户信息");
             return false;
         }
 
@@ -70,7 +82,8 @@ public class UserLoginInterceptor extends BaseHandlerInterceptor {
         //logger.info("<afterCompletion>"+handler.getClass().getName());
     }
 
-    public UserLoginInterceptor(UserCacheService userCacheService) {
+    public UserLoginInterceptor(UserCacheService userCacheService, UserServiceExt userServiceExt) {
         this.userCacheService = userCacheService;
+        this.userServiceExt = userServiceExt;
     }
 }

@@ -12,6 +12,7 @@ import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.GoodsOrderQuery;
 import com.mawkun.core.base.data.query.GoodsQuery;
 import com.mawkun.core.base.data.query.StateQuery;
+import com.mawkun.core.base.data.vo.ExportGoodsOrderVo;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.entity.*;
@@ -19,17 +20,16 @@ import com.mawkun.core.base.service.GoodsOrderService;
 import com.mawkun.core.dao.*;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.TimeUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.core.PartialUpdate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -85,6 +85,33 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         return new PageInfo<>(list);
     }
 
+    /**
+     * 列表分页
+     * @param query
+     * @return
+     */
+    public List<GoodsOrderVo> listByEntity(GoodsOrderQuery query) {
+        query.init();
+        List<ExportGoodsOrderVo> resultList = new ArrayList<>();
+        if(StringUtils.isNotEmpty(query.getOrderNo())) {
+            query.setOrderNo("%" + query.getOrderNo() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getShopName())) {
+            query.setShopName("%" + query.getShopName() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getLinkMobile1())) {
+            query.setLinkMobile1("%" + query.getLinkMobile1() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getLinkMobile2())) {
+            query.setLinkMobile2("%" + query.getLinkMobile2() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getDistributorMobile())) {
+            query.setLinkMobile2("%" + query.getDistributorMobile() + "%");
+        }
+        List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
+        return list;
+    }
+
     public int setOrderIsOld(List<GoodsOrderVo> list) {
         return goodsOrderDaoExt.setOrderIsOld(list);
     }
@@ -97,6 +124,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
      */
     public PageInfo<GoodsOrderVo> getDistributorOrder(Long userId, GoodsOrderQuery query) {
         query.init();
+        query.setPageSize(100);
         if(query.getType() == 2) {
             query.setDistributorId(userId);
         }
@@ -109,7 +137,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         //query.setTransportWay(Constant.ORDER_DELIVERY_GET);
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
-        List<GoodsOrderVo> resultList = list.stream().filter(item -> !item.getUserId().equals(userId) || item.getStatus() == Constant.ORDER_STATUS_CANCEL).collect(Collectors.toList());
+        List<GoodsOrderVo> resultList = list.stream().filter(item -> !item.getUserId().equals(userId) || item.getStatus() == Constant.ORDER_STATUS_CANCEL || item.getStatus() == Constant.ORDER_STATUS_WAITING_PAY).collect(Collectors.toList());
         //配送员已结单过滤已完成的订单
         if(query.getType() == 2) {
             resultList = resultList.stream().filter(item -> item.getStatus() != Constant.DELIVERY_ORDER_SURE_FINISH).collect(Collectors.toList());
@@ -315,7 +343,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         query.setDistributorId(userId);
         query.setTransportWay(transportway);
         List<GoodsOrderVo> resultList = goodsOrderDaoExt.selectList(query);
-        List<GoodsOrderVo> list = resultList.stream().filter(item -> item.getUserId() != userId).collect(Collectors.toList());
+        List<GoodsOrderVo> list = resultList.stream().filter(item -> !item.getUserId().equals(userId)).collect(Collectors.toList());
         List<GoodsOrderVo> waitTakeOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_WAITING_REAP).collect(Collectors.toList());
         List<GoodsOrderVo> sureTakeOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_SURE_TAKE).collect(Collectors.toList());
         List<GoodsOrderVo> waitSendOrders = list.stream().filter(item -> item.getStatus() == Constant.DELIVERY_ORDER_WAITING_TAKE).collect(Collectors.toList());
@@ -330,11 +358,11 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         orderQuery.setTransportWay(transportway);
         orderQuery.setType(1);
         List<GoodsOrderVo> orderVos = goodsOrderDaoExt.selectList(orderQuery);
-        List<GoodsOrderVo> resultOrders = orderVos.stream().filter(item -> !item.getUserId().equals(userId)).collect(Collectors.toList());
+        List<GoodsOrderVo> resultOrders = orderVos.stream().filter(item -> !item.getUserId().equals(userId) || item.getStatus() == Constant.ORDER_STATUS_CANCEL || item.getStatus() == Constant.ORDER_STATUS_WAITING_PAY).collect(Collectors.toList());
 
         JSONObject object = new JSONObject();
         if(query.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
-            Long finishOrderTransportFee = finishOrders.stream().mapToLong(GoodsOrder::getTransportFee).sum();
+            Long finishOrderTransportFee = finishOrders.stream().mapToLong(GoodsOrderVo::getTransportFee).sum();
             object.put("waitTakeCount", waitTakeOrders.size());
             object.put("finishOrderTransportFee", finishOrderTransportFee);
         }

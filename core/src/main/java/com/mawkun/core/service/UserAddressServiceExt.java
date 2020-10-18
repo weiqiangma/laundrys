@@ -35,8 +35,10 @@ public class UserAddressServiceExt extends UserAddressService {
         UserAddress query = new UserAddress();
         query.setUserId(userId);
         List<UserAddress> list = userAddressDaoExt.listByEntity(query);
+        if(list != null && list.size() > 0) {
         list.forEach(item -> item.setStatus(Constant.USER_ADDRESS_UNUSED));
         userAddressDaoExt.updateBatch(list);
+        }
     }
 
 

@@ -27,7 +27,10 @@
                 <if test="orderNo != null">and order_no like #{orderNo}</if>
                 <if test="userName != null and userName != ''">and user_name like #{userName}</if>
                 <if test="status != null">and invest_order.status = #{status}</if>
-                <if test="startTime != null and endTime != null">and create_time between #{startTime} and #{endTime}</if>
+                <if test="startTime != null and endTime != null">
+                    and DATE_FORMAT(invest_order.create_time, '%Y-%m-%d' ) &gt;= DATE_FORMAT(#{startTime}, '%Y-%m-%d' )
+                    and DATE_FORMAT(invest_order.create_time, '%Y-%m-%d' ) &lt;= DATE_FORMAT(#{endTime}, '%Y-%m-%d' )
+                </if>
             </where>
             order by invest_order.create_time desc
         </select>

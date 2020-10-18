@@ -67,7 +67,7 @@ public class InvestLogController extends BaseController {
     @GetMapping("/pageList")
     @ApiOperation(value="充值日志列表分页", notes="充值日志列表分页")
     public JsonResult pageList(@LoginedAuth UserSession session, InvestOrderQuery query) {
-        if(session.getId() > 0) query.setUserId(session.getId());
+        if(session.getLevel() > 0) query.setUserId(session.getId());
         query.setStatus(Constant.ORDER_TYPE_INVEST);
         if(query.getTimeType()!= null) {
             Date sTime = new Date();
@@ -121,7 +121,7 @@ public class InvestLogController extends BaseController {
 
     @GetMapping("/export")
     @ApiOperation(value="充值记录导出excel", notes="充值记录导出excel")
-    public void export(InvestOrder investOrder, HttpServletResponse response) {
+    public void export(InvestOrderQuery investOrder, HttpServletResponse response) {
         List<InvestOrder> list = investOrderServiceExt.listByEntity(investOrder);
         List<InvestOrder> resultList = new ArrayList<>();
         for(InvestOrder order : list) {

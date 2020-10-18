@@ -3,6 +3,7 @@ package com.mawkun.app.config;
 import com.mawkun.app.component.interpectors.AuthenticationInterceptor;
 import com.mawkun.app.component.interpectors.UserLoginInterceptor;
 import com.mawkun.core.base.service.UserCacheService;
+import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.spring.resolver.LoginArgumentResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class MyMvcConfig extends WebMvcConfigurationSupport {
 
     @Autowired
     private UserCacheService userCacheService;
+    @Autowired
+    private UserServiceExt userServiceExt;
 
     @Override
     protected void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
@@ -39,7 +42,7 @@ public class MyMvcConfig extends WebMvcConfigurationSupport {
     //创建登录拦截器并注入userCacheService
     @Bean
     UserLoginInterceptor createLoginInterceptor() {
-        return new UserLoginInterceptor(userCacheService);
+        return new UserLoginInterceptor(userCacheService, userServiceExt);
     }
     //认证的拦截器，将用户session存在request，后续登录注解解析有用到
     @Bean

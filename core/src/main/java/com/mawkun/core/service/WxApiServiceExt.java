@@ -95,7 +95,11 @@ public class WxApiServiceExt {
         String result = "";
         result = WechatDecryptDataUtil.decrypt(AppId,encryptedData,sessionKey,iv);
         JSONObject object = JSONObject.parseObject(result);
-        result = object.getString("phoneNumber");
+        if(object.containsKey("phoneNumber")) {
+            result = object.getString("phoneNumber");
+        } else {
+            log.error("手机号解密失败");
+        }
         return result;
     }
 
