@@ -79,7 +79,7 @@ public class GoodsOrderController extends BaseController {
         if(session.getId() > 0) {
             query.setUserId(session.getId());
         }
-        PageInfo page = goodsOrderServiceExt.pageByEntity(query);
+        PageInfo page = goodsOrderServiceExt.orderPageByEntity(query);
 //        ShopOrderData shopOrderData = goodsOrderServiceExt.statsGoodsOrder(query);
 //        page.setTotalAmount(shopOrderData.getTotalAmount());
 //        page.setTotalTransportFee(shopOrderData.getTotalTransportFee());

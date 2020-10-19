@@ -133,7 +133,7 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
                 if(amount >= lowAmount) {
                     return fee;
                 }
-                String feeStr = sortList.get(i).getSysValue();
+                String feeStr = sortList.get(i+1).getSysValue();
                 fee = NumberUtils.str2Int(feeStr);
                 return fee;
             }

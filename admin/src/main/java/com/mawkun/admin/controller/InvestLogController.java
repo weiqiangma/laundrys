@@ -97,9 +97,15 @@ public class InvestLogController extends BaseController {
         }
         PageInfo pageInfo = investOrderServiceExt.pageList(query);
         InvestOrderStatsVo investOrderStatsVo = investOrderServiceExt.statsInvestOrder(query);
-        pageInfo.setInvestMoney(investOrderStatsVo.getInvestMoney());
-        pageInfo.setGiftMoney(investOrderStatsVo.getGiftMoney());
-        pageInfo.setAmountMoney(investOrderStatsVo.getAmountMoney());
+        if(investOrderStatsVo != null) {
+            pageInfo.setInvestMoney(investOrderStatsVo.getInvestMoney());
+            pageInfo.setGiftMoney(investOrderStatsVo.getGiftMoney());
+            pageInfo.setAmountMoney(investOrderStatsVo.getAmountMoney());
+        } else {
+            pageInfo.setInvestMoney(0);
+            pageInfo.setGiftMoney(0);
+            pageInfo.setAmountMoney(0);
+        }
         return sendSuccess(pageInfo);
     }
 

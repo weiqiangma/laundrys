@@ -54,5 +54,7 @@ public interface GoodsOrderDaoExt {
      */
     List<GoodsOrderVo> selectList(GoodsOrderQuery query);
 
+    List<GoodsOrderVo> selectOrderList(GoodsOrderQuery query);
+
     List<GoodsOrder> getGoodsOrderList(GoodsOrderQuery query);
 }

@@ -72,11 +72,11 @@ public class UserServiceExt extends UserService {
         return userDaoExt.getByEntity(user);
     }
 
-    public User getByIdAndStatus(Long id, Integer status) {
+    public List<User> getByIdAndStatus(Long id, Integer status) {
         User user = new User();
         user.setId(id);
         user.setStatus(status);
-        return userDaoExt.getByEntity(user);
+        return userDaoExt.listByEntity(user);
     }
 
     /**

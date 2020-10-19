@@ -147,6 +147,10 @@ public class GoodsOrderVo {
     private String detail;
     @ExcelProperty("联系电话")
     private String linkMobile1;
+    @ExcelProperty("收货联系人")
+    private String linkMan;
+    @ExcelProperty("联系人性别")
+    private String gender;
     @ExcelProperty("备用联系电话")
     private String linkMobile2;
     @ExcelProperty("总金额")

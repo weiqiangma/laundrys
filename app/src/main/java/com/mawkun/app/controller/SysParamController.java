@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,7 @@ public class SysParamController extends BaseController {
     @GetMapping("/getSpecialNotice")
     public JsonResult getSpecialNotice() {
         List<SysParam> list = sysParamServiceExt.getOrderNotice();
-        return sendSuccess(list);
+        List<SysParam> sortList = list.stream().sorted(Comparator.comparingInt(SysParam::getSort).reversed()).collect(Collectors.toList());
+        return sendSuccess(sortList);
     }
 }

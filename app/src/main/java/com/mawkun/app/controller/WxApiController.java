@@ -67,10 +67,17 @@ public class WxApiController extends BaseController {
     @PostMapping("/api/wxApi/wxPay")
     @ApiOperation(value="小程序下单支付", notes="小程序下单支付")
     public JsonResult wxPay(@LoginedAuth UserSession session, Long orderId, String orderNo) {
-        User user = userServiceExt.getByIdAndStatus(session.getId(), Constant.USER_STATUS_ACTIVE);
-        if(user == null) {
+        User user = new User();
+        List<User> userList = userServiceExt.getByIdAndStatus(session.getId(), Constant.USER_STATUS_ACTIVE);
+        if(userList == null || userList.size() == 0) {
             return sendArgsError("未查询到该用户");
         }
+        if(userList.size() > 1) {
+            List<Long> userIdList = userList.stream().map(User::getId).collect(Collectors.toList());
+            userServiceExt.deleteByIds(userIdList);
+            return sendArgsError("系统错误，请重新登录");
+        }
+        user = userList.get(0);
         GoodsOrder orderForm = goodsOrderServiceExt.getByUserIdAndId(orderId, user.getId());
         if(orderForm == null) {
             return sendArgsError("未查询到该订单");

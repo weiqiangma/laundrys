@@ -85,6 +85,32 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         return new PageInfo<>(list);
     }
 
+    public PageInfo<GoodsOrderVo> orderPageByEntity(GoodsOrderQuery query) {
+        query.init();
+        PageHelper.startPage(query.getPageNo(), query.getPageSize());
+        if(StringUtils.isNotEmpty(query.getOrderNo())) {
+            query.setOrderNo("%" + query.getOrderNo() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getShopName())) {
+            query.setShopName("%" + query.getShopName() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getLinkMobile1())) {
+            query.setLinkMobile1("%" + query.getLinkMobile1() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getLinkMobile2())) {
+            query.setLinkMobile2("%" + query.getLinkMobile2() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getDistributorMobile())) {
+            query.setLinkMobile2("%" + query.getDistributorMobile() + "%");
+        }
+        List<GoodsOrderVo> list = goodsOrderDaoExt.selectOrderList(query);
+        for(GoodsOrderVo orderVo : list) {
+            List<OrderClothes> orderClothes = orderClothesServiceExt.getByOrderId(orderVo.getId());
+            orderVo.setList(orderClothes);
+        }
+        return new PageInfo<>(list);
+    }
+
     /**
      * 列表分页
      * @param query
@@ -186,6 +212,9 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
      */
     public GoodsOrderVo getDetail(Long id) {
         GoodsOrderVo vo = goodsOrderDaoExt.selectDetail(id);
+        if(vo.getLinkMan() != null && vo.getGender() != null) {
+            vo.setLinkMan(vo.getLinkMan() + vo.getGender());
+        }
         List<OrderClothes> goodsList = orderClothesServiceExt.getByOrderId(id);
         vo.setList(goodsList);
         return vo;

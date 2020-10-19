@@ -147,7 +147,7 @@ public class ShoppingCartController extends BaseController {
                     object.put("feeDiff", feeDiff);
                     return sendSuccess(object);
                 }
-                String feeStr = sortList.get(i).getSysValue();
+                String feeStr = sortList.get(i+1).getSysValue();
                 fee = NumberUtils.str2Int(feeStr);
                 feeDiff = lowAmount - amount;
                 object.put("transportFee", fee);
