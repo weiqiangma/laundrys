@@ -20,6 +20,8 @@
             <if test="status != null">
                 AND ofm.status = #{status}
             </if>
+            and ofm.status != 1
+            AND ofm.status != 7
         </where>
         GROUP BY
         type
@@ -50,6 +52,8 @@
             <if test="status != null">
                 AND ofm.status = #{status}
             </if>
+            AND ofm.status != 1
+            AND ofm.status != 7
         </where>
         group by type
     </select>
@@ -70,7 +74,7 @@
     </select>
 
     <select id="statsGoodsOrder" resultType="com.mawkun.core.base.data.ShopOrderData" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
-        select sum(total_amount) as totalAmount, sum(transport_fee) totalTransportFee from goods_order
+        select sum(total_amount) as totalAmount, sum(transport_fee) totalTransportFee, COUNT(goods_order.order_no)  orderSize from goods_order
         <where>
             <if test="shopId != null and shopId > 0">
                 and shop_id = #{shopId}
@@ -95,6 +99,7 @@
                 and DATE_FORMAT(create_time, '%Y-%m-%d' ) &lt;= DATE_FORMAT(#{createTimeEnd}, '%Y-%m-%d' )
             </if>
             and goods_order.status != 1
+            and goods_order.status != 7
         </where>
     </select>
 

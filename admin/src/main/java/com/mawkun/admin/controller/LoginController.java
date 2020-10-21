@@ -42,16 +42,31 @@ public class LoginController extends BaseController {
     @ResponseBody
     @PostMapping(value = "/login")
     @ApiOperation(value="登录接口", notes="登录接口")
-    public JsonResult login(String userName, String password) {
-        if (userName == null || password == null) return sendArgsError();
+    public JsonResult login(String userName, String mobile, String password) {
+        if (mobile == null || password == null) return sendArgsError("请填写登录凭证");
         password = CryptUtils.md5Safe(password);
         Admin queryAdmin = new Admin();
-        queryAdmin.setUserName(userName);
+        queryAdmin.setMobile(mobile);
         queryAdmin.setPassword(password);
-        Admin admin = adminServiceExt.getByEntity(queryAdmin);
-        if (admin == null){
+        Admin admin = new Admin();
+        List<Admin> adminList = adminServiceExt.listByEntity(queryAdmin);
+        if (adminList == null || adminList.size() < 1){
             super.addAdminLog("管理员登录:帐号密码错误");
             return sendError("帐号密码错误");
+        }
+        for(Admin eachAdmin : adminList) {
+            if(eachAdmin.getLevel() == Constant.ADMIN_TYPE_SUPER) {
+                admin = eachAdmin;
+                break;
+            }
+            if(eachAdmin.getLevel() == Constant.ADMIN_TYPE_COMMON) {
+                admin = eachAdmin;
+                break;
+            }
+            if(eachAdmin.getLevel() == Constant.ADMIN_TYPE_DISTRIBUTOR) {
+                admin = eachAdmin;
+                break;
+            }
         }
         if(admin.getStatus() == Constant.USER_STATUS_LOCK) {
             return sendArgsError("该用户已被封锁，如需解锁请联系主管理员");

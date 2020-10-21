@@ -82,6 +82,7 @@ public class PageInfo<T> extends PageSerializable<T> {
 
     private Integer totalAmount;
     private Integer totalTransportFee;
+    private Integer orderSize;
 
     private Integer investMoney;
     private Integer giftMoney;
@@ -401,6 +402,14 @@ public class PageInfo<T> extends PageSerializable<T> {
 
     public void setAmountMoney(Integer amountMoney) {
         this.amountMoney = amountMoney;
+    }
+
+    public Integer getOrderSize() {
+        return orderSize;
+    }
+
+    public void setOrderSize(Integer orderSize) {
+        this.orderSize = orderSize;
     }
 
     @Override

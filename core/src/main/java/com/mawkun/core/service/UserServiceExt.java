@@ -72,6 +72,21 @@ public class UserServiceExt extends UserService {
         return userDaoExt.getByEntity(user);
     }
 
+    public User getByMobile(String mobile) {
+        User user = new User();
+        user.setMobile(mobile);
+        user.setStatus(Constant.USER_STATUS_ACTIVE);
+        return userDaoExt.getByEntity(user);
+    }
+
+    public User getDistributorByMobile(String mobile) {
+        User user = new User();
+        user.setMobile(mobile);
+        user.setKind(Constant.USER_TYPE_DISTRIBUTOR);
+        user.setStatus(Constant.USER_STATUS_ACTIVE);
+        return userDaoExt.getByEntity(user);
+    }
+
     public List<User> getByIdAndStatus(Long id, Integer status) {
         User user = new User();
         user.setId(id);

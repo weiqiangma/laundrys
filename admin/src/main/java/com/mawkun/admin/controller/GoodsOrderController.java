@@ -14,7 +14,10 @@ import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
 import com.mawkun.core.base.entity.GoodsOrder;
 import com.mawkun.core.base.entity.InvestOrder;
+import com.mawkun.core.base.entity.User;
+import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.service.GoodsOrderServiceExt;
+import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.TimeUtils;
@@ -51,6 +54,10 @@ public class GoodsOrderController extends BaseController {
     
     @Resource
     GoodsOrderServiceExt goodsOrderServiceExt;
+    @Resource
+    ShopUserDaoExt shopUserDaoExt;
+    @Resource
+    UserServiceExt userServiceExt;
 
     @ResponseBody
     @GetMapping("/get")
@@ -77,8 +84,13 @@ public class GoodsOrderController extends BaseController {
     @GetMapping("/pageList")
     @ApiOperation(value="订单列表分页", notes="订单列表分页")
     public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, GoodsOrderQuery query) {
-        if(session.getLevel() > 0) {
+        if(session.getLevel() == Constant.ADMIN_TYPE_COMMON) {
             query.setShopId(session.getShopId());
+        }
+        if(session.isDistributor()) {
+            User user = userServiceExt.getDistributorByMobile(session.getMobile());
+            if(user == null) return sendArgsError("未查询到该配送员信息");
+            query.setDistributorId(user.getId());
         }
         Date sTime = new Date();
         Date eTime = new Date();
@@ -118,6 +130,7 @@ public class GoodsOrderController extends BaseController {
         if(shopOrderData != null) {
             page.setTotalAmount(shopOrderData.getTotalAmount());
             page.setTotalTransportFee(shopOrderData.getTotalTransportFee());
+            page.setOrderSize(shopOrderData.getOrderSize());
             if(shopOrderData.getTotalTransportFee() == null) {
                 page.setTotalTransportFee(0);
             }
@@ -128,6 +141,7 @@ public class GoodsOrderController extends BaseController {
         } else{
             page.setTotalAmount(0);
             page.setTotalTransportFee(0);
+            page.setOrderSize(0);
         }
         return sendSuccess(page);
     }

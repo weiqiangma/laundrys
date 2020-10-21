@@ -2,13 +2,16 @@ package com.mawkun.admin.controller;
 
 
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.controller.BaseController;
 import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.AdminQuery;
 import com.mawkun.core.base.entity.Admin;
+import com.mawkun.core.base.entity.User;
 import com.mawkun.core.service.AdminServiceExt;
 import com.mawkun.core.service.ShopServiceExt;
+import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
@@ -38,6 +41,8 @@ public class AdminController extends BaseController {
     private AdminServiceExt adminServiceExt;
     @Autowired
     private ShopServiceExt shopServiceExt;
+    @Autowired
+    private UserServiceExt userServiceExt;
 
     @GetMapping("/get")
     @ApiOperation(value="根据id获取admin", notes="根据id获取admin")
@@ -77,9 +82,16 @@ public class AdminController extends BaseController {
         if(session.getLevel() > 0) return sendSuccess("子管理员无权添加管理员，请联系主管理员添加");
         Admin query = new Admin();
         if(admin.getUserName() != null) query.setUserName(admin.getUserName());
-        if(admin.getMobile() != null) query.setMobile(admin.getMobile());
+        Admin resultNameAdmin = adminServiceExt.getByEntity(query);
+        if(resultNameAdmin != null) return sendArgsError("用户名重复,请重新添加");
+        Admin mobileQuery = new Admin();
+        if(admin.getMobile() != null) mobileQuery.setMobile(admin.getMobile());
         Admin resultAdmin = adminServiceExt.getByEntity(query);
-        if(resultAdmin != null) return sendArgsError("用户名或手机号重复,请重新添加");
+        if(resultAdmin != null && resultAdmin.getLevel().equals(admin.getLevel())) return sendArgsError("手机号重复,请重新添加");
+        if(admin.getLevel() != null && admin.getLevel() == Constant.ADMIN_TYPE_DISTRIBUTOR) {
+            User user = userServiceExt.getDistributorByMobile(admin.getMobile());
+            if(user == null) return sendArgsError("请先在用户管理中配置该用户为配送员，在继续该操作");
+        }
         adminServiceExt.insert(admin);
         return sendSuccess(admin);
     }

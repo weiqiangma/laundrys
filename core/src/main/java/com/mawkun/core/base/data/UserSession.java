@@ -51,6 +51,7 @@ public class UserSession {
         this.shopId = admin.getShopId();
         this.userName = admin.getUserName();
         this.password = admin.getPassword();
+        this.mobile = admin.getMobile();
         this.level = admin.getLevel();
         this.kind = Constant.USER_TYPE_ADMIN;
     }
@@ -87,6 +88,13 @@ public class UserSession {
     }
 
     public boolean isDistributor() {
-        return this.getKind() == Constant.USER_TYPE_DISTRIBUTOR;
+        boolean result =  false;
+        if(this.getKind() != null && this.getKind() == Constant.USER_TYPE_DISTRIBUTOR) {
+            result = true;
+        }
+        if(this.getLevel() != null && this.getLevel() == Constant.ADMIN_TYPE_DISTRIBUTOR) {
+            result = true;
+        }
+        return result;
     }
 }

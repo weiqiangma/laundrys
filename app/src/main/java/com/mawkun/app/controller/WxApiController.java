@@ -87,7 +87,10 @@ public class WxApiController extends BaseController {
         }
         List<OrderClothes> clothesList = orderClothesServiceExt.getByOrderId(orderId);
         String body = clothesList.stream().map(OrderClothes::getGoodsName).collect(Collectors.joining());
-        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderForm.getOrderNo(), orderForm.getTotalAmount().toString(), body, body, goodsNotifyUrl);
+        Long totalAmount = orderForm.getTotalAmount();
+        Long transportFee = (orderForm.getTransportFee() == null) ? 0 : orderForm.getTransportFee();
+        Long amount = totalAmount + transportFee;
+        JSONObject object = wxApiServiceExt.unifyOrder(user.getOpenId(), orderForm.getOrderNo(), amount.toString(), body, body, goodsNotifyUrl);
         return sendSuccess(object);
     }
 
@@ -221,8 +224,8 @@ public class WxApiController extends BaseController {
                     payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
                     //发送通知(给下单的用户及关联该门店的配送员)
                     List<String> openIdList = shopUserDaoExt.selectDistorOpenIdByShopId(orderForm.getShopId());
-                    wxApiServiceExt.sendOrderPaySuccessNotice(user, orderForm, endTime, user.getOpenId());
-                    wxApiServiceExt.sendDistributorOrderTakeNotice(user, orderForm, timeEnd, openIdList);
+                    //wxApiServiceExt.sendOrderPaySuccessNotice(user, orderForm, endTime, user.getOpenId());
+                    //wxApiServiceExt.sendDistributorOrderTakeNotice(user, orderForm, timeEnd, openIdList);
                 }
             }
         } else {

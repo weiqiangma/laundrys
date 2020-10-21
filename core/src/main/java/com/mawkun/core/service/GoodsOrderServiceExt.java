@@ -359,7 +359,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
 
     public List<GoodsOrderVo> getShopNewOrder(GoodsOrderQuery query) {
         query.setIsnew(Constant.ORDER_NEW);
-        return goodsOrderDaoExt.selectList(query);
+        return goodsOrderDaoExt.selectOrderList(query);
     }
 
     /**
