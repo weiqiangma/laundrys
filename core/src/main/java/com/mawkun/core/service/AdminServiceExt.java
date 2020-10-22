@@ -35,4 +35,16 @@ public class AdminServiceExt extends AdminService {
         return adminDaoExt.getByEntity(query);
     }
 
+    public Admin getByMobile(String mobile) {
+        Admin query = new Admin();
+        query.setMobile(mobile);
+        return adminDaoExt.getByEntity(query);
+    }
+
+    public int deleteByMobile(String mobile) {
+        Admin admin = new Admin();
+        admin.setMobile(mobile);
+        return adminDaoExt.deleteByEntity(admin);
+    }
+
 }

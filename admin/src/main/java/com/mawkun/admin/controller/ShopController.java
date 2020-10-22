@@ -9,8 +9,10 @@ import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
+import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.ShopVo;
 import com.mawkun.core.base.entity.Shop;
+import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.service.ShopServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author mawkun
@@ -43,6 +46,8 @@ public class ShopController extends BaseController {
     
     @Autowired
     private ShopServiceExt shopServiceExt;
+    @Autowired
+    private ShopUserDaoExt shopUserDaoExt;
     @Autowired
     private GoodsOrderServiceExt goodsOrderServiceExt;
 
@@ -70,7 +75,12 @@ public class ShopController extends BaseController {
     @GetMapping("/pageList")
     @ApiOperation(value="门店列表分业", notes="门店列表分业")
     public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, ShopQuery shopQuery) {
-        if(session.getShopId() > 0) shopQuery.setId(session.getShopId());
+        if(session.getLevel() == Constant.ADMIN_TYPE_COMMON) shopQuery.setId(session.getShopId());
+        if(session.getLevel() == Constant.ADMIN_TYPE_DISTRIBUTOR) {
+            List<ShopUserVo> list = shopUserDaoExt.selectShopNameByUserId(session.getId());
+            List<Long> shopIdList = list.stream().map(ShopUserVo::getShopId).collect(Collectors.toList());
+            shopQuery.setShopIdList(shopIdList);
+        }
         PageInfo<ShopVo> page = shopServiceExt.pageByEntity(shopQuery);
         return sendSuccess(page);
     }

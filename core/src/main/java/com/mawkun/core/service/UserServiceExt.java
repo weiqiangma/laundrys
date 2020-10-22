@@ -1,14 +1,14 @@
 package com.mawkun.core.service;
 
+import cn.pertech.common.utils.CryptUtils;
+import cn.pertech.common.utils.NumberUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.UserVo;
-import com.mawkun.core.base.entity.InvestOrder;
-import com.mawkun.core.base.entity.MemberCard;
-import com.mawkun.core.base.entity.User;
+import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.dao.SysParamDaoExt;
@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +36,10 @@ public class UserServiceExt extends UserService {
     private SysParamDaoExt sysParamDaoExt;
     @Autowired
     private WxApiServiceExt wxApiServiceExt;
+    @Resource
+    private ShopServiceExt shopServiceExt;
+    @Resource
+    private AdminServiceExt adminServiceExt;
     /**
      * 列表分页
      * @param query
@@ -138,5 +144,68 @@ public class UserServiceExt extends UserService {
             object.put("orderNo", orderNo);
         }
         return object;
+    }
+
+    /**
+     * 把用户设置为配送员
+     * @param user
+     * @param shopIds
+     * @return
+     */
+    public int setUserToDistributor(User user, String password, String shopIds) {
+        if(StringUtils.isNotEmpty(shopIds)) {
+            List<String> shopIdList = Arrays.asList(shopIds.split(","));
+            shopUserDaoExt.deleteByUserId(user.getId());
+            for(String shopId : shopIdList) {
+                Long sId = NumberUtils.str2Long(shopId);
+                ShopUser shopUser = new ShopUser();
+                shopUser.setUserId(user.getId());
+                shopUser.setShopId(sId);
+                shopUserDaoExt.insert(shopUser);
+            }
+        }
+
+        Shop shop = shopServiceExt.getFirstLevelShop();
+        Admin admin = new Admin();
+        admin.setMobile(user.getMobile());
+        admin.setPassword(password);
+        admin.setLevel(Constant.ADMIN_TYPE_DISTRIBUTOR);
+        admin.setUserName(user.getUserName());
+        admin.setRealName(user.getRealName());
+        admin.setStatus(Constant.USER_STATUS_ACTIVE);
+        if(shop != null) admin.setShopId(shop.getId());
+        admin.setUpdateTime(new Date());
+        admin.setCreateTime(new Date());
+        adminServiceExt.insert(admin);
+        user.setUpdateTime(new Date());
+        user.setKind(Constant.USER_TYPE_DISTRIBUTOR);
+        return userDaoExt.update(user);
+    }
+
+    public int deleteDistributor(User user) {
+        user.setKind(Constant.USER_TYPE_CUSTOMER);
+        userDaoExt.update(user);
+        shopUserDaoExt.deleteByUserId(user.getId());
+        return adminServiceExt.deleteByMobile(user.getMobile());
+    }
+
+    public int updateDistributor(User user, String password, String shopIds) {
+        if(StringUtils.isNotEmpty(shopIds)) {
+            List<String> shopIdList = Arrays.asList(shopIds.split(","));
+            shopUserDaoExt.deleteByUserId(user.getId());
+            for(String shopId : shopIdList) {
+                Long sId = NumberUtils.str2Long(shopId);
+                ShopUser shopUser = new ShopUser();
+                shopUser.setUserId(user.getId());
+                shopUser.setShopId(sId);
+                shopUserDaoExt.insert(shopUser);
+            }
+        }
+        Admin admin = adminServiceExt.getByMobile(user.getMobile());
+        if(password != null) admin.setPassword(password);
+        if(user.getUserName() != null) admin.setUserName(user.getUserName());
+        if(user.getRealName() != null) admin.setRealName(user.getRealName());
+        admin.setUpdateTime(new Date());
+        return adminServiceExt.update(admin);
     }
 }

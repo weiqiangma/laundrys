@@ -44,7 +44,7 @@ public class WxApiServiceExt {
     private UserAddressServiceExt userAddressServiceExt;
     @Autowired
     private OrderClothesServiceExt orderClothesServiceExt;
-
+    
     /**
      * 根据code获取用户openId
      *

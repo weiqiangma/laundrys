@@ -4,6 +4,7 @@ import cn.pertech.common.utils.RequestUtils;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.controller.BaseController;
 import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
@@ -148,6 +149,27 @@ public class UserController extends BaseController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "setUserToDistributor")
+    public JsonResult setUserToDistributor(@LoginedAuth UserSession session, Long userId, String realName, String password, String shopIds, Integer type) {
+        int result = -1;
+        if(session.getLevel() > 0) return sendArgsError("非主管理员无权操作");
+        User resultUser = userServiceExt.getById(userId);
+        if(resultUser == null) return sendArgsError("查询不到该用户");
+        resultUser.setRealName(realName);
+        if(type == 2) {
+            result = userServiceExt.updateDistributor(resultUser, password, shopIds);
+        }
+        if(type == 1) {
+            result = userServiceExt.setUserToDistributor(resultUser, password, shopIds);
+        }
+        if(type == 0) {
+            result = userServiceExt.deleteDistributor(resultUser);
+        }
+        if(result > 0) return sendSuccess("操作成功");
+        return sendArgsError("操作失败，请重试");
     }
 
     private StateQuery createQueryStateVo(){

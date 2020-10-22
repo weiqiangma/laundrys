@@ -1,22 +1,21 @@
 package com.mawkun.core.base.service;
 
+import cn.pertech.common.utils.CryptUtils;
 import cn.pertech.common.utils.NumberUtils;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageInfo;
-import com.mawkun.core.base.dao.ShopUserDao;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.dao.UserDao;
-import com.mawkun.core.base.data.query.UserQuery;
+import com.mawkun.core.base.entity.Admin;
+import com.mawkun.core.base.entity.Shop;
 import com.mawkun.core.base.entity.ShopUser;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.dao.ShopUserDaoExt;
+import com.mawkun.core.service.AdminServiceExt;
+import com.mawkun.core.service.ShopServiceExt;
 import com.mawkun.core.utils.StringUtils;
-import net.sf.cglib.core.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author mawkun
@@ -29,6 +28,10 @@ public class UserService {
     private UserDao userDao;
     @Resource
     private ShopUserDaoExt shopUserDaoExt;
+    @Resource
+    private ShopServiceExt shopServiceExt;
+    @Resource
+    private AdminServiceExt adminServiceExt;
 
     public UserDao getUserDao() {
         return userDao;
@@ -81,6 +84,14 @@ public class UserService {
         }
         user.setUpdateTime(new Date());
         return userDao.update(user);
+    }
+
+
+    public int deleteDistributor(User user) {
+        User resultUser = userDao.getById(user.getId());
+        resultUser.setKind(Constant.USER_TYPE_CUSTOMER);
+        shopUserDaoExt.deleteByUserId(resultUser.getId());
+        return adminServiceExt.deleteByMobile(resultUser.getMobile());
     }
 
     public int updateBatch(List<User> list) {

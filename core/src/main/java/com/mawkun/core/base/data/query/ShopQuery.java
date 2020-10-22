@@ -4,6 +4,7 @@ import com.mawkun.core.base.entity.Shop;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class ShopQuery extends Shop {
@@ -12,6 +13,7 @@ public class ShopQuery extends Shop {
     private String userAddress;
     private Long addressId;
     private String lal;
+    private List<Long> shopIdList;
     private Date createTimeStart;
     private Date createTimeEnd;
 
