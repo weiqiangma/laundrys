@@ -2,37 +2,22 @@ package com.mawkun.core.service;
 
 import cn.pertech.common.http.HttpResult;
 import cn.pertech.common.http.HttpUtils;
-import cn.pertech.common.utils.RandomUtils;
 import cn.pertech.common.utils.XmlUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.entity.*;
 import com.mawkun.core.base.service.CacheService;
-import com.mawkun.core.base.service.UserAddressService;
 import com.mawkun.core.utils.StringUtils;
 import com.mawkun.core.utils.WechatDecryptDataUtil;
 import com.xiaoleilu.hutool.crypto.SecureUtil;
-import com.xiaoleilu.hutool.lang.Base64;
 import com.xiaoleilu.hutool.lang.Validator;
-import com.xiaoleilu.hutool.util.XmlUtil;
-import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.security.SecurityUtil;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jce.provider.JDKMessageDigest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.net.InetAddress;
-import java.security.AlgorithmParameters;
-import java.security.Key;
-import java.security.MessageDigest;
-import java.security.Security;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -110,7 +95,7 @@ public class WxApiServiceExt {
         String msg = "";
         JSONObject object = new JSONObject();
         String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        String param = createParam(openId, orderNo, totalFee, body, detail, notifyUrl);
+        String param = createParam(openId, orderNo, "1", body, detail, notifyUrl);
         try {
             HttpResult result = HttpUtils.post(url, param, "UTF-8");
             String message = result.getHtml();

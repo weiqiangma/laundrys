@@ -7,7 +7,6 @@ import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.data.query.UserQuery;
-import com.mawkun.core.base.data.vo.UserVo;
 import com.mawkun.core.base.entity.ShopUser;
 import com.mawkun.core.base.entity.User;
 import com.mawkun.core.base.service.UserCacheService;
@@ -44,6 +43,7 @@ public class LoginController extends BaseController {
     @PostMapping(value = "/login")
     @ApiOperation(value="小程序登录", notes="小程序登录")
     public JsonResult login(String code) {
+        
         WxLoginResultData resultData = wxApiServiceExt.getOpenIdByCode(code);
         //根据openID查询数据库中是否存在该用户，没有则添加
         UserQuery query = new UserQuery();

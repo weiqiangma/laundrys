@@ -144,8 +144,8 @@ public class WxApiController extends BaseController {
                     payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
                     //发送通知(给下单的用户及关联该门店的配送员)
                     List<String> openIdList = shopUserDaoExt.selectDistorOpenIdByShopId(orderForm.getShopId());
-                    wxApiServiceExt.sendOrderPaySuccessNotice(user, orderForm, TimeUtils.convertWeiXinTimeStr(timeEnd), user.getOpenId());
-                    wxApiServiceExt.sendDistributorOrderTakeNotice(user, orderForm, timeEnd, openIdList);
+                    //wxApiServiceExt.sendOrderPaySuccessNotice(user, orderForm, TimeUtils.convertWeiXinTimeStr(timeEnd), user.getOpenId());
+                    //wxApiServiceExt.sendDistributorOrderTakeNotice(user, orderForm, timeEnd, openIdList);
                 }
                 result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
             } else {
