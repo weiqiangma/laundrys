@@ -86,14 +86,6 @@ public class UserService {
         return userDao.update(user);
     }
 
-
-    public int deleteDistributor(User user) {
-        User resultUser = userDao.getById(user.getId());
-        resultUser.setKind(Constant.USER_TYPE_CUSTOMER);
-        shopUserDaoExt.deleteByUserId(resultUser.getId());
-        return adminServiceExt.deleteByMobile(resultUser.getMobile());
-    }
-
     public int updateBatch(List<User> list) {
         return userDao.updateBatch(list);
     }

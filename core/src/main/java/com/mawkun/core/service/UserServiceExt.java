@@ -5,10 +5,13 @@ import cn.pertech.common.utils.NumberUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.mawkun.core.base.common.constant.Constant;
+import com.mawkun.core.base.data.UserSession;
+import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.data.query.UserQuery;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.UserVo;
 import com.mawkun.core.base.entity.*;
+import com.mawkun.core.base.service.UserCacheService;
 import com.mawkun.core.base.service.UserService;
 import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.dao.SysParamDaoExt;
@@ -22,7 +25,11 @@ import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * @author js
+ */
 @Service
 public class UserServiceExt extends UserService {
 
@@ -40,6 +47,8 @@ public class UserServiceExt extends UserService {
     private ShopServiceExt shopServiceExt;
     @Resource
     private AdminServiceExt adminServiceExt;
+    @Resource
+    private UserCacheService userCacheService;
     /**
      * 列表分页
      * @param query
@@ -207,5 +216,39 @@ public class UserServiceExt extends UserService {
         if(user.getRealName() != null) admin.setRealName(user.getRealName());
         admin.setUpdateTime(new Date());
         return adminServiceExt.update(admin);
+    }
+
+    public synchronized String login(String code) {
+        WxLoginResultData resultData = wxApiServiceExt.getOpenIdByCode(code);
+        //根据openID查询数据库中是否存在该用户，没有则添加
+        UserQuery query = new UserQuery();
+        query.setOpenId(resultData.getOpenId());
+        User user = userDaoExt.getByEntity(query);
+        if (user == null) {
+            User addUser = new User();
+            addUser.setOpenId(resultData.getOpenId());
+            addUser.setKind(Constant.USER_TYPE_CUSTOMER);
+            userDaoExt.insert(addUser);
+            resultData.setKind(Constant.USER_TYPE_CUSTOMER);
+            resultData.setUserId(addUser.getId());
+        } else {
+            resultData.setKind(user.getKind());
+            resultData.setUserId(user.getId());
+            //如果是配送员，将其关联的店铺存入session
+            if (user.getKind() != null) {
+                if (user.getKind() == Constant.USER_TYPE_DISTRIBUTOR) {
+                    ShopUser shopUser = new ShopUser();
+                    shopUser.setUserId(user.getId());
+                    List<ShopUser> list = shopUserDaoExt.listByEntity(shopUser);
+                    List<Long> shopIdList = list.stream().map(ShopUser::getShopId).collect(Collectors.toList());
+                    resultData.setShopIdList(shopIdList);
+                }
+            }
+        }
+        //生成token,保存session
+        String token = CryptUtils.md5Safe(resultData.getOpenId() + resultData.getSessionKey() + System.currentTimeMillis());
+        UserSession session = new UserSession(token, resultData);
+        userCacheService.putUserSession(token, session);
+        return token;
     }
 }

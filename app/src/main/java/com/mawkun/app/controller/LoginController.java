@@ -41,45 +41,39 @@ public class LoginController extends BaseController {
     private ShopUserDaoExt shopUserDaoExt;
 
     @PostMapping(value = "/login")
-    @ApiOperation(value="小程序登录", notes="小程序登录")
+    @ApiOperation(value = "小程序登录", notes = "小程序登录")
     public JsonResult login(String code) {
-        boolean flag = true;
-        if(flag) {
-            flag = false;
-            WxLoginResultData resultData = wxApiServiceExt.getOpenIdByCode(code);
-            //根据openID查询数据库中是否存在该用户，没有则添加
-            UserQuery query = new UserQuery();
-            query.setOpenId(resultData.getOpenId());
-            User user = userServiceExt.getByEntity(query);
-            if (user == null) {
-                User addUser = new User();
-                addUser.setOpenId(resultData.getOpenId());
-                addUser.setKind(Constant.USER_TYPE_CUSTOMER);
-                userServiceExt.insert(addUser);
-                resultData.setKind(Constant.USER_TYPE_CUSTOMER);
-                resultData.setUserId(addUser.getId());
-            } else {
-                resultData.setKind(user.getKind());
-                resultData.setUserId(user.getId());
-                //如果是配送员，将其关联的店铺存入session
-                if (user.getKind() != null) {
-                    if (user.getKind() == Constant.USER_TYPE_DISTRIBUTOR) {
-                        ShopUser shopUser = new ShopUser();
-                        shopUser.setUserId(user.getId());
-                        List<ShopUser> list = shopUserDaoExt.listByEntity(shopUser);
-                        List<Long> shopIdList = list.stream().map(ShopUser::getShopId).collect(Collectors.toList());
-                        resultData.setShopIdList(shopIdList);
-                    }
-                }
-            }
-            //生成token,保存session
-            String token = CryptUtils.md5Safe(resultData.getOpenId() + resultData.getSessionKey() + System.currentTimeMillis());
-            UserSession session = new UserSession(token, resultData);
-            userCacheService.putUserSession(token, session);
-            flag = true;
-            return sendSuccess("ok", token);
-        } else {
-            return sendSuccess("ok", "系统繁忙");
-        }
+//        WxLoginResultData resultData = wxApiServiceExt.getOpenIdByCode(code);
+//        //根据openID查询数据库中是否存在该用户，没有则添加
+//        UserQuery query = new UserQuery();
+//        query.setOpenId(resultData.getOpenId());
+//        User user = userServiceExt.getByEntity(query);
+//        if (user == null) {
+//            User addUser = new User();
+//            addUser.setOpenId(resultData.getOpenId());
+//            addUser.setKind(Constant.USER_TYPE_CUSTOMER);
+//            userServiceExt.insert(addUser);
+//            resultData.setKind(Constant.USER_TYPE_CUSTOMER);
+//            resultData.setUserId(addUser.getId());
+//        } else {
+//            resultData.setKind(user.getKind());
+//            resultData.setUserId(user.getId());
+//            //如果是配送员，将其关联的店铺存入session
+//            if (user.getKind() != null) {
+//                if (user.getKind() == Constant.USER_TYPE_DISTRIBUTOR) {
+//                    ShopUser shopUser = new ShopUser();
+//                    shopUser.setUserId(user.getId());
+//                    List<ShopUser> list = shopUserDaoExt.listByEntity(shopUser);
+//                    List<Long> shopIdList = list.stream().map(ShopUser::getShopId).collect(Collectors.toList());
+//                    resultData.setShopIdList(shopIdList);
+//                }
+//            }
+//        }
+//        //生成token,保存session
+//        String token = CryptUtils.md5Safe(resultData.getOpenId() + resultData.getSessionKey() + System.currentTimeMillis());
+//        UserSession session = new UserSession(token, resultData);
+//        userCacheService.putUserSession(token, session);
+        String token = userServiceExt.login(code);
+        return sendSuccess("ok", token);
     }
 }
