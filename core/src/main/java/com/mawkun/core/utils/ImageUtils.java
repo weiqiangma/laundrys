@@ -19,7 +19,7 @@ public class ImageUtils {
                 String originalFileName = file.getOriginalFilename();
                 assert originalFileName != null;
                 String suffixName = originalFileName.substring(originalFileName.lastIndexOf("."));  // 后缀名
-                String fileNewName = RandomUtils.uuid() + new Date().getTime() + suffixName;
+                String fileNewName = RandomUtils.uuid() + System.currentTimeMillis() + suffixName;
                 //构建文件目录
                 //File uploadDir = new File("D:/Images"); //如果目录不存在，则创建
                 File uploadDir = new File("/usr/downLoad/image");
