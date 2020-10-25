@@ -249,14 +249,19 @@ public class GoodsOrderController extends BaseController {
         for(GoodsOrderVo goodsOrderVo : list) {
             long realAmount = 0;
             long totalAmount = 0;
+            long transportFee = 0;
             if(goodsOrderVo.getRealAmount() != null) {
                 realAmount = goodsOrderVo.getRealAmount() / 100;
             }
             if(goodsOrderVo.getTotalAmount() != null) {
                 totalAmount = goodsOrderVo.getTotalAmount() / 100;
             }
+            if(goodsOrderVo.getTransportFee() != null) {
+                transportFee = goodsOrderVo.getTransportFee() / 100;
+            }
             goodsOrderVo.setRealAmount(realAmount);
             goodsOrderVo.setTotalAmount(totalAmount);
+            goodsOrderVo.setTransportFee(transportFee);
             resultList.add(goodsOrderVo);
         }
         try(OutputStream outputStream = response.getOutputStream()) {

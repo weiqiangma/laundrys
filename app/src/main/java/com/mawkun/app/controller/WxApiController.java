@@ -219,7 +219,8 @@ public class WxApiController extends BaseController {
                     orderForm.setPayTime(payTime);
                     orderForm.setUpdateTime(new Date());
                     orderForm.setRealAmount(NumberUtils.str2Long(totalFee));
-                    goodsOrderServiceExt.update(null, orderForm);
+                    //goodsOrderServiceExt.update(null, orderForm);
+                    goodsOrderServiceExt.update(session, orderForm);
                     //生成支付流水
                     payFlowServiceExt.createPayFlow(user, orderForm, Constant.ORDER_TYPE_GOODS);
                     //发送通知(给下单的用户及关联该门店的配送员)
@@ -310,7 +311,7 @@ public class WxApiController extends BaseController {
                     //生成支付流水
                     payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_INVEST);
                     //发送通知
-                    wxApiServiceExt.sendInvestSuccessNotice(user, investOrder, timeEnd);
+                    //wxApiServiceExt.sendInvestSuccessNotice(user, investOrder, timeEnd);
                     result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
                 } else {
                     result = "<xml><return_code>SUCCESS</return_code><return_msg>OK</return_msg></xml>";
@@ -359,10 +360,15 @@ public class WxApiController extends BaseController {
                     investOrder.setUpdateTime(new Date());
                     investOrder.setStatus(Constant.INVEST_ORDER_FINISH);
                     investOrderServiceExt.update(investOrder);
+                    //更新用户余额
+                    User resultUser = userServiceExt.getById(investOrder.getUserId());
+                    Long sumOfMoney = user.getSumOfMoney() + investOrder.getAmountMoney();
+                    resultUser.setSumOfMoney(sumOfMoney);
+                    userServiceExt.update(resultUser, null);
                     //生成支付流水
                     payFlowServiceExt.createPayFlow(user, investOrder, Constant.ORDER_TYPE_INVEST);
                     //发送通知
-                    wxApiServiceExt.sendInvestSuccessNotice(user, investOrder, timeEnd);
+                    //wxApiServiceExt.sendInvestSuccessNotice(user, investOrder, timeEnd);
                 }
             }
         } else {

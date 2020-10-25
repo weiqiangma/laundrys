@@ -365,19 +365,11 @@ public class TimeUtils {
         return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
     }
 
+
     public static void main(String[] args) throws ParseException {
-        String sTime ="20200926125506";
-        String year = sTime.substring(0,4);
-        String month = sTime.substring(4, 6);
-        String day = sTime.substring(6, 8);
-        String hour = sTime.substring(8, 10);
-        String minute = sTime.substring(10, 12);
-        String second = sTime.substring(12, 14);
-        StringBuilder builder = new StringBuilder();
-        builder.append(year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second);
-        String time = builder.toString();
-        Date lTime = DateUtils.parse("yyyy-MM-dd HH:mm:ss", time);
-        System.out.println(lTime);
+        Date s = getBeginDayOfWeek();
+        Date e = getEndDayOfWeek();
+        System.out.println("lTime");
     }
 
 }

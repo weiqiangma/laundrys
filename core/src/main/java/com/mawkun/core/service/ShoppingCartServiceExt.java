@@ -129,7 +129,7 @@ public class ShoppingCartServiceExt extends ShoppingCartService {
                 return fee;
             }
             if(distance >= front && distance < next) {
-                long lowAmount = sortList.get(i).getLowAmount();
+                long lowAmount = sortList.get(i+1).getLowAmount();
                 if(amount >= lowAmount) {
                     return fee;
                 }

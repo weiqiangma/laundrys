@@ -165,18 +165,24 @@ public class UserServiceExt extends UserService {
             }
         }
 
-        Shop shop = shopServiceExt.getFirstLevelShop();
-        Admin admin = new Admin();
-        admin.setMobile(user.getMobile());
-        admin.setPassword(password);
-        admin.setLevel(Constant.ADMIN_TYPE_DISTRIBUTOR);
-        admin.setUserName(user.getUserName());
-        admin.setRealName(user.getRealName());
-        admin.setStatus(Constant.USER_STATUS_ACTIVE);
-        if(shop != null) admin.setShopId(shop.getId());
-        admin.setUpdateTime(new Date());
-        admin.setCreateTime(new Date());
-        adminServiceExt.insert(admin);
+        Admin resultAdmin = adminServiceExt.getByMobile(user.getMobile());
+        if(resultAdmin == null) {
+            Shop shop = shopServiceExt.getFirstLevelShop();
+            Admin admin = new Admin();
+            admin.setMobile(user.getMobile());
+            admin.setPassword(password);
+            admin.setLevel(Constant.ADMIN_TYPE_DISTRIBUTOR);
+            admin.setUserName(user.getUserName());
+            admin.setRealName(user.getRealName());
+            admin.setStatus(Constant.USER_STATUS_ACTIVE);
+            if (shop != null) admin.setShopId(shop.getId());
+            admin.setUpdateTime(new Date());
+            admin.setCreateTime(new Date());
+            adminServiceExt.insert(admin);
+        } else {
+            resultAdmin.setUpdateTime(new Date());
+            adminServiceExt.updateWithoutPassword(resultAdmin);
+        }
         user.setUpdateTime(new Date());
         user.setKind(Constant.USER_TYPE_DISTRIBUTOR);
         return userDaoExt.update(user);
@@ -186,7 +192,13 @@ public class UserServiceExt extends UserService {
         user.setKind(Constant.USER_TYPE_CUSTOMER);
         userDaoExt.update(user);
         shopUserDaoExt.deleteByUserId(user.getId());
-        return adminServiceExt.deleteByMobile(user.getMobile());
+        Admin admin = adminServiceExt.getByMobile(user.getMobile());
+        if(admin.getLevel() == Constant.ADMIN_TYPE_DISTRIBUTOR) {
+            return adminServiceExt.deleteById(admin.getId());
+        } else {
+            admin.setUpdateTime(new Date());
+            return adminServiceExt.update(admin);
+        }
     }
 
     public int updateDistributor(User user, String password, String shopIds) {
@@ -202,10 +214,14 @@ public class UserServiceExt extends UserService {
             }
         }
         Admin admin = adminServiceExt.getByMobile(user.getMobile());
-        if(password != null) admin.setPassword(password);
-        if(user.getUserName() != null) admin.setUserName(user.getUserName());
-        if(user.getRealName() != null) admin.setRealName(user.getRealName());
+        if(StringUtils.isNotEmpty(password)) admin.setPassword(CryptUtils.md5Safe(password));
+        if(StringUtils.isNotEmpty(user.getUserName())) admin.setUserName(user.getUserName());
+        if(StringUtils.isNotEmpty(user.getRealName())) admin.setRealName(user.getRealName());
         admin.setUpdateTime(new Date());
-        return adminServiceExt.update(admin);
+        return adminServiceExt.updateWithoutPassword(admin);
+    }
+
+    public int updateUser(User user) {
+        return userDaoExt.update(user);
     }
 }

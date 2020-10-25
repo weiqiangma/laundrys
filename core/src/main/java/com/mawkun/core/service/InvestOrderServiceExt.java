@@ -56,6 +56,12 @@ public class InvestOrderServiceExt extends InvestOrderService {
     }
 
     public InvestOrderStatsVo statsInvestOrder(InvestOrderQuery query) {
+        if(StringUtils.isNotEmpty(query.getUserName())) {
+            query.setUserName("%" + query.getUserName() + "%");
+        }
+        if(StringUtils.isNotEmpty(query.getOrderNo())) {
+            query.setOrderNo("%" + query.getOrderNo() + "%");
+        }
         return investOrderDaoExt.statsInvestOrder(query);
     }
 

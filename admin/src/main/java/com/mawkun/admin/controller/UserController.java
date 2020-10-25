@@ -11,7 +11,9 @@ import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.WxLoginResultData;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.query.UserQuery;
+import com.mawkun.core.base.entity.Admin;
 import com.mawkun.core.base.entity.User;
+import com.mawkun.core.service.AdminServiceExt;
 import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.service.WxApiServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
@@ -56,6 +58,8 @@ public class UserController extends BaseController {
     private UserServiceExt userServiceExt;
     @Autowired
     private WxApiServiceExt wxApiServiceExt;
+    @Autowired
+    private AdminServiceExt adminServiceExt;
 
     @GetMapping("/get")
     @ResponseBody
@@ -158,6 +162,7 @@ public class UserController extends BaseController {
         if(session.getLevel() > 0) return sendArgsError("非主管理员无权操作");
         User resultUser = userServiceExt.getById(userId);
         if(resultUser == null) return sendArgsError("查询不到该用户");
+        if(resultUser.getMobile() == null) return sendArgsError("该用户未进行手机号授权，无法操作");
         resultUser.setRealName(realName);
         if(type == 2) {
             result = userServiceExt.updateDistributor(resultUser, password, shopIds);

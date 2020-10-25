@@ -1,5 +1,6 @@
 package com.mawkun.app.controller;
 
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.controller.BaseController;
 import com.mawkun.core.base.data.JsonResult;
 import com.mawkun.core.base.data.PageInfo;
@@ -56,6 +57,7 @@ public class InvestLogController extends BaseController {
         if(session.getId() > 0) {
             query.setUserId(session.getId());
         }
+        query.setStatus(Constant.INVEST_ORDER_FINISH);
         PageInfo pageInfo = investOrderServiceExt.pageList(query);
         return sendSuccess(pageInfo);
     }

@@ -25,8 +25,13 @@ public class AdminServiceExt extends AdminService {
         if(StringUtils.isNotEmpty(query.getUserName())) query.setUserName("%" + query.getUserName() + "%");
         if(StringUtils.isNotEmpty(query.getRealName())) query.setRealName("%" + query.getRealName() + "%");
         if(StringUtils.isNotEmpty(query.getMobile())) query.setMobile("%" + query.getMobile() + "%");
-        List<Admin> list = adminDaoExt.listByEntity(query);
+        //List<Admin> list = adminDaoExt.listByEntity(query);
+        List<Admin> list = adminDaoExt.selectList(query);
         return new PageInfo(list);
+    }
+
+    public List<Admin> selectList(AdminQuery query) {
+        return adminDaoExt.selectList(query);
     }
 
     public Admin getByShopId(Long shopId) {
@@ -46,5 +51,10 @@ public class AdminServiceExt extends AdminService {
         admin.setMobile(mobile);
         return adminDaoExt.deleteByEntity(admin);
     }
+
+    public int updateWithoutPassword(Admin admin) {
+        return adminDaoExt.update(admin);
+    }
+
 
 }

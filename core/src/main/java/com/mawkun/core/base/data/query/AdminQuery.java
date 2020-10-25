@@ -4,9 +4,12 @@ import com.mawkun.core.base.entity.Admin;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class AdminQuery extends Admin {
+
+    private List<Integer> levelList;
     private Integer pageNo;
     private Integer pageSize;
     private Date createTimeStart;

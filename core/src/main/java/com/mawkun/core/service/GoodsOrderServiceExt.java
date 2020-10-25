@@ -163,7 +163,9 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         //query.setTransportWay(Constant.ORDER_DELIVERY_GET);
         PageHelper.startPage(query.getPageNo(), query.getPageSize());
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
-        List<GoodsOrderVo> resultList = list.stream().filter(item -> !item.getUserId().equals(userId) || item.getStatus() == Constant.ORDER_STATUS_CANCEL || item.getStatus() == Constant.ORDER_STATUS_WAITING_PAY).collect(Collectors.toList());
+        List<GoodsOrderVo> resultList = list.stream().filter(item -> !item.getUserId().equals(userId)).collect(Collectors.toList());
+        resultList = resultList.stream().filter(item -> item.getStatus() != Constant.ORDER_STATUS_CANCEL).collect(Collectors.toList());
+        resultList = resultList.stream().filter(item -> item.getStatus() != Constant.ORDER_STATUS_WAITING_PAY).collect(Collectors.toList());
         //配送员已结单过滤已完成的订单
         if(query.getType() == 2) {
             resultList = resultList.stream().filter(item -> item.getStatus() != Constant.DELIVERY_ORDER_SURE_FINISH).collect(Collectors.toList());
@@ -387,7 +389,9 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
         orderQuery.setTransportWay(transportway);
         orderQuery.setType(1);
         List<GoodsOrderVo> orderVos = goodsOrderDaoExt.selectList(orderQuery);
-        List<GoodsOrderVo> resultOrders = orderVos.stream().filter(item -> !item.getUserId().equals(userId) || item.getStatus() == Constant.ORDER_STATUS_CANCEL || item.getStatus() == Constant.ORDER_STATUS_WAITING_PAY).collect(Collectors.toList());
+        List<GoodsOrderVo> resultOrders = orderVos.stream().filter(item -> !item.getUserId().equals(userId)).collect(Collectors.toList());
+        resultOrders = resultOrders.stream().filter(item -> item.getStatus() != Constant.ORDER_STATUS_CANCEL).collect(Collectors.toList());
+        resultOrders = resultOrders.stream().filter(item -> item.getStatus() != Constant.ORDER_STATUS_WAITING_PAY).collect(Collectors.toList());
 
         JSONObject object = new JSONObject();
         if(query.getTransportWay() == Constant.ORDER_DELIVERY_GET) {
@@ -410,6 +414,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
     public JSONArray statsDistributorOrder(StateQuery query) {
         fillQueryData(query);
         List<ShopOrderData> list = goodsOrderDaoExt.statsShopOrder(query);
+        //List<ShopOrderData> list = goodsOrderDaoExt.statsDistributorOrder(query);
         //根据type进行分组
         Map<String, ShopOrderData> dataMap = list.stream().collect(Collectors.toMap(ShopOrderData::getType, m->m));
         Date sTime = query.getStartTime();
@@ -431,8 +436,8 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
             JSONObject object = new JSONObject();
             String shopName = (data == null) ? "" : data.getShopName();
             if(query.getShopId() == null) shopName = "";
-            Integer amount = (data == null) ? 0 : data.getAmount();
-            Integer fee = (data == null) ? 0 : data.getFee();
+            Integer amount = (data == null || data.getAmount() == null) ? 0 : data.getAmount();
+            Integer fee = (data == null || data.getFee() == null) ? 0 : data.getFee();
             object.put("time", key);
             object.put("fee", fee);
             object.put("amount", amount);
@@ -452,8 +457,8 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
             queryVO.setDateCount(24);
         }else if(queryVO.getType() == 2) {
             //本周统计
-            queryVO.setStartTime(TimeUtils.getWeekStart());
-            queryVO.setEndTime(TimeUtils.getWeekEnd());
+            queryVO.setStartTime(TimeUtils.getBeginDayOfWeek());
+            queryVO.setEndTime(TimeUtils.getEndDayOfWeek());
             queryVO.setFormatCode("%Y-%m-%d");
             queryVO.setDateCount(7);
         }else if(queryVO.getType() == 3) {

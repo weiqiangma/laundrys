@@ -46,14 +46,20 @@ public class UserAddressServiceExt extends UserAddressService {
         String address = (userAddress.getAddress() != null) ? userAddress.getAddress() : "";
         String detail = (userAddress.getDetail() != null) ? userAddress.getDetail() : "";
         String detailAddress = address + detail;
-        String location = gaoDeApiServiceExt.getLalByAddress(detailAddress);
-        if(StringUtils.isEmpty(location)) return new JsonResult().error("收货地址解析失败,请输入正确地址");
+        if(StringUtils.isEmpty(userAddress.getLongitude()) || StringUtils.isEmpty(userAddress.getLatidute())) {
+            return new JsonResult().error("地址解析失败，请重新选择");
+        }
+        //String location = gaoDeApiServiceExt.getLalByAddress(detailAddress);
+        //if(StringUtils.isEmpty(location)) return new JsonResult().error("收货地址解析失败,请输入正确地址");
         if(userAddress.getStatus() != null && userAddress.getStatus() == Constant.USER_ADDRESS_USED) {
             setUserAddressUnused(userId);
         }
-        String[] lal = location.split(",");
-        String longitude = lal[0];
-        String latidute = lal[1];
+//        String[] lal = location.split(",");
+//        String longitude = lal[0];
+//        String latidute = lal[1];
+        String longitude = userAddress.getLongitude();
+        String latidute = userAddress.getLatidute();
+        String location = longitude + "," + latidute;
         userAddress.setExactAddress(detailAddress);
         userAddress.setLongitude(longitude);
         userAddress.setLatidute(latidute);
@@ -63,12 +69,31 @@ public class UserAddressServiceExt extends UserAddressService {
         return new JsonResult().success("地址添加成功");
     }
 
-    @Transactional
-    public int updateUserAddress(UserAddress address) {
-        if(address.getStatus() != null) {
-            userAddressDaoExt.setAddressUnUsed(address.getUserId());
+    public JsonResult updateUserAddress(UserAddress userAddress) {
+        if(StringUtils.isEmpty(userAddress.getLongitude()) || StringUtils.isEmpty(userAddress.getLatidute())) {
+            return new JsonResult().error("地址解析失败，请重新选择");
         }
-        return userAddressDaoExt.update(address);
+        if(userAddress.getStatus() != null) {
+            userAddressDaoExt.setAddressUnUsed(userAddress.getUserId());
+        }
+        String address = (userAddress.getAddress() != null) ? userAddress.getAddress() : "";
+        String detail = (userAddress.getDetail() != null) ? userAddress.getDetail() : "";
+        String detailAddress = address + detail;
+        //String location = gaoDeApiServiceExt.getLalByAddress(detailAddress);
+        //if(StringUtils.isEmpty(location)) return 0;
+        //String[] lal = location.split(",");
+        //String longitude = lal[0];
+        //String latidute = lal[1];
+        String longitude = userAddress.getLongitude();
+        String latidute = userAddress.getLatidute();
+        String location = longitude + "," + latidute;
+        userAddress.setExactAddress(detailAddress);
+        userAddress.setLongitude(longitude);
+        userAddress.setLatidute(latidute);
+        userAddress.setLocation(location);
+        int result =  userAddressDaoExt.update(userAddress);
+        if(result > 0) return new JsonResult().success("地址编辑成功");
+        return new JsonResult().error("地址编辑失败");
     }
 
 

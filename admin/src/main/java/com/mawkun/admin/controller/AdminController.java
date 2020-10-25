@@ -9,6 +9,7 @@ import com.mawkun.core.base.data.UserSession;
 import com.mawkun.core.base.data.query.AdminQuery;
 import com.mawkun.core.base.entity.Admin;
 import com.mawkun.core.base.entity.User;
+import com.mawkun.core.dao.ShopUserDaoExt;
 import com.mawkun.core.service.AdminServiceExt;
 import com.mawkun.core.service.ShopServiceExt;
 import com.mawkun.core.service.UserServiceExt;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author mawkun
@@ -41,6 +43,8 @@ public class AdminController extends BaseController {
     private AdminServiceExt adminServiceExt;
     @Autowired
     private ShopServiceExt shopServiceExt;
+    @Autowired
+    private ShopUserDaoExt shopUserDaoExt;
     @Autowired
     private UserServiceExt userServiceExt;
 
@@ -71,8 +75,9 @@ public class AdminController extends BaseController {
     @ApiOperation(value="管理员列表分页", notes="管理员列表分页")
     public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, AdminQuery query) {
         if(session.getLevel() > 0) return sendArgsError("子管理员无权查看");
+        List<Integer> levelList = Arrays.asList(Constant.ADMIN_TYPE_SUPER, Constant.ADMIN_TYPE_COMMON);
+        query.setLevelList(levelList);
         PageInfo page = adminServiceExt.pageByEntity(query);
-        JsonResult result = sendSuccess(page);
         return sendSuccess(page);
     }
 
@@ -80,19 +85,21 @@ public class AdminController extends BaseController {
     @ApiOperation(value="添加admin", notes="添加admin")
     public JsonResult insert(@LoginedAuth @ApiIgnore UserSession session, Admin admin){
         if(session.getLevel() > 0) return sendSuccess("子管理员无权添加管理员，请联系主管理员添加");
+        if(admin.getShopId() != null && admin.getShopId() > 0) admin.setLevel(Constant.ADMIN_TYPE_COMMON);
         Admin query = new Admin();
         if(admin.getUserName() != null) query.setUserName(admin.getUserName());
         Admin resultNameAdmin = adminServiceExt.getByEntity(query);
         if(resultNameAdmin != null) return sendArgsError("用户名重复,请重新添加");
         Admin mobileQuery = new Admin();
         if(admin.getMobile() != null) mobileQuery.setMobile(admin.getMobile());
-        Admin resultAdmin = adminServiceExt.getByEntity(query);
+        Admin resultAdmin = adminServiceExt.getByEntity(mobileQuery);
         if(resultAdmin != null && resultAdmin.getLevel().equals(admin.getLevel())) return sendArgsError("手机号重复,请重新添加");
-        if(admin.getLevel() != null && admin.getLevel() == Constant.ADMIN_TYPE_DISTRIBUTOR) {
-            User user = userServiceExt.getDistributorByMobile(admin.getMobile());
-            if(user == null) return sendArgsError("请先在用户管理中配置该用户为配送员，在继续该操作");
+        if(resultAdmin != null &&  resultAdmin.getLevel() == Constant.ADMIN_TYPE_DISTRIBUTOR && admin.getLevel() < Constant.ADMIN_TYPE_DISTRIBUTOR) {
+            resultAdmin.setLevel(admin.getLevel());
+            adminServiceExt.update(resultAdmin);
+        } else {
+            adminServiceExt.insert(admin);
         }
-        adminServiceExt.insert(admin);
         return sendSuccess(admin);
     }
 
@@ -109,6 +116,15 @@ public class AdminController extends BaseController {
     @ApiImplicitParam(name = "id", value = "管理员ID", dataType = "Long", paramType = "header")
     public JsonResult deleteOne(@LoginedAuth @ApiIgnore UserSession session, Long id){
         if(session.getLevel() > 0) return sendSuccess("子管理员无删除其他管理员权限");
+        Admin admin = adminServiceExt.getById(id);
+        if(admin == null) return sendArgsError("查询不到管理员信息");
+        if(admin.getMobile() == null) return sendArgsError("该管理员手机号不能为空");
+        User user = userServiceExt.getByMobile(admin.getMobile());
+        if(user == null) return sendArgsError("根据管理员手机号查询用户失败");
+        user.setKind(Constant.USER_TYPE_CUSTOMER);
+        user.setUpdateTime(new Date());
+        userServiceExt.updateUser(user);
+        shopUserDaoExt.deleteByUserId(user.getId());
         adminServiceExt.deleteById(id);
         return sendSuccess("删除成功");
     }

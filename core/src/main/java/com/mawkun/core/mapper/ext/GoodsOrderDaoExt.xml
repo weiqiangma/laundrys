@@ -5,7 +5,7 @@
     <!-- 统计门店收入 -->
     <select id="statsShopIncome" resultType="com.mawkun.core.base.data.vo.GoodsOrderVo" parameterType="com.mawkun.core.base.data.query.StateQuery">
         SELECT
-        ifnull( SUM( total_amount ), 0 ) amount,
+        ifnull( SUM( total_amount) + SUM(ifnull(transport_fee, 0)), 0 ) amount,
         DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
         FROM
         goods_order ofm
@@ -60,14 +60,23 @@
 
     <select id="statsDistributorOrder" resultType="com.mawkun.core.base.data.ShopOrderData" parameterType="com.mawkun.core.base.data.query.StateQuery">
         SELECT
-        count( ofm.id ) amount,
-        DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type FROM goods_order ofm
+        sum( ofm.total_amount ) amount,
+        sum( ofm.transport_fee) fee,
+        DATE_FORMAT( ofm.create_time, '${formatCode}' ) AS type
+        <if test="shopId != null and shopId > 0">
+            ,shop.shop_name shopName
+        </if>
+        FROM goods_order ofm
         <where>
             <if test="startTime != null and endTime != null">
-                AND ofm.create_time &gt;= #{startTime} AND ofm.create_time &lt;= #{endTime}
+                and DATE_FORMAT(create_time, '%Y-%m-%d' ) &gt;= DATE_FORMAT(#{startTime}, '%Y-%m-%d' )
+                and DATE_FORMAT(create_time, '%Y-%m-%d' ) &lt;= DATE_FORMAT(#{endTime}, '%Y-%m-%d' )
             </if>
             <if test="shopId != null and shopId > 0">
                 AND ofm.shop_id = #{shopId}
+            </if>
+            <if test="distributorId != null and distributorId > 0">
+                AND ofm.distributor_id = #{distributorId}
             </if>
         </where>
         group by type
@@ -125,6 +134,9 @@
         <result column="link_mobile1" property="linkMobile1"/>
         <result column="link_mobile2" property="linkMobile2"/>
         <result column="mobile" property="mobile"/>
+        <result column="location" property="location"/>
+        <result column="shopAddress" property="shopAddress"/>
+        <result column="shopLocation" property="shopLocation"/>
         <result column="customerName" property="customerName"/>
         <result column="distributorName" property="distributorName"/>
         <result column="create_time" property="createTime"/>
@@ -147,6 +159,8 @@
         cus.real_name customerName,
         cus.mobile,
         uas.location,
+        shop.location shopLocation,
+        shop.address shopAddress,
         uas.link_mobile1,
         uas.link_mobile2,
         uas.name,
@@ -184,6 +198,7 @@
         <result property="realAmount" column="real_amount" jdbcType="NUMERIC"/>
         <result property="totalAmount" column="total_amount" jdbcType="NUMERIC"/>
         <result property="transportWay" column="transport_way" jdbcType="INTEGER"/>
+        <result property="linkMan" column="link_man"/>
         <result property="userAddress" column="user_address"/>
         <result property="address" column="address"/>
         <result property="detail" column="detail"/>
@@ -196,13 +211,17 @@
         <result property="linkMobile2" column="link_mobile2"/>
         <result property="offlineMobile" column="offline_mobile"/>
         <result property="location" column="location"/>
+        <result property="shopLocation" column="shopLocation"/>
+        <result property="shopAddress" column="shopAddress"/>
         <result property="transportFee" column="transport_fee"/>
         <result property="type" column="type"/>
         <result property="payKind" column="pay_kind"/>
+        <result property="payTime" column="pay_time"/>
+        <result property="updateTime" column="update_time"/>
         <result property="createTime" column="create_time"/>
     </resultMap>
     <select id="selectList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
-        select goods_order.*, ua.location, user.mobile, ua.link_mobile1, ua.link_mobile2, ua.address, ua.name, ua.detail, uw.user_name as distributor_name, uw.mobile distributorMobile from goods_order
+        select goods_order.*, ua.location, user.mobile, ua.link_man, ua.link_mobile1, ua.link_mobile2, ua.address, ua.name, ua.detail, uw.user_name as distributor_name, uw.mobile distributorMobile from goods_order
         left join user on goods_order.user_id = user.id
         left join user_address ua on goods_order.address_id = ua.id
         left join user uw on goods_order.distributor_id = uw.id
@@ -274,10 +293,11 @@
     </select>
 
     <select id="selectOrderList" resultMap="OrderFormVoResultMap" parameterType="com.mawkun.core.base.data.query.GoodsOrderQuery">
-        select goods_order.*, ua.location, user.mobile, ua.link_mobile1, ua.link_mobile2, ua.address, ua.name, ua.detail, uw.user_name as distributor_name, uw.mobile distributorMobile from goods_order
+        select goods_order.*, ua.location, shop.location shopLocation, shop.address shopAddress, user.mobile, ua.link_mobile1, ua.link_mobile2, ua.address, ua.name, ua.detail, uw.user_name as distributor_name, uw.mobile distributorMobile from goods_order
         left join user on goods_order.user_id = user.id
         left join user_address ua on goods_order.address_id = ua.id
         left join user uw on goods_order.distributor_id = uw.id
+        left join shop on goods_order.shop_id = shop.id
         <where>
             <if test="id != null and id > 0">
                 and goods_order.id = #{id}

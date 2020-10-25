@@ -13,27 +13,27 @@ import java.util.List;
 
 @Data
 public class GoodsOrderVo {
-    @ExcelProperty("ID")
+    @ExcelIgnore
     private Long id;
     /**
      * 用户id
      */
-    @ExcelProperty("用户ID")
+    @ExcelIgnore
     private Long userId;
     /**[
      * 店铺id
      */
-    @ExcelProperty("店铺ID")
+    @ExcelIgnore
     private Long shopId;
     /**
      * 配送员id
      */
-    @ExcelProperty("配送员ID")
+    @ExcelIgnore
     private Long distributorId;
     /**
      * 地址id
      */
-    @ExcelProperty("地址ID")
+    @ExcelIgnore
     private Long addressId;
     /**
      * 用户名
@@ -45,6 +45,21 @@ public class GoodsOrderVo {
      */
     @ExcelProperty("店铺名")
     private String shopName;
+    /**
+     * 配送员名
+     */
+    @ExcelProperty("配送员姓名")
+    private String distributorName;     //配送员姓名
+    @ExcelProperty("微信电话")
+    private String mobile;
+    @ExcelProperty("联系电话")
+    private String linkMobile1;
+    @ExcelProperty("备用联系电话")
+    private String linkMobile2;
+    @ExcelProperty("收货联系人")
+    private String linkMan;
+    @ExcelProperty("配送员手机号")
+    private String distributorMobile;
     /**
      * 订单号
      */
@@ -71,15 +86,15 @@ public class GoodsOrderVo {
     @ExcelProperty("总金额")
     private Long totalAmount;
     /**
-     * 用户地址
-     */
-    @ExcelProperty("收货地址")
-    private String userAddress;
-    /**
      * 运费
      */
     @ExcelProperty("运费")
     private Long transportFee;
+    /**
+     * 用户地址
+     */
+    @ExcelProperty("收货地址")
+    private String userAddress;
     /**
      * 配送方式
      */
@@ -97,16 +112,6 @@ public class GoodsOrderVo {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date payTime;
-    /**
-     * 是否新订单
-     */
-    @ExcelProperty("是否新订单")
-    private Integer isnew;
-    /**
-     * 线上线下订单
-     */
-    @ExcelProperty("线上线下订单")
-    private Integer orderType;
     /**
      * 线下订单手机号
      */
@@ -127,33 +132,36 @@ public class GoodsOrderVo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date createTime;
 
+    @ExcelIgnore
+    private String shopLocation;
+    @ExcelIgnore
+    private String shopAddress;
 
 
-    @ExcelProperty("用户名")
+
+    /**
+     * 是否新订单
+     */
+    @ExcelIgnore
+    private Integer isnew;
+    /**
+     * 线上线下订单
+     */
+    @ExcelIgnore
+    private Integer orderType;
+    @ExcelIgnore
     private String customerName;        //客户姓名
-    @ExcelProperty("微信电话")
-    private String mobile;
-    @ExcelProperty("配送员手机号")
-    private String distributorMobile;
-    @ExcelProperty("配送员姓名")
-    private String distributorName;     //配送员姓名
-    @ExcelProperty("坐标")
+    @ExcelIgnore
     private String location;            //订单收货地址
-    @ExcelProperty("收货地址")
+    @ExcelIgnore
     private String address;
-    @ExcelProperty("微信定位")
+    @ExcelIgnore
     private String name;
-    @ExcelProperty("详细地址")
+    @ExcelIgnore
     private String detail;
-    @ExcelProperty("联系电话")
-    private String linkMobile1;
-    @ExcelProperty("收货联系人")
-    private String linkMan;
-    @ExcelProperty("联系人性别")
+    @ExcelIgnore
     private String gender;
-    @ExcelProperty("备用联系电话")
-    private String linkMobile2;
-    @ExcelProperty("总金额")
+    @ExcelIgnore
     private Double amount;
     @ExcelIgnore
     private List<OrderClothes> list;         //订单下商品

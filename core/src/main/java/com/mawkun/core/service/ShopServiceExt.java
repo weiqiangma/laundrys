@@ -6,7 +6,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mawkun.core.base.common.constant.Constant;
 import com.mawkun.core.base.data.ShopOrderData;
+import com.mawkun.core.base.data.query.AdminQuery;
 import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.GoodsOrderVo;
@@ -226,9 +228,11 @@ public class ShopServiceExt extends ShopService {
                 List<Long> idList = shopUserDaoExt.selectDistorIdByShopId(shopVo.getId());
                 String ids = StringUtils.join(idList,",");
                 shopVo.setDistributorIds(ids);
-                Admin adminQuery = new Admin();
+                AdminQuery adminQuery = new AdminQuery();
+                List<Integer> levelList = Arrays.asList(Constant.ADMIN_TYPE_SUPER, Constant.ADMIN_TYPE_COMMON);
                 adminQuery.setShopId(shopVo.getId());
-                List<Admin> adminList = adminServiceExt.listByEntity(adminQuery);
+                adminQuery.setLevelList(levelList);
+                List<Admin> adminList = adminServiceExt.selectList(adminQuery);
                 shopVo.setAdminList(adminList);
             }
             return new PageInfo<ShopVo>(list);

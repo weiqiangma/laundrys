@@ -141,7 +141,8 @@ public class ShoppingCartController extends BaseController {
             if(distance >= front && distance < next) {
                 int fee = 0;
                 int feeDiff = 0;
-                int lowAmount = sortList.get(i).getLowAmount();
+                //int lowAmount = sortList.get(i).getLowAmount();
+                int lowAmount = sortList.get(i+1).getLowAmount();
                 if(amount >= lowAmount) {
                     object.put("transportFee", 0);
                     object.put("feeDiff", feeDiff);
@@ -260,8 +261,8 @@ public class ShoppingCartController extends BaseController {
                         //transactionManager.commit(status);
                         String timeEnd = DateUtils.format("yyyy-MM-dd HH:mm:ss", resultOrder.getCreateTime());
                         List<String> openIdList = shopUserDaoExt.selectDistorOpenIdByShopId(resultOrder.getShopId());
-                        wxApiServiceExt.sendOrderPaySuccessNotice(user, resultOrder, timeEnd, user.getOpenId());
-                        wxApiServiceExt.sendDistributorOrderTakeNotice(user, resultOrder, timeEnd, openIdList);
+                        //wxApiServiceExt.sendOrderPaySuccessNotice(user, resultOrder, timeEnd, user.getOpenId());
+                        //wxApiServiceExt.sendDistributorOrderTakeNotice(user, resultOrder, timeEnd, openIdList);
                         return sendSuccess("支付成功");
                     } else {
                         //transactionManager.commit(status);

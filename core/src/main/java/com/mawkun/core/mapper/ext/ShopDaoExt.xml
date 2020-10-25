@@ -28,6 +28,7 @@
             <if test="status != null">and status = #{status}</if>
             <if test="id != null"> and id = #{id}</if>
             <if test="shopIdList != null and shopIdList.size() > 0">
+                and id in
                 <foreach item="item" collection="shopIdList" separator="," open="(" close=")" index="index">
                     #{item}
                 </foreach>

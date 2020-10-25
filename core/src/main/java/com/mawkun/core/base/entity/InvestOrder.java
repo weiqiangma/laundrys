@@ -2,6 +2,7 @@ package com.mawkun.core.base.entity;
 
 import java.util.Date;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -16,7 +17,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Data
 public class InvestOrder {
 
-    @ExcelProperty("ID")
+    @ExcelIgnore
     private Long id;
     @ExcelProperty("用户ID")
     private Long userId;
@@ -60,7 +61,7 @@ public class InvestOrder {
     /**
      * 状态
      */
-    @ExcelProperty("订单状态")
+    @ExcelIgnore
     private Integer status;
     /**
      * 支付时间

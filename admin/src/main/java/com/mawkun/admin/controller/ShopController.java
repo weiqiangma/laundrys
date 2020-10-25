@@ -11,10 +11,14 @@ import com.mawkun.core.base.data.query.ShopQuery;
 import com.mawkun.core.base.data.query.StateQuery;
 import com.mawkun.core.base.data.vo.ShopUserVo;
 import com.mawkun.core.base.data.vo.ShopVo;
+import com.mawkun.core.base.entity.Admin;
 import com.mawkun.core.base.entity.Shop;
+import com.mawkun.core.base.entity.User;
 import com.mawkun.core.dao.ShopUserDaoExt;
+import com.mawkun.core.service.AdminServiceExt;
 import com.mawkun.core.service.GoodsOrderServiceExt;
 import com.mawkun.core.service.ShopServiceExt;
+import com.mawkun.core.service.UserServiceExt;
 import com.mawkun.core.spring.annotation.LoginedAuth;
 import com.xiaoleilu.hutool.convert.Convert;
 import io.swagger.annotations.Api;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +53,10 @@ public class ShopController extends BaseController {
     private ShopServiceExt shopServiceExt;
     @Autowired
     private ShopUserDaoExt shopUserDaoExt;
+    @Resource
+    private UserServiceExt userServiceExt;
+    @Resource
+    private AdminServiceExt adminServiceExt;
     @Autowired
     private GoodsOrderServiceExt goodsOrderServiceExt;
 
@@ -77,7 +86,10 @@ public class ShopController extends BaseController {
     public JsonResult pageList(@LoginedAuth @ApiIgnore UserSession session, ShopQuery shopQuery) {
         if(session.getLevel() == Constant.ADMIN_TYPE_COMMON) shopQuery.setId(session.getShopId());
         if(session.getLevel() == Constant.ADMIN_TYPE_DISTRIBUTOR) {
-            List<ShopUserVo> list = shopUserDaoExt.selectShopNameByUserId(session.getId());
+
+            User user = userServiceExt.getByMobile(session.getMobile());
+            if(user == null) return sendArgsError("未查询到该配送员信息");
+            List<ShopUserVo> list = shopUserDaoExt.selectShopNameByUserId(user.getId());
             List<Long> shopIdList = list.stream().map(ShopUserVo::getShopId).collect(Collectors.toList());
             shopQuery.setShopIdList(shopIdList);
         }
@@ -174,9 +186,12 @@ public class ShopController extends BaseController {
     @ApiOperation(value="配送员订单统计", notes="配送员订单统计")
     public JsonResult statsDistributorOrder(@LoginedAuth UserSession session) {
         StateQuery query = this.createQueryStateVo();
-        query.setDistributorId(session.getId());
-        query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
-        query.setTransportWay(Constant.ORDER_DELIVERY_GET);
+        Admin admin = adminServiceExt.getById(session.getId());
+        if(admin == null || admin.getMobile() == null) return sendArgsError("查询不到该配送员信息");
+        User user = userServiceExt.getByMobile(admin.getMobile());
+        query.setDistributorId(user.getId());
+        //query.setStatus(Constant.SELF_ORDER_SURE_TAKE);
+        //query.setTransportWay(Constant.ORDER_DELIVERY_GET);
         JSONArray array = goodsOrderServiceExt.statsDistributorOrder(query);
         return sendSuccess(array);
     }

@@ -52,8 +52,7 @@ public class UserAddressController extends BaseController {
     @PostMapping("/update")
     public JsonResult update(@LoginedAuth UserSession session, UserAddress userAddress){
         if(session.getId() > 0) userAddress.setUserId(session.getId());
-        int result = userAddressServiceExt.updateUserAddress(userAddress);
-        return sendSuccess(result);
+        return userAddressServiceExt.updateUserAddress(userAddress);
     }
 
     @PostMapping("/delete")
