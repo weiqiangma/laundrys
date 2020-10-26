@@ -95,7 +95,7 @@ public class WxApiServiceExt {
         String msg = "";
         JSONObject object = new JSONObject();
         String url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        String param = createParam(openId, orderNo, "1", body, detail, notifyUrl);
+        String param = createParam(openId, orderNo, totalFee, body, detail, notifyUrl);
         try {
             HttpResult result = HttpUtils.post(url, param, "UTF-8");
             String message = result.getHtml();

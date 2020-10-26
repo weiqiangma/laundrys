@@ -8,6 +8,7 @@
         <result property="cartId" column="cart_id" jdbcType="INTEGER"/>
         <result property="orderNo" column="order_no" jdbcType="VARCHAR"/>
         <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="mobile" column="mobile"/>
         <result property="cartName" column="cart_name" jdbcType="VARCHAR"/>
         <result property="investMoney" column="invest_money" jdbcType="INTEGER"/>
         <result property="giftMoney" column="gift_money" jdbcType="INTEGER"/>
@@ -20,7 +21,7 @@
         <result property="description" column="description"/>
     </resultMap>
         <select id="selectListByTerms" resultMap="InvestOrderDataResultMap" parameterType="com.mawkun.core.base.data.query.InvestOrderQuery">
-            select invest_order.*, member_card.description from invest_order left join member_card on invest_order.cart_id = member_card.id left join user on invest_order.user_id = user.id
+            select invest_order.*,user.mobile, member_card.description from invest_order left join member_card on invest_order.cart_id = member_card.id left join user on invest_order.user_id = user.id
             <where>
                 <if test="userId != null">and user_id = #{userId}</if>
                 <if test="mobile != null">and user.mobile like #{mobile}</if>

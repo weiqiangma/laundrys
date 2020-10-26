@@ -75,7 +75,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
             query.setLinkMobile2("%" + query.getLinkMobile2() + "%");
         }
         if(StringUtils.isNotEmpty(query.getDistributorMobile())) {
-            query.setLinkMobile2("%" + query.getDistributorMobile() + "%");
+            query.setDistributorMobile("%" + query.getDistributorMobile() + "%");
         }
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
         for(GoodsOrderVo orderVo : list) {
@@ -132,7 +132,7 @@ public class GoodsOrderServiceExt extends GoodsOrderService {
             query.setLinkMobile2("%" + query.getLinkMobile2() + "%");
         }
         if(StringUtils.isNotEmpty(query.getDistributorMobile())) {
-            query.setLinkMobile2("%" + query.getDistributorMobile() + "%");
+            query.setDistributorMobile("%" + query.getDistributorMobile() + "%");
         }
         List<GoodsOrderVo> list = goodsOrderDaoExt.selectList(query);
         return list;

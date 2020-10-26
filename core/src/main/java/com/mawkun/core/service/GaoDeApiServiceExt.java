@@ -19,7 +19,7 @@ public class GaoDeApiServiceExt {
 
     public String getDistanceWithUserAndShop(String originlal, String destincation) {
         String distance = "";
-        String url = "https://restapi.amap.com/v3/distance?origins=" + originlal + "&destination=" + destincation +"&output=json&key=" + GaoDeKey;
+        String url = "https://restapi.amap.com/v3/distance?origins=" + originlal + "&destination=" + destincation +"&output=json&key=" + GaoDeKey + "&type=3";
         try {
             HttpResult result = HttpUtils.get(url);
             JSONObject object = result.asJSON();

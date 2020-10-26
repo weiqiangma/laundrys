@@ -6,4 +6,5 @@ import lombok.Data;
 @Data
 public class InvestOrderData extends InvestOrder {
     private String description;
+    private String mobile;
 }
