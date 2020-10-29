@@ -234,6 +234,16 @@ public class ShopServiceExt extends ShopService {
                 adminQuery.setLevelList(levelList);
                 List<Admin> adminList = adminServiceExt.selectList(adminQuery);
                 shopVo.setAdminList(adminList);
+                if(StringUtils.isNotEmpty(query.getWxLongitude()) || StringUtils.isNotEmpty(query.getWxLatitude())) {
+                    String originalLal = query.getWxLongitude() + "," + query.getWxLatitude();
+                    String destincation = shopVo.getLocation();
+                    String distanceStr = gaoDeApiServiceExt.getDistanceWithUserAndShop(originalLal, destincation);
+                    Integer distance = NumberUtils.str2Int(distanceStr);
+                    shopVo.setLength(distance);
+                    distanceStr = convertDistanceUnit(distanceStr);
+                    shopVo.setDistance(distanceStr);
+                    resultList.add(shopVo);
+                }
             }
             return new PageInfo<ShopVo>(list);
         } else {

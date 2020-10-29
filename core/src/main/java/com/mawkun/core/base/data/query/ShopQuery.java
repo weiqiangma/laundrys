@@ -14,6 +14,8 @@ public class ShopQuery extends Shop {
     private Long addressId;
     private String lal;
     private List<Long> shopIdList;
+    private String wxLongitude;
+    private String wxLatitude;
     private Date createTimeStart;
     private Date createTimeEnd;
 

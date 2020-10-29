@@ -24,10 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author mawkun
@@ -62,7 +60,9 @@ public class ShopController extends BaseController {
     public JsonResult pageList(ShopQuery shopQuery) {
         PageInfo<ShopVo> page = shopServiceExt.pageByEntity(shopQuery);
         List<ShopVo> list = page.getList();
-        return sendSuccess(list);
+        list = list.stream().limit(6).collect(Collectors.toList());
+        List<ShopVo> sortShopList = list.stream().sorted(Comparator.comparingInt(ShopVo::getLength)).collect(Collectors.toList());
+        return sendSuccess(sortShopList);
     }
 
 }
